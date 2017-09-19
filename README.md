@@ -1,0 +1,123 @@
+# Tensornets
+
+High level network definitions in [TensorFlow](https://github.com/tensorflow/tensorflow).
+
+## Guiding principles
+
+- 1
+- 2
+- 3
+
+## A quick example
+
+```python
+import tensorflow as tf
+import tensornets as nets
+
+inputs = tf.placeholder(tf.float32, [None, 224, 224, 3])
+
+with tf.device('cpu:0'):
+    model1 = nets.ResNet50(inputs, is_training=False, scope='myresnet')
+    model2 = nets.ResNet152(inputs, is_training=False)
+
+assert all(isinstance(m, tf.Tensor) for m in [model1, model2])
+```
+
+```python
+from tensornets.utils import *
+
+img = load_img('cat.png', target_size=256, crop_size=224)
+img = nets.resnets.preprocess(img)
+
+assert img.shape == (1, 224, 224, 3)
+```
+
+```python
+with tf.Session() as sess:
+    nets.load_resnet50(model1)
+    nets.load_resnet152(model2)
+    preds = sess.run([model1, model2], {inputs: img})
+```
+
+```python
+for pred in preds:
+    print('Predicted:', decode_predictions(pred, top=3)[0])
+```
+
+```
+('Predicted:', [(u'n02124075', u'Egyptian_cat', 0.27387387), (u'n02127052', u'lynx', 0.11052437), (u'n02123045', u'tabby', 0.074132949)])
+('Predicted:', [(u'n02124075', u'Egyptian_cat', 0.13528407), (u'n02123045', u'tabby', 0.094977126), (u'n04033995', u'quilt', 0.070704058)])
+```
+
+```python
+print_summary(model1)
+print_summary(model2)
+```
+
+```
+Scope: myresnet
+Total layers: 54
+Total weights: 320
+Total parameters: 25,636,712
+Scope: resnet152
+Total layers: 156
+Total weights: 932
+Total parameters: 60,419,944
+```
+
+```python
+print_weights(model1)
+```
+
+```
+Scope: myresnet
+conv1/conv/weights:0 (7, 7, 3, 64)
+conv1/conv/biases:0 (64,)
+conv1/bn/beta:0 (64,)
+conv1/bn/gamma:0 (64,)
+conv1/bn/moving_mean:0 (64,)
+conv1/bn/moving_variance:0 (64,)
+conv2/block1/0/conv/weights:0 (1, 1, 64, 256)
+conv2/block1/0/conv/biases:0 (256,)
+conv2/block1/0/bn/beta:0 (256,)
+conv2/block1/0/bn/gamma:0 (256,)
+...
+```
+
+```python
+print_outputs(model2)
+```
+
+```
+Scope: resnet152
+pad:0 (?, 230, 230, 3)
+conv1/conv/BiasAdd:0 (?, 112, 112, 64)
+conv1/bn/batchnorm/add_1:0 (?, 112, 112, 64)
+conv1/relu:0 (?, 112, 112, 64)
+pool1/MaxPool:0 (?, 55, 55, 64)
+conv2/block1/0/conv/BiasAdd:0 (?, 55, 55, 256)
+conv2/block1/0/bn/batchnorm/add_1:0 (?, 55, 55, 256)
+conv2/block1/1/conv/BiasAdd:0 (?, 55, 55, 64)
+conv2/block1/1/bn/batchnorm/add_1:0 (?, 55, 55, 64)
+conv2/block1/1/relu:0 (?, 55, 55, 64)
+...
+```
+
+## Performances
+
+- Currently,
+
+|             | Top-1 error | Top-5 error | References                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+|-------------|-------------|-------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ResNet50    | 25.104      | 7.932       | [[paper]](https://arxiv.org/abs/1512.03385) [[keras]](https://github.com/fchollet/keras/blob/master/keras/applications/resnet50.py) [[tf-slim]](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/slim/python/slim/nets/resnet_v1.py) [[tf-models (cifar)]](https://github.com/tensorflow/models/blob/master/resnet/resnet_model.py) [[torch-fb]](https://github.com/facebook/fb.resnet.torch/blob/master/models/resnet.lua) |
+| ResNet101   | 23.904      | 7.278       | [[paper]](https://arxiv.org/abs/1512.03385) [[tf-slim]](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/slim/python/slim/nets/resnet_v1.py) [[torch-fb]](https://github.com/facebook/fb.resnet.torch/blob/master/models/resnet.lua) |
+| ResNet152   | 23.606      | 7.112       | [[paper]](https://arxiv.org/abs/1512.03385) [[tf-slim]](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/slim/python/slim/nets/resnet_v1.py) [[torch-fb]](https://github.com/facebook/fb.resnet.torch/blob/master/models/resnet.lua) |
+| ResNet50v2  |             |             | [[paper]](https://arxiv.org/abs/1603.05027) [[tf-slim]](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/slim/python/slim/nets/resnet_v2.py) [[torch-fb]](https://github.com/facebook/fb.resnet.torch/blob/master/models/preresnet.lua) |
+| ResNet101v2 |             |             | [[paper]](https://arxiv.org/abs/1603.05027) [[tf-slim]](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/slim/python/slim/nets/resnet_v2.py) [[torch-fb]](https://github.com/facebook/fb.resnet.torch/blob/master/models/preresnet.lua) |
+| ResNet152v2 |             |             | [[paper]](https://arxiv.org/abs/1603.05027) [[tf-slim]](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/slim/python/slim/nets/resnet_v2.py) [[torch-fb]](https://github.com/facebook/fb.resnet.torch/blob/master/models/preresnet.lua) |
+| ResNeXt50   |             |             | [[paper]](https://arxiv.org/abs/1611.05431) [[torch-fb]](https://github.com/facebookresearch/ResNeXt/blob/master/models/resnext.lua) |
+| ResNeXt101  |             |             | [[paper]](https://arxiv.org/abs/1611.05431) [[torch-fb]](https://github.com/facebookresearch/ResNeXt/blob/master/models/resnext.lua) |
+| Inception1  |             |             | [[paper]](https://arxiv.org/abs/1409.4842) [[tf-slim]](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/slim/python/slim/nets/inception_v1.py) [[tf-models]](https://github.com/tensorflow/models/blob/master/slim/nets/inception_v1.py) |
+| Inception2  |             |             | [[paper]](https://arxiv.org/abs/1502.03167) [[tf-slim]](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/slim/python/slim/nets/inception_v2.py) [[tf-models]](https://github.com/tensorflow/models/blob/master/slim/nets/inception_v2.py) |
+| Inception3  | 22.092      | 6.220       | [[paper]](https://arxiv.org/abs/1512.00567) [[keras]](https://github.com/fchollet/keras/blob/master/keras/applications/inception_v3.py) [[tf-slim]](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/slim/python/slim/nets/inception_v3.py) [[tf-models]](https://github.com/tensorflow/models/blob/master/slim/nets/inception_v3.py) |
+| Inception4  |             |             | [[paper]](https://arxiv.org/abs/1602.07261) [[tf-models]](https://github.com/tensorflow/models/blob/master/slim/nets/inception_v4.py) |
