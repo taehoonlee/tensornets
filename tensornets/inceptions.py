@@ -13,14 +13,9 @@ from tensorflow.contrib.layers import separable_conv2d
 from .ops import *
 from .utils import arg_scope
 from .utils import collect_outputs
-from .utils import get_file
-from .utils import init
-from .utils import load_keras_weights
 from .utils import var_scope
 
 
-__model_url__ = 'https://github.com/taehoonlee/deep-learning-models/' \
-                'releases/download/inception/'
 __layers__ = [avg_pool2d, batch_norm, conv2d, dropout,
               fully_connected, max_pool2d, separable_conv2d]
 
@@ -352,24 +347,6 @@ def inception4(x, is_training=True, classes=1000, scope=None, reuse=None):
     return x
 
 
-def load_inception1(scopes):
-    filename = 'inception1.h5'
-    weights_path = get_file(
-        filename, __model_url__ + filename,
-        cache_subdir='models',
-        md5_hash='6a212e3cb60b33f49c372906f18ae4a8')
-    return load_keras_weights(scopes, weights_path)
-
-
-def load_inception3(scopes):
-    filename = 'inception3.h5'
-    weights_path = get_file(
-        filename, __model_url__ + filename,
-        cache_subdir='models',
-        md5_hash='7c4556613c348da3b99b633e1c430fff')
-    return load_keras_weights(scopes, weights_path)
-
-
 def preprocess(x):
     # Copied from keras
     x /= 255.
@@ -383,5 +360,3 @@ GoogLeNet = Inception1 = inception1
 Inception2 = inception2
 Inception3 = inception3
 Inception4 = inception4
-load_inception2 = init  # TODO
-load_inception4 = init  # TODO
