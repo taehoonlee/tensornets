@@ -13,6 +13,8 @@ __model_url__ = 'https://github.com/taehoonlee/deep-learning-models/' \
 
 
 def load_inception1(scopes):
+    # Converted from the BAIR's Caffe Model Zoo as a Keras format
+    # Refer to https://github.com/BVLC/caffe/tree/master/models/bvlc_googlenet
     filename = 'inception1.h5'
     weights_path = get_file(
         filename, __model_url__ + 'inception/' + filename,
@@ -22,6 +24,8 @@ def load_inception1(scopes):
 
 
 def load_inception3(scopes):
+    # Copied from keras with a slight modification due to the order of weights
+    # Refer to https://github.com/fchollet/keras/tree/master/keras/applications
     filename = 'inception3.h5'
     weights_path = get_file(
         filename, __model_url__ + 'inception/' + filename,
@@ -31,6 +35,8 @@ def load_inception3(scopes):
 
 
 def load_resnet50(scopes):
+    # Converted from the original Caffe files as a Keras format
+    # Refer to https://github.com/KaimingHe/deep-residual-networks
     filename = 'resnet50.h5'
     weights_path = get_file(
         filename, __model_url__ + 'resnet/' + filename,
@@ -40,6 +46,8 @@ def load_resnet50(scopes):
 
 
 def load_resnet101(scopes):
+    # Converted from the original Caffe files as a Keras format
+    # Refer to https://github.com/KaimingHe/deep-residual-networks
     filename = 'resnet101.h5'
     weights_path = get_file(
         filename, __model_url__ + 'resnet/' + filename,
@@ -49,6 +57,8 @@ def load_resnet101(scopes):
 
 
 def load_resnet152(scopes):
+    # Converted from the original Caffe files as a Keras format
+    # Refer to https://github.com/KaimingHe/deep-residual-networks
     filename = 'resnet152.h5'
     weights_path = get_file(
         filename, __model_url__ + 'resnet/' + filename,
@@ -58,6 +68,8 @@ def load_resnet152(scopes):
 
 
 def load_keras_resnet50(scopes):
+    # Copied from keras
+    # Refer to https://github.com/fchollet/keras/tree/master/keras/applications
     filename = 'resnet50_weights_tf_dim_ordering_tf_kernels.h5'
     weights_path = get_file(
         filename, __keras_url__ + filename,
