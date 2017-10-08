@@ -63,11 +63,12 @@ def _block1(x, filters, kernel_size=3, stride=1,
 @var_scope('block2')
 def _block2(x, filters, kernel_size=3, stride=1,
             conv_shortcut=True, scope=None):
-    x = batch_norm(x)
     if conv_shortcut is True:
-        shortcut = conv2d(x, filters[2], 1, stride=stride, scope='0/conv')
+        shortcut = conv(x, filters[2], 1, stride=stride, scope='0')
     else:
         shortcut = x
+    x = batch_norm(x)
+    x = relu(x)
     x = conv(x, filters[0], 1, stride=stride, scope='1')
     x = relu(x, name='1/relu')
     x = conv(x, filters[1], kernel_size, stride=1, padding='SAME', scope='2')
