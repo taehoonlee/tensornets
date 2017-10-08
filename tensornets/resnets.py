@@ -112,9 +112,10 @@ def _stack(x, block_fn, filters, blocks, stride1=2, scope=None):
 
 def resnet(x, stack_fn, activation_fn, is_training, classes,
            scope=None, reuse=None):
-    x = pad(x, [[0, 0], [3, 3], [3, 3], [0, 0]], name='pad')
+    x = pad(x, [[0, 0], [3, 3], [3, 3], [0, 0]], name='conv1/pad')
     x = conv(x, 64, 7, stride=2, scope='conv1')
     x = relu(x, name='conv1/relu')
+    x = pad(x, [[0, 0], [1, 1], [1, 1], [0, 0]], name='pool1/pad')
     x = max_pool2d(x, 3, stride=2, scope='pool1')
     x = stack_fn(x)
     x = reduce_mean(x, [1, 2], name='avgpool')
