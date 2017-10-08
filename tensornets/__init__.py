@@ -12,6 +12,7 @@ from .resnets import ResNet152
 from .resnets import ResNet50v2
 from .resnets import ResNet101v2
 from .resnets import ResNet152v2
+from .resnets import ResNet200v2
 from .resnets import ResNeXt50
 from .resnets import ResNeXt101
 

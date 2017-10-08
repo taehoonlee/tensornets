@@ -203,6 +203,20 @@ def resnet152_v2(x, is_training=True, classes=1000, scope=None, reuse=None):
     return resnet(x, stack, relu, is_training, classes, scope, reuse)
 
 
+@var_scope('resnet200_v2')
+@layers_common_args(True)
+def resnet200_v2(x, is_training=True, classes=1000, scope=None, reuse=None):
+    def stack(x):
+        x = _stack(x, _block2, [64, 64, 256], 3, stride1=1, scope='conv2')
+        x = _stack(x, _block2, [128, 128, 512], 24, scope='conv3')
+        x = _stack(x, _block2, [256, 256, 1024], 36, scope='conv4')
+        x = _stack(x, _block2, [512, 512, 2048], 3, scope='conv5')
+        x = batch_norm(x)
+        x = relu(x)
+        return x
+    return resnet(x, stack, relu, is_training, classes, scope, reuse)
+
+
 @var_scope('resnext50')
 @layers_common_args(False)
 def resnext50(x, is_training=True, classes=1000, scope=None, reuse=None):
@@ -236,6 +250,19 @@ def preprocess(x):
     return x
 
 
+def fb_preprocess(x):
+    # Refer to the following Torch ResNets
+    # https://github.com/facebook/fb.resnet.torch/blob/master/pretrained/classify.lua
+    x /= 255.
+    x[:, :, :, 0] -= 0.485
+    x[:, :, :, 1] -= 0.456
+    x[:, :, :, 2] -= 0.406
+    x[:, :, :, 0] /= 0.229
+    x[:, :, :, 1] /= 0.224
+    x[:, :, :, 2] /= 0.225
+    return x
+
+
 # Simple alias.
 ResNet50 = resnet50
 ResNet101 = resnet101
@@ -243,5 +270,6 @@ ResNet152 = resnet152
 ResNet50v2 = resnet50_v2
 ResNet101v2 = resnet101_v2
 ResNet152v2 = resnet152_v2
+ResNet200v2 = resnet200_v2
 ResNeXt50 = resnext50
 ResNeXt101 = resnext101
