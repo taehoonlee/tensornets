@@ -200,13 +200,14 @@ def _block6(x, filters, scope=None):
 @var_scope('inception1')
 @layers_common_args
 def inception1(x, is_training=True, classes=1000, scope=None, reuse=None):
-    x = conv0(x, 64, 7, stride=2, scope='block1')
+    x = pad(x, [[0, 0], [3, 3], [3, 3], [0, 0]], name='pad0')
+    x = conv0(x, 64, 7, stride=2, padding='VALID', scope='block1')
     x = max_pool2d(x, 3, stride=2, scope='pool1')
-    x = lrn(x, depth_radius=5, alpha=0.0001, beta=0.75, name='lrn1')
+    x = lrn(x, depth_radius=2, alpha=0.00002, beta=0.75, name='lrn1')
 
     x = conv0(x, 64, 1, scope='block2/3x3/r')
     x = conv0(x, 192, 3, scope='block2/3x3/1')
-    x = lrn(x, depth_radius=5, alpha=0.0001, beta=0.75, name='lrn2')
+    x = lrn(x, depth_radius=2, alpha=0.00002, beta=0.75, name='lrn2')
     x = max_pool2d(x, 3, stride=2, scope='pool2')
 
     x = _block0(x, [64, [96, 128], [16, 32], 32], scope='block3a')
@@ -218,7 +219,7 @@ def inception1(x, is_training=True, classes=1000, scope=None, reuse=None):
     x = _block0(x, [128, [128, 256], [24, 64], 64], scope='block4c')
     x = _block0(x, [112, [144, 288], [32, 64], 64], scope='block4d')
     x = _block0(x, [256, [160, 320], [32, 128], 128], scope='block4e')
-    x = max_pool2d(x, 2, stride=2, scope='pool4')
+    x = max_pool2d(x, 3, stride=2, scope='pool4')
 
     x = _block0(x, [256, [160, 320], [32, 128], 128], scope='block5a')
     x = _block0(x, [384, [192, 384], [48, 128], 128], scope='block5b')
@@ -344,6 +345,16 @@ def inception4(x, is_training=True, classes=1000, scope=None, reuse=None):
     x = fully_connected(x, classes, scope='logits')
     x = softmax(x, name='probs')
     x.aliases = [tf.get_variable_scope().name]
+    return x
+
+
+def preprocess1(x):
+    # Refer to the following BAIR Caffe Model Zoo
+    # https://github.com/BVLC/caffe/blob/master/models/bvlc_googlenet/train_val.prototxt
+    x = x[:, :, :, ::-1]
+    x[:, :, :, 0] -= 104.
+    x[:, :, :, 1] -= 117.
+    x[:, :, :, 2] -= 123.
     return x
 
 
