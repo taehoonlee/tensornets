@@ -21,7 +21,8 @@ def layers_common_args(conv_bias):
         def wrapper(*args, **kwargs):
             b_kwargs = {'scale': True,
                         'is_training': kwargs['is_training'],
-                        'scope': 'bn'}
+                        'scope': 'bn',
+                        'epsilon': 1e-5}
             c_kwargs = {'padding': 'VALID',
                         'activation_fn': None,
                         'scope': 'conv'}
