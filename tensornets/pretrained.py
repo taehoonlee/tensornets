@@ -102,6 +102,16 @@ for i in range(4, 8):
     move_rules_fb_resnet_torch.append(("%d.0.0.1.1.running_var" % i, -18))
 
 
+def load_torch_resnet50(scopes):
+    """Converted from the [Torch ResNets][4]."""
+    filename = 'resnet_50_cpu.pth'
+    weights_path = get_file(
+        filename, __model_url__ + 'resnet/' + filename,
+        cache_subdir='models',
+        md5_hash='5b38c39802c94de00b55596145d304aa')
+    return load_torch_weights(scopes, weights_path, move_rules_fb_resnet_torch)
+
+
 def load_torch_resnet101(scopes):
     """Converted from the [Torch ResNets][4]."""
     filename = 'resnet_101_cpu.pth'
@@ -112,6 +122,26 @@ def load_torch_resnet101(scopes):
     return load_torch_weights(scopes, weights_path, move_rules_fb_resnet_torch)
 
 
+def load_torch_resnet152(scopes):
+    """Converted from the [Torch ResNets][4]."""
+    filename = 'resnet_152_cpu.pth'
+    weights_path = get_file(
+        filename, __model_url__ + 'resnet/' + filename,
+        cache_subdir='models',
+        md5_hash='3339f6aca7f746f8ae7f6ce577efc0c0')
+    return load_torch_weights(scopes, weights_path, move_rules_fb_resnet_torch)
+
+
+def load_torch_resnet200v2(scopes):
+    """Converted from the [Torch ResNets][4]."""
+    filename = 'resnet_200_cpu.pth'
+    weights_path = get_file(
+        filename, __model_url__ + 'resnet/' + filename,
+        cache_subdir='models',
+        md5_hash='220df3970701d3e0608eed887fb95d82')
+    return load_torch_weights(scopes, weights_path, move_rules_fb_resnet_torch)
+
+
 # Simple alias.
 load_inception2 = init  # TODO
 load_inception4 = init  # TODO
@@ -119,5 +149,6 @@ load_inception4 = init  # TODO
 load_resnet50v2 = init  # TODO
 load_resnet101v2 = init  # TODO
 load_resnet152v2 = init  # TODO
+load_resnet200v2 = load_torch_resnet200v2
 load_resnext50 = init  # TODO
 load_resnext101 = init  # TODO
