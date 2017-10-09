@@ -47,156 +47,6 @@ def conv(*args, **kwargs):
         return relu(batch_norm(conv2d(*args, **kwargs)))
 
 
-@var_scope('block0')
-def _block0(x, filters, scope=None):
-    conv1 = conv0(x, filters[0], 1, scope='1x1')
-
-    conv2 = conv0(x, filters[1][0], 1, scope='3x3/r')
-    conv2 = conv0(conv2, filters[1][1], 3, scope='3x3/1')
-
-    conv3 = conv0(x, filters[2][0], 1, scope='5x5/r')
-    conv3 = conv0(conv3, filters[2][1], 5, scope='5x5/1')
-
-    pool = max_pool2d(x, 3)
-    pool = conv0(pool, filters[3], 1, scope='proj')
-
-    x = concat([conv1, conv2, conv3, pool], axis=3, name='concat')
-    return x
-
-
-@var_scope('block1')
-def _block1(x, filters, fs=5, pool_fn=avg_pool2d, scope=None):
-    conv1 = conv(x, filters[0], 1, scope='1x1')
-
-    conv2 = conv(x, filters[1][0], 1, scope='3x3/r')
-    conv2 = conv(conv2, filters[1][1], fs, scope='3x3/1')
-
-    conv3 = conv(x, filters[2][0], 1, scope='d3x3/r')
-    conv3 = conv(conv3, filters[2][1], 3, scope='d3x3/1')
-    conv3 = conv(conv3, filters[2][1], 3, scope='d3x3/2')
-
-    pool = pool_fn(x, 3)
-    pool = conv(pool, filters[3], 1, scope='proj')
-
-    x = concat([conv1, conv2, conv3, pool], axis=3, name='concat')
-    return x
-
-
-@var_scope('block2')
-def _block2(x, filters, padding='VALID', scope=None):
-    if padding == 'VALID':
-        conv2 = conv(x, filters[0], 3, stride=2, padding=padding, scope='3x3')
-    else:
-        conv2 = conv(x, filters[0][0], 1, scope='3x3/r')
-        conv2 = conv(conv2, filters[0][1], 3, stride=2, scope='3x3/1')
-
-    f = filters[1]
-    conv3 = conv(x, f[0], 1, scope='d3x3/r')
-    conv3 = conv(conv3, f[1], 3, scope='d3x3/1')
-    conv3 = conv(conv3, f[2], 3, stride=2, padding=padding, scope='d3x3/2')
-
-    pool = max_pool2d(x, 3, stride=2, padding=padding)
-
-    x = concat([conv2, conv3, pool], axis=3, name='concat')
-    return x
-
-
-@var_scope('block3')
-def _block3(x, filters, scope=None):
-    conv1 = conv(x, filters[0], 1, scope='1x1')
-
-    f = filters[1]
-    if not isinstance(f, list):
-        f = [f] * 2 + [filters[0]]
-    conv2 = conv(x, f[0], 1, scope='7x7/r')
-    conv2 = conv(conv2, f[1], (1, 7), scope='7x7/1')
-    conv2 = conv(conv2, f[2], (7, 1), scope='7x7/2')
-
-    f = filters[2]
-    if isinstance(f, list):
-        f = [f[0], f[0], f[1], f[1], f[2]]
-    else:
-        f = [f] * 4 + [filters[0]]
-    conv3 = conv(x, f[0], 1, scope='d7x7/r')
-    conv3 = conv(conv3, f[1], (7, 1), scope='d7x7/1')
-    conv3 = conv(conv3, f[2], (1, 7), scope='d7x7/2')
-    conv3 = conv(conv3, f[3], (7, 1), scope='d7x7/3')
-    conv3 = conv(conv3, f[4], (1, 7), scope='d7x7/4')
-
-    pool = avg_pool2d(x, 3)
-    pool = conv(pool, filters[3], 1, scope='proj')
-
-    x = concat([conv1, conv2, conv3, pool], axis=3, name='concat')
-    return x
-
-
-@var_scope('block4')
-def _block4(x, filters, scope=None):
-    f = filters[0]
-    conv2 = conv(x, f[0], 1, scope='3x3/r')
-    conv2 = conv(conv2, f[1], 3, stride=2, padding='VALID', scope='3x3/1')
-
-    f = filters[1]
-    if isinstance(f, list):
-        f = [f[0], f[0], f[1], f[1]]
-    else:
-        f = [f] * 4
-    conv3 = conv(x, f[0], 1, scope='7x7/r')
-    conv3 = conv(conv3, f[1], (1, 7), scope='7x7/1')
-    conv3 = conv(conv3, f[2], (7, 1), scope='7x7/2')
-    conv3 = conv(conv3, f[3], 3, stride=2, padding='VALID', scope='7x7/3')
-
-    pool = max_pool2d(x, 3, stride=2, padding='VALID')
-
-    x = concat([conv2, conv3, pool], axis=3, name='concat')
-    return x
-
-
-@var_scope('block5')
-def _block5(x, filters, scope=None):
-    conv1 = conv(x, filters[0], 1, scope='1x1')
-
-    conv2 = conv(x, filters[1], 1, scope='3x3/r')
-    conv2_1 = conv(conv2, filters[1], (1, 3), scope='3x3/1')
-    conv2_2 = conv(conv2, filters[1], (3, 1), scope='3x3/2')
-    conv2 = concat([conv2_1, conv2_2], axis=3, name='3x3/c')
-
-    conv3 = conv(x, filters[2][0], 1, scope='d3x3/r')
-    conv3 = conv(conv3, filters[2][1], (3, 3), scope='d3x3/1')
-    conv3_1 = conv(conv3, filters[2][1], (1, 3), scope='d3x3/2')
-    conv3_2 = conv(conv3, filters[2][1], (3, 1), scope='d3x3/3')
-    conv3 = concat([conv3_1, conv3_2], axis=3, name='d3x3/c')
-
-    pool = avg_pool2d(x, 3)
-    pool = conv(pool, filters[3], 1, scope='proj')
-
-    x = concat([conv1, conv2, conv3, pool], axis=3, name='concat')
-    return x
-
-
-@var_scope('block6')
-def _block6(x, filters, scope=None):
-    conv1 = conv(x, filters[0], 1, scope='1x1')
-
-    conv2 = conv(x, filters[1][0], 1, scope='3x3/r')
-    conv2_1 = conv(conv2, filters[1][1], (1, 3), scope='3x3/1')
-    conv2_2 = conv(conv2, filters[1][1], (3, 1), scope='3x3/2')
-    conv2 = concat([conv2_1, conv2_2], axis=3, name='3x3/c')
-
-    conv3 = conv(x, filters[2][0], 1, scope='d3x3/r')
-    conv3 = conv(conv3, filters[2][1], (3, 1), scope='d3x3/1')
-    conv3 = conv(conv3, filters[2][2], (1, 3), scope='d3x3/2')
-    conv3_1 = conv(conv3, filters[2][3], (1, 3), scope='d3x3/3')
-    conv3_2 = conv(conv3, filters[2][3], (3, 1), scope='d3x3/4')
-    conv3 = concat([conv3_1, conv3_2], axis=3, name='d3x3/c')
-
-    pool = avg_pool2d(x, 3)
-    pool = conv(pool, filters[3], 1, scope='proj')
-
-    x = concat([conv1, conv2, conv3, pool], axis=3, name='concat')
-    return x
-
-
 @var_scope('inception1')
 @layers_common_args
 def inception1(x, is_training=True, classes=1000, scope=None, reuse=None):
@@ -345,6 +195,156 @@ def inception4(x, is_training=True, classes=1000, scope=None, reuse=None):
     x = fully_connected(x, classes, scope='logits')
     x = softmax(x, name='probs')
     x.aliases = [tf.get_variable_scope().name]
+    return x
+
+
+@var_scope('block0')
+def _block0(x, filters, scope=None):
+    conv1 = conv0(x, filters[0], 1, scope='1x1')
+
+    conv2 = conv0(x, filters[1][0], 1, scope='3x3/r')
+    conv2 = conv0(conv2, filters[1][1], 3, scope='3x3/1')
+
+    conv3 = conv0(x, filters[2][0], 1, scope='5x5/r')
+    conv3 = conv0(conv3, filters[2][1], 5, scope='5x5/1')
+
+    pool = max_pool2d(x, 3)
+    pool = conv0(pool, filters[3], 1, scope='proj')
+
+    x = concat([conv1, conv2, conv3, pool], axis=3, name='concat')
+    return x
+
+
+@var_scope('block1')
+def _block1(x, filters, fs=5, pool_fn=avg_pool2d, scope=None):
+    conv1 = conv(x, filters[0], 1, scope='1x1')
+
+    conv2 = conv(x, filters[1][0], 1, scope='3x3/r')
+    conv2 = conv(conv2, filters[1][1], fs, scope='3x3/1')
+
+    conv3 = conv(x, filters[2][0], 1, scope='d3x3/r')
+    conv3 = conv(conv3, filters[2][1], 3, scope='d3x3/1')
+    conv3 = conv(conv3, filters[2][1], 3, scope='d3x3/2')
+
+    pool = pool_fn(x, 3)
+    pool = conv(pool, filters[3], 1, scope='proj')
+
+    x = concat([conv1, conv2, conv3, pool], axis=3, name='concat')
+    return x
+
+
+@var_scope('block2')
+def _block2(x, filters, padding='VALID', scope=None):
+    if padding == 'VALID':
+        conv2 = conv(x, filters[0], 3, stride=2, padding=padding, scope='3x3')
+    else:
+        conv2 = conv(x, filters[0][0], 1, scope='3x3/r')
+        conv2 = conv(conv2, filters[0][1], 3, stride=2, scope='3x3/1')
+
+    f = filters[1]
+    conv3 = conv(x, f[0], 1, scope='d3x3/r')
+    conv3 = conv(conv3, f[1], 3, scope='d3x3/1')
+    conv3 = conv(conv3, f[2], 3, stride=2, padding=padding, scope='d3x3/2')
+
+    pool = max_pool2d(x, 3, stride=2, padding=padding)
+
+    x = concat([conv2, conv3, pool], axis=3, name='concat')
+    return x
+
+
+@var_scope('block3')
+def _block3(x, filters, scope=None):
+    conv1 = conv(x, filters[0], 1, scope='1x1')
+
+    f = filters[1]
+    if not isinstance(f, list):
+        f = [f] * 2 + [filters[0]]
+    conv2 = conv(x, f[0], 1, scope='7x7/r')
+    conv2 = conv(conv2, f[1], (1, 7), scope='7x7/1')
+    conv2 = conv(conv2, f[2], (7, 1), scope='7x7/2')
+
+    f = filters[2]
+    if isinstance(f, list):
+        f = [f[0], f[0], f[1], f[1], f[2]]
+    else:
+        f = [f] * 4 + [filters[0]]
+    conv3 = conv(x, f[0], 1, scope='d7x7/r')
+    conv3 = conv(conv3, f[1], (7, 1), scope='d7x7/1')
+    conv3 = conv(conv3, f[2], (1, 7), scope='d7x7/2')
+    conv3 = conv(conv3, f[3], (7, 1), scope='d7x7/3')
+    conv3 = conv(conv3, f[4], (1, 7), scope='d7x7/4')
+
+    pool = avg_pool2d(x, 3)
+    pool = conv(pool, filters[3], 1, scope='proj')
+
+    x = concat([conv1, conv2, conv3, pool], axis=3, name='concat')
+    return x
+
+
+@var_scope('block4')
+def _block4(x, filters, scope=None):
+    f = filters[0]
+    conv2 = conv(x, f[0], 1, scope='3x3/r')
+    conv2 = conv(conv2, f[1], 3, stride=2, padding='VALID', scope='3x3/1')
+
+    f = filters[1]
+    if isinstance(f, list):
+        f = [f[0], f[0], f[1], f[1]]
+    else:
+        f = [f] * 4
+    conv3 = conv(x, f[0], 1, scope='7x7/r')
+    conv3 = conv(conv3, f[1], (1, 7), scope='7x7/1')
+    conv3 = conv(conv3, f[2], (7, 1), scope='7x7/2')
+    conv3 = conv(conv3, f[3], 3, stride=2, padding='VALID', scope='7x7/3')
+
+    pool = max_pool2d(x, 3, stride=2, padding='VALID')
+
+    x = concat([conv2, conv3, pool], axis=3, name='concat')
+    return x
+
+
+@var_scope('block5')
+def _block5(x, filters, scope=None):
+    conv1 = conv(x, filters[0], 1, scope='1x1')
+
+    conv2 = conv(x, filters[1], 1, scope='3x3/r')
+    conv2_1 = conv(conv2, filters[1], (1, 3), scope='3x3/1')
+    conv2_2 = conv(conv2, filters[1], (3, 1), scope='3x3/2')
+    conv2 = concat([conv2_1, conv2_2], axis=3, name='3x3/c')
+
+    conv3 = conv(x, filters[2][0], 1, scope='d3x3/r')
+    conv3 = conv(conv3, filters[2][1], (3, 3), scope='d3x3/1')
+    conv3_1 = conv(conv3, filters[2][1], (1, 3), scope='d3x3/2')
+    conv3_2 = conv(conv3, filters[2][1], (3, 1), scope='d3x3/3')
+    conv3 = concat([conv3_1, conv3_2], axis=3, name='d3x3/c')
+
+    pool = avg_pool2d(x, 3)
+    pool = conv(pool, filters[3], 1, scope='proj')
+
+    x = concat([conv1, conv2, conv3, pool], axis=3, name='concat')
+    return x
+
+
+@var_scope('block6')
+def _block6(x, filters, scope=None):
+    conv1 = conv(x, filters[0], 1, scope='1x1')
+
+    conv2 = conv(x, filters[1][0], 1, scope='3x3/r')
+    conv2_1 = conv(conv2, filters[1][1], (1, 3), scope='3x3/1')
+    conv2_2 = conv(conv2, filters[1][1], (3, 1), scope='3x3/2')
+    conv2 = concat([conv2_1, conv2_2], axis=3, name='3x3/c')
+
+    conv3 = conv(x, filters[2][0], 1, scope='d3x3/r')
+    conv3 = conv(conv3, filters[2][1], (3, 1), scope='d3x3/1')
+    conv3 = conv(conv3, filters[2][2], (1, 3), scope='d3x3/2')
+    conv3_1 = conv(conv3, filters[2][3], (1, 3), scope='d3x3/3')
+    conv3_2 = conv(conv3, filters[2][3], (3, 1), scope='d3x3/4')
+    conv3 = concat([conv3_1, conv3_2], axis=3, name='d3x3/c')
+
+    pool = avg_pool2d(x, 3)
+    pool = conv(pool, filters[3], 1, scope='proj')
+
+    x = concat([conv1, conv2, conv3, pool], axis=3, name='concat')
     return x
 
 

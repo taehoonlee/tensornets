@@ -44,76 +44,6 @@ def conv(*args, **kwargs):
         return batch_norm(conv2d(*args, **kwargs))
 
 
-@var_scope('block1')
-def _block1(x, filters, kernel_size=3, stride=1,
-            conv_shortcut=True, scope=None):
-    if conv_shortcut is True:
-        shortcut = conv(x, filters[2], 1, stride=stride, scope='0')
-    else:
-        shortcut = x
-    # Most reference implementations (e.g., TF-slim and Torch-ResNets)
-    # apply a stride of 2 on the 3x3 conv kernel like the below `_block2`,
-    # but here the stride 2 on the 1x1 to follow the original Caffe-ResNets.
-    x = conv(x, filters[0], 1, stride=stride, scope='1')
-    x = relu(x, name='1/relu')
-    x = conv(x, filters[1], kernel_size, stride=1, padding='SAME', scope='2')
-    x = relu(x, name='2/relu')
-    x = conv(x, filters[2], 1, stride=1, scope='3')
-    x = relu(shortcut + x, name='out')
-    return x
-
-
-@var_scope('block2')
-def _block2(x, filters, kernel_size=3, stride=1,
-            conv_shortcut=True, scope=None):
-    if conv_shortcut is True:
-        shortcut = conv(x, filters[2], 1, stride=stride, scope='0')
-    else:
-        shortcut = x
-    x = batch_norm(x)
-    x = relu(x)
-    x = conv(x, filters[0], 1, stride=1, scope='1')
-    x = relu(x, name='1/relu')
-    x = pad(x, [[0, 0], [1, 1], [1, 1], [0, 0]], name='2/pad')
-    x = conv(x, filters[1], kernel_size, stride=stride, scope='2')
-    x = relu(x, name='2/relu')
-    x = conv2d(x, filters[2], 1, stride=1, scope='3/conv')
-    x = add(shortcut, x, name='out')
-    return x
-
-
-@var_scope('block3')
-def _block3(x, filters, kernel_size=3, stride=1,
-            conv_shortcut=True, scope=None):
-    if conv_shortcut is True:
-        shortcut = conv(x, 2 * filters, 1, stride=stride, scope='0')
-    else:
-        shortcut = x
-    x = conv(x, filters, 1, stride=1, scope='1')
-    x = lrelu(x, name='1/lrelu')
-    groups = []
-    channels = int(filters / 32)
-    for c in range(32):
-        group = conv2d(x[:, :, :, c*channels:(c+1)*channels], channels, 3,
-                       stride=stride, padding='SAME',
-                       biases_initializer=None, scope="2/%d" % c)
-        groups.append(group)
-    x = concat(groups, axis=3, name='concat')
-    x = batch_norm(x, scope='2/bn')
-    x = lrelu(x, name='2/relu')
-    x = conv(x, 2 * filters, 1, stride=1, padding='SAME', scope='3')
-    x = lrelu(shortcut + x, name='out')
-    return x
-
-
-@var_scope('stack')
-def _stack(x, block_fn, filters, blocks, stride1=2, scope=None):
-    x = block_fn(x, filters, stride=stride1, scope='block1')
-    for i in range(2, blocks+1):
-        x = block_fn(x, filters, conv_shortcut=False, scope="block%d" % i)
-    return x
-
-
 def resnet(x, stack_fn, activation_fn, is_training, classes,
            scope=None, reuse=None):
     x = pad(x, [[0, 0], [3, 3], [3, 3], [0, 0]], name='conv1/pad')
@@ -243,6 +173,76 @@ def resnext101(x, is_training=True, classes=1000, scope=None, reuse=None):
         x = _stack(x, _block3, 1024, 3, scope='conv5')
         return x
     return resnet(x, stack, lrelu, is_training, classes, scope, reuse)
+
+
+@var_scope('stack')
+def _stack(x, block_fn, filters, blocks, stride1=2, scope=None):
+    x = block_fn(x, filters, stride=stride1, scope='block1')
+    for i in range(2, blocks+1):
+        x = block_fn(x, filters, conv_shortcut=False, scope="block%d" % i)
+    return x
+
+
+@var_scope('block1')
+def _block1(x, filters, kernel_size=3, stride=1,
+            conv_shortcut=True, scope=None):
+    if conv_shortcut is True:
+        shortcut = conv(x, filters[2], 1, stride=stride, scope='0')
+    else:
+        shortcut = x
+    # Most reference implementations (e.g., TF-slim and Torch-ResNets)
+    # apply a stride of 2 on the 3x3 conv kernel like the below `_block2`,
+    # but here the stride 2 on the 1x1 to follow the original Caffe-ResNets.
+    x = conv(x, filters[0], 1, stride=stride, scope='1')
+    x = relu(x, name='1/relu')
+    x = conv(x, filters[1], kernel_size, stride=1, padding='SAME', scope='2')
+    x = relu(x, name='2/relu')
+    x = conv(x, filters[2], 1, stride=1, scope='3')
+    x = relu(shortcut + x, name='out')
+    return x
+
+
+@var_scope('block2')
+def _block2(x, filters, kernel_size=3, stride=1,
+            conv_shortcut=True, scope=None):
+    if conv_shortcut is True:
+        shortcut = conv(x, filters[2], 1, stride=stride, scope='0')
+    else:
+        shortcut = x
+    x = batch_norm(x)
+    x = relu(x)
+    x = conv(x, filters[0], 1, stride=1, scope='1')
+    x = relu(x, name='1/relu')
+    x = pad(x, [[0, 0], [1, 1], [1, 1], [0, 0]], name='2/pad')
+    x = conv(x, filters[1], kernel_size, stride=stride, scope='2')
+    x = relu(x, name='2/relu')
+    x = conv2d(x, filters[2], 1, stride=1, scope='3/conv')
+    x = add(shortcut, x, name='out')
+    return x
+
+
+@var_scope('block3')
+def _block3(x, filters, kernel_size=3, stride=1,
+            conv_shortcut=True, scope=None):
+    if conv_shortcut is True:
+        shortcut = conv(x, 2 * filters, 1, stride=stride, scope='0')
+    else:
+        shortcut = x
+    x = conv(x, filters, 1, stride=1, scope='1')
+    x = lrelu(x, name='1/lrelu')
+    groups = []
+    channels = int(filters / 32)
+    for c in range(32):
+        group = conv2d(x[:, :, :, c*channels:(c+1)*channels], channels, 3,
+                       stride=stride, padding='SAME',
+                       biases_initializer=None, scope="2/%d" % c)
+        groups.append(group)
+    x = concat(groups, axis=3, name='concat')
+    x = batch_norm(x, scope='2/bn')
+    x = lrelu(x, name='2/relu')
+    x = conv(x, 2 * filters, 1, stride=1, padding='SAME', scope='3')
+    x = lrelu(shortcut + x, name='out')
+    return x
 
 
 def preprocess(x):
