@@ -51,6 +51,9 @@ def _block1(x, filters, kernel_size=3, stride=1,
         shortcut = conv(x, filters[2], 1, stride=stride, scope='0')
     else:
         shortcut = x
+    # Most reference implementations (e.g., TF-slim and Torch-ResNets)
+    # apply a stride of 2 on the 3x3 conv kernel like the below `_block2`,
+    # but here the stride 2 on the 1x1 to follow the original Caffe-ResNets.
     x = conv(x, filters[0], 1, stride=stride, scope='1')
     x = relu(x, name='1/relu')
     x = conv(x, filters[1], kernel_size, stride=1, padding='SAME', scope='2')
@@ -69,9 +72,10 @@ def _block2(x, filters, kernel_size=3, stride=1,
         shortcut = x
     x = batch_norm(x)
     x = relu(x)
-    x = conv(x, filters[0], 1, stride=stride, scope='1')
+    x = conv(x, filters[0], 1, stride=1, scope='1')
     x = relu(x, name='1/relu')
-    x = conv(x, filters[1], kernel_size, stride=1, padding='SAME', scope='2')
+    x = pad(x, [[0, 0], [1, 1], [1, 1], [0, 0]], name='2/pad')
+    x = conv(x, filters[1], kernel_size, stride=stride, scope='2')
     x = relu(x, name='2/relu')
     x = conv2d(x, filters[2], 1, stride=1, scope='3/conv')
     x = add(shortcut, x, name='out')
