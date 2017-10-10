@@ -44,8 +44,7 @@ def conv(*args, **kwargs):
         return batch_norm(conv2d(*args, **kwargs))
 
 
-def resnet(x, stack_fn, activation_fn, is_training, classes,
-           scope=None, reuse=None):
+def resnet(x, stack_fn, is_training, classes, scope=None, reuse=None):
     x = pad(x, [[0, 0], [3, 3], [3, 3], [0, 0]], name='conv1/pad')
     x = conv(x, 64, 7, stride=2, scope='conv1')
     x = relu(x, name='conv1/relu')
@@ -63,92 +62,92 @@ def resnet(x, stack_fn, activation_fn, is_training, classes,
 @layers_common_args(True)
 def resnet50(x, is_training=True, classes=1000, scope=None, reuse=None):
     def stack(x):
-        x = _stack(x, _block1, [64, 64, 256], 3, stride1=1, scope='conv2')
-        x = _stack(x, _block1, [128, 128, 512], 4, scope='conv3')
-        x = _stack(x, _block1, [256, 256, 1024], 6, scope='conv4')
-        x = _stack(x, _block1, [512, 512, 2048], 3, scope='conv5')
+        x = _stack(x, _block1, 64, 3, stride1=1, scope='conv2')
+        x = _stack(x, _block1, 128, 4, scope='conv3')
+        x = _stack(x, _block1, 256, 6, scope='conv4')
+        x = _stack(x, _block1, 512, 3, scope='conv5')
         return x
-    return resnet(x, stack, relu, is_training, classes, scope, reuse)
+    return resnet(x, stack, is_training, classes, scope, reuse)
 
 
 @var_scope('resnet50_v2')
 @layers_common_args(True)
 def resnet50_v2(x, is_training=True, classes=1000, scope=None, reuse=None):
     def stack(x):
-        x = _stack(x, _block2, [64, 64, 256], 3, stride1=1, scope='conv2')
-        x = _stack(x, _block2, [128, 128, 512], 4, scope='conv3')
-        x = _stack(x, _block2, [256, 256, 1024], 6, scope='conv4')
-        x = _stack(x, _block2, [512, 512, 2048], 3, scope='conv5')
+        x = _stack(x, _block2, 64, 3, stride1=1, scope='conv2')
+        x = _stack(x, _block2, 128, 4, scope='conv3')
+        x = _stack(x, _block2, 256, 6, scope='conv4')
+        x = _stack(x, _block2, 512, 3, scope='conv5')
         x = batch_norm(x)
         x = relu(x)
         return x
-    return resnet(x, stack, relu, is_training, classes, scope, reuse)
+    return resnet(x, stack, is_training, classes, scope, reuse)
 
 
 @var_scope('resnet101')
 @layers_common_args(True)
 def resnet101(x, is_training=True, classes=1000, scope=None, reuse=None):
     def stack(x):
-        x = _stack(x, _block1, [64, 64, 256], 3, stride1=1, scope='conv2')
-        x = _stack(x, _block1, [128, 128, 512], 4, scope='conv3')
-        x = _stack(x, _block1, [256, 256, 1024], 23, scope='conv4')
-        x = _stack(x, _block1, [512, 512, 2048], 3, scope='conv5')
+        x = _stack(x, _block1, 64, 3, stride1=1, scope='conv2')
+        x = _stack(x, _block1, 128, 4, scope='conv3')
+        x = _stack(x, _block1, 256, 23, scope='conv4')
+        x = _stack(x, _block1, 512, 3, scope='conv5')
         return x
-    return resnet(x, stack, relu, is_training, classes, scope, reuse)
+    return resnet(x, stack, is_training, classes, scope, reuse)
 
 
 @var_scope('resnet101_v2')
 @layers_common_args(True)
 def resnet101_v2(x, is_training=True, classes=1000, scope=None, reuse=None):
     def stack(x):
-        x = _stack(x, _block2, [64, 64, 256], 3, stride1=1, scope='conv2')
-        x = _stack(x, _block2, [128, 128, 512], 4, scope='conv3')
-        x = _stack(x, _block2, [256, 256, 1024], 23, scope='conv4')
-        x = _stack(x, _block2, [512, 512, 2048], 3, scope='conv5')
+        x = _stack(x, _block2, 64, 3, stride1=1, scope='conv2')
+        x = _stack(x, _block2, 128, 4, scope='conv3')
+        x = _stack(x, _block2, 256, 23, scope='conv4')
+        x = _stack(x, _block2, 512, 3, scope='conv5')
         x = batch_norm(x)
         x = relu(x)
         return x
-    return resnet(x, stack, relu, is_training, classes, scope, reuse)
+    return resnet(x, stack, is_training, classes, scope, reuse)
 
 
 @var_scope('resnet152')
 @layers_common_args(True)
 def resnet152(x, is_training=True, classes=1000, scope=None, reuse=None):
     def stack(x):
-        x = _stack(x, _block1, [64, 64, 256], 3, stride1=1, scope='conv2')
-        x = _stack(x, _block1, [128, 128, 512], 8, scope='conv3')
-        x = _stack(x, _block1, [256, 256, 1024], 36, scope='conv4')
-        x = _stack(x, _block1, [512, 512, 2048], 3, scope='conv5')
+        x = _stack(x, _block1, 64, 3, stride1=1, scope='conv2')
+        x = _stack(x, _block1, 128, 8, scope='conv3')
+        x = _stack(x, _block1, 256, 36, scope='conv4')
+        x = _stack(x, _block1, 512, 3, scope='conv5')
         return x
-    return resnet(x, stack, relu, is_training, classes, scope, reuse)
+    return resnet(x, stack, is_training, classes, scope, reuse)
 
 
 @var_scope('resnet152_v2')
 @layers_common_args(True)
 def resnet152_v2(x, is_training=True, classes=1000, scope=None, reuse=None):
     def stack(x):
-        x = _stack(x, _block2, [64, 64, 256], 3, stride1=1, scope='conv2')
-        x = _stack(x, _block2, [128, 128, 512], 8, scope='conv3')
-        x = _stack(x, _block2, [256, 256, 1024], 36, scope='conv4')
-        x = _stack(x, _block2, [512, 512, 2048], 3, scope='conv5')
+        x = _stack(x, _block2, 64, 3, stride1=1, scope='conv2')
+        x = _stack(x, _block2, 128, 8, scope='conv3')
+        x = _stack(x, _block2, 256, 36, scope='conv4')
+        x = _stack(x, _block2, 512, 3, scope='conv5')
         x = batch_norm(x)
         x = relu(x)
         return x
-    return resnet(x, stack, relu, is_training, classes, scope, reuse)
+    return resnet(x, stack, is_training, classes, scope, reuse)
 
 
 @var_scope('resnet200_v2')
 @layers_common_args(True)
 def resnet200_v2(x, is_training=True, classes=1000, scope=None, reuse=None):
     def stack(x):
-        x = _stack(x, _block2, [64, 64, 256], 3, stride1=1, scope='conv2')
-        x = _stack(x, _block2, [128, 128, 512], 24, scope='conv3')
-        x = _stack(x, _block2, [256, 256, 1024], 36, scope='conv4')
-        x = _stack(x, _block2, [512, 512, 2048], 3, scope='conv5')
+        x = _stack(x, _block2, 64, 3, stride1=1, scope='conv2')
+        x = _stack(x, _block2, 128, 24, scope='conv3')
+        x = _stack(x, _block2, 256, 36, scope='conv4')
+        x = _stack(x, _block2, 512, 3, scope='conv5')
         x = batch_norm(x)
         x = relu(x)
         return x
-    return resnet(x, stack, relu, is_training, classes, scope, reuse)
+    return resnet(x, stack, is_training, classes, scope, reuse)
 
 
 @var_scope('resnext50')
@@ -160,7 +159,7 @@ def resnext50(x, is_training=True, classes=1000, scope=None, reuse=None):
         x = _stack(x, _block3, 512, 6, scope='conv4')
         x = _stack(x, _block3, 1024, 3, scope='conv5')
         return x
-    return resnet(x, stack, lrelu, is_training, classes, scope, reuse)
+    return resnet(x, stack, is_training, classes, scope, reuse)
 
 
 @var_scope('resnext101')
@@ -172,7 +171,7 @@ def resnext101(x, is_training=True, classes=1000, scope=None, reuse=None):
         x = _stack(x, _block3, 512, 23, scope='conv4')
         x = _stack(x, _block3, 1024, 3, scope='conv5')
         return x
-    return resnet(x, stack, lrelu, is_training, classes, scope, reuse)
+    return resnet(x, stack, is_training, classes, scope, reuse)
 
 
 @var_scope('stack')
@@ -187,17 +186,17 @@ def _stack(x, block_fn, filters, blocks, stride1=2, scope=None):
 def _block1(x, filters, kernel_size=3, stride=1,
             conv_shortcut=True, scope=None):
     if conv_shortcut is True:
-        shortcut = conv(x, filters[2], 1, stride=stride, scope='0')
+        shortcut = conv(x, 4 * filters, 1, stride=stride, scope='0')
     else:
         shortcut = x
     # Most reference implementations (e.g., TF-slim and Torch-ResNets)
     # apply a stride of 2 on the 3x3 conv kernel like the below `_block2`,
     # but here the stride 2 on the 1x1 to follow the original Caffe-ResNets.
-    x = conv(x, filters[0], 1, stride=stride, scope='1')
+    x = conv(x, filters, 1, stride=stride, scope='1')
     x = relu(x, name='1/relu')
-    x = conv(x, filters[1], kernel_size, stride=1, padding='SAME', scope='2')
+    x = conv(x, filters, kernel_size, stride=1, padding='SAME', scope='2')
     x = relu(x, name='2/relu')
-    x = conv(x, filters[2], 1, stride=1, scope='3')
+    x = conv(x, 4 * filters, 1, stride=1, scope='3')
     x = relu(shortcut + x, name='out')
     return x
 
@@ -206,17 +205,17 @@ def _block1(x, filters, kernel_size=3, stride=1,
 def _block2(x, filters, kernel_size=3, stride=1,
             conv_shortcut=True, scope=None):
     if conv_shortcut is True:
-        shortcut = conv(x, filters[2], 1, stride=stride, scope='0')
+        shortcut = conv(x, 4 * filters, 1, stride=stride, scope='0')
     else:
         shortcut = x
     x = batch_norm(x)
     x = relu(x)
-    x = conv(x, filters[0], 1, stride=1, scope='1')
+    x = conv(x, filters, 1, stride=1, scope='1')
     x = relu(x, name='1/relu')
     x = pad(x, [[0, 0], [1, 1], [1, 1], [0, 0]], name='2/pad')
-    x = conv(x, filters[1], kernel_size, stride=stride, scope='2')
+    x = conv(x, filters, kernel_size, stride=stride, scope='2')
     x = relu(x, name='2/relu')
-    x = conv2d(x, filters[2], 1, stride=1, scope='3/conv')
+    x = conv2d(x, 4 * filters, 1, stride=1, scope='3/conv')
     x = add(shortcut, x, name='out')
     return x
 
