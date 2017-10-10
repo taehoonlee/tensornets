@@ -134,6 +134,24 @@ def collect_outputs(layers):
     return arg_scope(layers, outputs_collections=__outputs__)
 
 
+def load_weights(scopes, weights_path):
+    sess = tf.get_default_session()
+    assert sess is not None, 'The default session should be given.'
+
+    from .utils import parse_scopes
+    scopes = parse_scopes(scopes)
+
+    data = np.load(weights_path)
+    values = data['values']
+
+    for scope in scopes:
+        weights = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=scope)
+        assert len(weights) == len(values), 'The sizes of symbolic and ' \
+                                            'actual weights do not match.' \
+
+        sess.run([w.assign(v) for (w, v) in zip(weights, values)])
+
+
 def load_torch_weights(scopes, weights_path, move_rules=None):
     try:
         import torch

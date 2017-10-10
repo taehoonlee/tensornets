@@ -6,19 +6,22 @@ serializes every single tensor from the following repositories:
 
 [1]: https://github.com/BVLC/caffe/tree/master/models/bvlc_googlenet
      "BAIR Caffe Model Zoo"
-[2]: https://github.com/fchollet/keras/tree/master/keras/applications
+[2]: https://github.com/tensorflow/models/tree/master/research/slim
+     "TF Slim"
+[3]: https://github.com/fchollet/keras/tree/master/keras/applications
      "Keras"
-[3]: https://github.com/KaimingHe/deep-residual-networks
+[4]: https://github.com/KaimingHe/deep-residual-networks
      "Caffe ResNets"
-[4]: https://github.com/facebook/fb.resnet.torch
+[5]: https://github.com/facebook/fb.resnet.torch
      "Torch ResNets"
-[5]: https://github.com/facebookresearch/ResNeXt
+[6]: https://github.com/facebookresearch/ResNeXt
      "Torch ResNeXts"
 """
 from __future__ import absolute_import
 
 from .utils import get_file
 from .utils import init
+from .utils import load_weights
 from .utils import load_keras_weights
 from .utils import load_torch_weights
 
@@ -39,8 +42,18 @@ def load_inception1(scopes):
     return load_keras_weights(scopes, weights_path)
 
 
+def load_inception2(scopes):
+    """Converted from the [TF Slim][2]."""
+    filename = 'inception2.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'inception/' + filename,
+        cache_subdir='models',
+        md5_hash='0476b876a5d35a99e2747f98248d856d')
+    return load_weights(scopes, weights_path)
+
+
 def load_inception3(scopes):
-    """Copied from [keras][2] with modifications on the order of weights."""
+    """Copied from [keras][3] with modifications on the order of weights."""
     filename = 'inception3.h5'
     weights_path = get_file(
         filename, __model_url__ + 'inception/' + filename,
@@ -49,8 +62,18 @@ def load_inception3(scopes):
     return load_keras_weights(scopes, weights_path)
 
 
+def load_inception4(scopes):
+    """Converted from the [TF Slim][2]."""
+    filename = 'inception4.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'inception/' + filename,
+        cache_subdir='models',
+        md5_hash='8d5a0e8cb451c85112d5c4e363d77a42')
+    return load_weights(scopes, weights_path)
+
+
 def load_resnet50(scopes):
-    """Converted from the original [Caffe ResNets][3]."""
+    """Converted from the original [Caffe ResNets][4]."""
     filename = 'resnet50.h5'
     weights_path = get_file(
         filename, __model_url__ + 'resnet/' + filename,
@@ -60,7 +83,7 @@ def load_resnet50(scopes):
 
 
 def load_resnet101(scopes):
-    """Converted from the original [Caffe ResNets][3]."""
+    """Converted from the original [Caffe ResNets][4]."""
     filename = 'resnet101.h5'
     weights_path = get_file(
         filename, __model_url__ + 'resnet/' + filename,
@@ -70,7 +93,7 @@ def load_resnet101(scopes):
 
 
 def load_resnet152(scopes):
-    """Converted from the original [Caffe ResNets][3]."""
+    """Converted from the original [Caffe ResNets][4]."""
     filename = 'resnet152.h5'
     weights_path = get_file(
         filename, __model_url__ + 'resnet/' + filename,
@@ -80,7 +103,7 @@ def load_resnet152(scopes):
 
 
 def load_keras_resnet50(scopes):
-    """Copied from [keras][2]."""
+    """Copied from [keras][3]."""
     filename = 'resnet50_weights_tf_dim_ordering_tf_kernels.h5'
     weights_path = get_file(
         filename, __keras_url__ + filename,
@@ -105,7 +128,7 @@ for i in range(4, 8):
 
 
 def load_torch_resnet50(scopes):
-    """Converted from the [Torch ResNets][4]."""
+    """Converted from the [Torch ResNets][5]."""
     filename = 'resnet_50_cpu.pth'
     weights_path = get_file(
         filename, __model_url__ + 'resnet/' + filename,
@@ -115,7 +138,7 @@ def load_torch_resnet50(scopes):
 
 
 def load_torch_resnet101(scopes):
-    """Converted from the [Torch ResNets][4]."""
+    """Converted from the [Torch ResNets][5]."""
     filename = 'resnet_101_cpu.pth'
     weights_path = get_file(
         filename, __model_url__ + 'resnet/' + filename,
@@ -125,7 +148,7 @@ def load_torch_resnet101(scopes):
 
 
 def load_torch_resnet152(scopes):
-    """Converted from the [Torch ResNets][4]."""
+    """Converted from the [Torch ResNets][5]."""
     filename = 'resnet_152_cpu.pth'
     weights_path = get_file(
         filename, __model_url__ + 'resnet/' + filename,
@@ -135,7 +158,7 @@ def load_torch_resnet152(scopes):
 
 
 def load_resnet200v2(scopes):
-    """Converted from the [Torch ResNets][4]."""
+    """Converted from the [Torch ResNets][5]."""
     filename = 'resnet_200_cpu.pth'
     weights_path = get_file(
         filename, __model_url__ + 'resnet/' + filename,
@@ -145,7 +168,7 @@ def load_resnet200v2(scopes):
 
 
 def load_resnext50(scopes):
-    """Converted from the [Torch ResNeXts][5]."""
+    """Converted from the [Torch ResNeXts][6]."""
     filename = 'resnext_50_32x4d_cpu.pth'
     move_rules = [(r, -15) for (r, i) in move_rules_fb_resnet_torch
                   if '1.0.bias' not in r]
@@ -157,7 +180,7 @@ def load_resnext50(scopes):
 
 
 def load_resnext101(scopes):
-    """Converted from the [Torch ResNeXts][5]."""
+    """Converted from the [Torch ResNeXts][6]."""
     filename = 'resnext_101_32x4d_cpu.pth'
     move_rules = [(r, -15) for (r, i) in move_rules_fb_resnet_torch
                   if '1.0.bias' not in r]
@@ -169,9 +192,6 @@ def load_resnext101(scopes):
 
 
 # Simple alias.
-load_inception2 = init  # TODO
-load_inception4 = init  # TODO
-
 load_resnet50v2 = init  # TODO
 load_resnet101v2 = init  # TODO
 load_resnet152v2 = init  # TODO

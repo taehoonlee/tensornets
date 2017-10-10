@@ -87,8 +87,8 @@ def inception1(x, is_training=True, classes=1000, scope=None, reuse=None):
 @var_scope('inception2')
 @layers_common_args
 def inception2(x, is_training=True, classes=1000, scope=None, reuse=None):
-    x = separable_conv2d(x, 64, 7, stride=2, depth_multiplier=1.,
-                         scope='block1')
+    x = separable_conv2d(x, 64, 7, stride=2, depth_multiplier=8.,
+                         activation_fn=None, scope='block1')
     x = max_pool2d(x, 3, stride=2, scope='pool1')
 
     x = conv(x, 64, 1, scope='block2/1')
@@ -103,8 +103,8 @@ def inception2(x, is_training=True, classes=1000, scope=None, reuse=None):
 
     x = inceptionA(x, [224, [64, 96], [96, 128], 128], scope='block4a')
     x = inceptionA(x, [192, [96, 128], [96, 128], 128], scope='block4b')
-    x = inceptionA(x, [160, [128, 160], [128, 160], 128], scope='block4c')
-    x = inceptionA(x, [96, [128, 192], [160, 192], 128], scope='block4d')
+    x = inceptionA(x, [160, [128, 160], [128, 160], 96], scope='block4c')
+    x = inceptionA(x, [96, [128, 192], [160, 192], 96], scope='block4d')
 
     x = reductionA(x, [[128, 192], [192, 256, 256]], padding='SAME',
                    scope='block4e')
@@ -164,22 +164,24 @@ def inception4(x, is_training=True, classes=1000, scope=None, reuse=None):
     x = conv(x, 32, 3, padding='VALID', scope='block2a')
     x = conv(x, 64, 3, scope='block2b')
 
-    x_1 = max_pool2d(x, 3, stride=2, padding='VALID', scope='block3a/pool')
-    x_2 = conv(x, 96, 3, stride=2, padding='VALID', scope='block3a/conv')
-    x = concat([x_1, x_2], axis=3, name='block3')
+    with tf.variable_scope('block3a'):
+        x_1 = max_pool2d(x, 3, stride=2, padding='VALID', scope='pool')
+        x_2 = conv(x, 96, 3, stride=2, padding='VALID', scope='conv')
+        x = concat([x_1, x_2], axis=3, name='concat')
 
     with tf.variable_scope('block4a'):
-        x_1 = conv2d(x, 64, 1, scope='1')
-        x_2 = conv2d(x, 64, 1, scope='2')
-        x_2 = conv2d(x_2, 64, (1, 7), scope='3')
-        x_2 = conv2d(x_2, 64, (7, 1), scope='4')
-        x = concat([conv2d(x_1, 96, 3, padding='VALID', scope='5'),
-                    conv2d(x_2, 96, 3, padding='VALID', scope='6')],
-                   axis=3, name='concat')
+        x_1 = conv(x, 64, 1, scope='1a')
+        x_1 = conv(x_1, 96, 3, padding='VALID', scope='1b')
+        x_2 = conv(x, 64, 1, scope='2a')
+        x_2 = conv(x_2, 64, (1, 7), scope='2b')
+        x_2 = conv(x_2, 64, (7, 1), scope='2c')
+        x_2 = conv(x_2, 96, 3, padding='VALID', scope='2d')
+        x = concat([x_1, x_2], axis=3, name='concat')
 
-    x_1 = conv(x, 192, 3, stride=2, padding='VALID', scope='block5a/conv')
-    x_2 = max_pool2d(x, 3, stride=2, padding='VALID', scope='block5a/pool')
-    x = concat([x_1, x_2], axis=3, name='block5a')
+    with tf.variable_scope('block5a'):
+        x_1 = conv(x, 192, 3, stride=2, padding='VALID', scope='conv')
+        x_2 = max_pool2d(x, 3, stride=2, padding='VALID', scope='pool')
+        x = concat([x_1, x_2], axis=3, name='concat')
 
     for i in range(4):
         x = inceptionA(x, [96, [64, 96], [64, 96], 96],
