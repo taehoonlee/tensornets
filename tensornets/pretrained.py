@@ -12,6 +12,8 @@ serializes every single tensor from the following repositories:
      "Caffe ResNets"
 [4]: https://github.com/facebook/fb.resnet.torch
      "Torch ResNets"
+[5]: https://github.com/facebookresearch/ResNeXt
+     "Torch ResNeXts"
 """
 from __future__ import absolute_import
 
@@ -132,7 +134,7 @@ def load_torch_resnet152(scopes):
     return load_torch_weights(scopes, weights_path, move_rules_fb_resnet_torch)
 
 
-def load_torch_resnet200v2(scopes):
+def load_resnet200v2(scopes):
     """Converted from the [Torch ResNets][4]."""
     filename = 'resnet_200_cpu.pth'
     weights_path = get_file(
@@ -142,6 +144,30 @@ def load_torch_resnet200v2(scopes):
     return load_torch_weights(scopes, weights_path, move_rules_fb_resnet_torch)
 
 
+def load_resnext50(scopes):
+    """Converted from the [Torch ResNeXts][5]."""
+    filename = 'resnext_50_32x4d_cpu.pth'
+    move_rules = [(r, -15) for (r, i) in move_rules_fb_resnet_torch
+                  if '1.0.bias' not in r]
+    weights_path = get_file(
+        filename, __model_url__ + 'resnet/' + filename,
+        cache_subdir='models',
+        md5_hash='fdfc372bc47f7bf55313c04aebcef8ca')
+    return load_torch_weights(scopes, weights_path, move_rules)
+
+
+def load_resnext101(scopes):
+    """Converted from the [Torch ResNeXts][5]."""
+    filename = 'resnext_101_32x4d_cpu.pth'
+    move_rules = [(r, -15) for (r, i) in move_rules_fb_resnet_torch
+                  if '1.0.bias' not in r]
+    weights_path = get_file(
+        filename, __model_url__ + 'resnet/' + filename,
+        cache_subdir='models',
+        md5_hash='5e97757d9f898aa8174fe8bc6e59bce8')
+    return load_torch_weights(scopes, weights_path, move_rules)
+
+
 # Simple alias.
 load_inception2 = init  # TODO
 load_inception4 = init  # TODO
@@ -149,6 +175,3 @@ load_inception4 = init  # TODO
 load_resnet50v2 = init  # TODO
 load_resnet101v2 = init  # TODO
 load_resnet152v2 = init  # TODO
-load_resnet200v2 = load_torch_resnet200v2
-load_resnext50 = init  # TODO
-load_resnext101 = init  # TODO

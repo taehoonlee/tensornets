@@ -229,19 +229,20 @@ def _block3(x, filters, kernel_size=3, stride=1,
     else:
         shortcut = x
     x = conv(x, filters, 1, stride=1, scope='1')
-    x = lrelu(x, name='1/lrelu')
+    x = relu(x, name='1/relu')
+    x = pad(x, [[0, 0], [1, 1], [1, 1], [0, 0]], name='2/pad')
     groups = []
     channels = int(filters / 32)
     for c in range(32):
-        group = conv2d(x[:, :, :, c*channels:(c+1)*channels], channels, 3,
-                       stride=stride, padding='SAME',
+        group = conv2d(x[:, :, :, c*channels:(c+1)*channels], channels,
+                       kernel_size, stride=stride,
                        biases_initializer=None, scope="2/%d" % c)
         groups.append(group)
     x = concat(groups, axis=3, name='concat')
     x = batch_norm(x, scope='2/bn')
-    x = lrelu(x, name='2/relu')
-    x = conv(x, 2 * filters, 1, stride=1, padding='SAME', scope='3')
-    x = lrelu(shortcut + x, name='out')
+    x = relu(x, name='2/relu')
+    x = conv(x, 2 * filters, 1, stride=1, scope='3')
+    x = relu(shortcut + x, name='out')
     return x
 
 

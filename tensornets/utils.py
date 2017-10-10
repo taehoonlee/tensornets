@@ -168,8 +168,10 @@ def load_torch_weights(scopes, weights_path, move_rules=None):
             val = np.transpose(val, [2, 3, 1, 0])
         if val.ndim == 2:
             val = np.transpose(val, [1, 0])
-            val = np.flip(val, 0)
-        values.append(val)
+        if (val.ndim == 4) and (val.shape[3] // val.shape[2] == 32):
+            values += np.split(val, 32, axis=3)
+        else:
+            values.append(val)
 
     for scope in scopes:
         weights = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=scope)
