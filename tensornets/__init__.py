@@ -16,6 +16,10 @@ from .resnets import ResNet200v2
 from .resnets import ResNeXt50
 from .resnets import ResNeXt101
 
+from .densenets import DenseNet121
+from .densenets import DenseNet169
+from .densenets import DenseNet201
+
 from .pretrained import *
 from .utils import *
 

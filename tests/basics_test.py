@@ -20,6 +20,9 @@ import pytest
     (nets.Inception2, (299, 299, 3)),
     (nets.Inception3, (299, 299, 3)),
     (nets.Inception4, (299, 299, 3)),
+    (nets.DenseNet121, (224, 224, 3)),
+    (nets.DenseNet169, (224, 224, 3)),
+    (nets.DenseNet201, (224, 224, 3)),
 ])
 def test_basics(net, shape):
     inputs = tf.placeholder(tf.float32, [None] + list(shape))

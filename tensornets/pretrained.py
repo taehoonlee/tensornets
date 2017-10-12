@@ -16,6 +16,8 @@ serializes every single tensor from the following repositories:
      "Torch ResNets"
 [6]: https://github.com/facebookresearch/ResNeXt
      "Torch ResNeXts"
+[7]: https://github.com/liuzhuang13/DenseNet
+     "Torch DenseNets"
 """
 from __future__ import absolute_import
 
@@ -189,6 +191,36 @@ def load_resnext101(scopes):
         cache_subdir='models',
         md5_hash='5e97757d9f898aa8174fe8bc6e59bce8')
     return load_torch_weights(scopes, weights_path, move_rules)
+
+
+def load_densenet121(scopes):
+    """Converted from the [Torch DenseNets][7]."""
+    filename = 'densenet_121_cpu.pth'
+    weights_path = get_file(
+        filename, __model_url__ + 'densenet/' + filename,
+        cache_subdir='models',
+        md5_hash='9817430b1d3634645f6b04b8c663c34f')
+    return load_torch_weights(scopes, weights_path)
+
+
+def load_densenet169(scopes):
+    """Converted from the [Torch DenseNets][7]."""
+    filename = 'densenet_169_cpu.pth'
+    weights_path = get_file(
+        filename, __model_url__ + 'densenet/' + filename,
+        cache_subdir='models',
+        md5_hash='98c5cac06124192627391adf17d66493')
+    return load_torch_weights(scopes, weights_path)
+
+
+def load_densenet201(scopes):
+    """Converted from the [Torch DenseNets][7]."""
+    filename = 'densenet_201_cpu.pth'
+    weights_path = get_file(
+        filename, __model_url__ + 'densenet/' + filename,
+        cache_subdir='models',
+        md5_hash='fa3aa0454be559b81409e92f3bafd155')
+    return load_torch_weights(scopes, weights_path)
 
 
 # Simple alias.

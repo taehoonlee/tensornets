@@ -123,3 +123,6 @@ conv2/block1/1/relu:0 (?, 55, 55, 64)
 | Inception2  | 26.420      | 8.450       | 13.43 | [[paper]](https://arxiv.org/abs/1502.03167) [[tf-slim]](https://github.com/tensorflow/models/blob/master/research/slim/nets/inception_v2.py) |
 | Inception3  | 22.092      | 6.220       | 31.46 | [[paper]](https://arxiv.org/abs/1512.00567) [[tf-slim]](https://github.com/tensorflow/models/blob/master/research/slim/nets/inception_v3.py) [[keras]](https://github.com/fchollet/keras/blob/master/keras/applications/inception_v3.py) |
 | Inception4  | 19.854      | 5.032       | 58.21 | [[paper]](https://arxiv.org/abs/1602.07261) [[tf-slim]](https://github.com/tensorflow/models/blob/master/research/slim/nets/inception_v4.py) |
+| DenseNet121  | 25.550      | 8.174       | 20.29 | [[paper]](https://arxiv.org/abs/1608.06993) [[torch]](https://github.com/liuzhuang13/DenseNet/blob/master/models/densenet.lua) |
+| DenseNet169  | 24.092      | 7.172       | 21.91 | [[paper]](https://arxiv.org/abs/1608.06993) [[torch]](https://github.com/liuzhuang13/DenseNet/blob/master/models/densenet.lua) |
+| DenseNet201  | 22.988      | 6.700       | 27.20 | [[paper]](https://arxiv.org/abs/1608.06993) [[torch]](https://github.com/liuzhuang13/DenseNet/blob/master/models/densenet.lua) |
