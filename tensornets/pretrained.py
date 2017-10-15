@@ -40,7 +40,7 @@ def load_inception1(scopes):
     weights_path = get_file(
         filename, __model_url__ + 'inception/' + filename,
         cache_subdir='models',
-        md5_hash='6a212e3cb60b33f49c372906f18ae4a8')
+        file_hash='6a212e3cb60b33f49c372906f18ae4a8')
     return load_keras_weights(scopes, weights_path)
 
 
@@ -50,7 +50,7 @@ def load_inception2(scopes):
     weights_path = get_file(
         filename, __model_url__ + 'inception/' + filename,
         cache_subdir='models',
-        md5_hash='0476b876a5d35a99e2747f98248d856d')
+        file_hash='0476b876a5d35a99e2747f98248d856d')
     return load_weights(scopes, weights_path)
 
 
@@ -60,7 +60,7 @@ def load_inception3(scopes):
     weights_path = get_file(
         filename, __model_url__ + 'inception/' + filename,
         cache_subdir='models',
-        md5_hash='7c4556613c348da3b99b633e1c430fff')
+        file_hash='7c4556613c348da3b99b633e1c430fff')
     return load_keras_weights(scopes, weights_path)
 
 
@@ -70,7 +70,7 @@ def load_inception4(scopes):
     weights_path = get_file(
         filename, __model_url__ + 'inception/' + filename,
         cache_subdir='models',
-        md5_hash='8d5a0e8cb451c85112d5c4e363d77a42')
+        file_hash='8d5a0e8cb451c85112d5c4e363d77a42')
     return load_weights(scopes, weights_path)
 
 
@@ -80,7 +80,7 @@ def load_resnet50(scopes):
     weights_path = get_file(
         filename, __model_url__ + 'resnet/' + filename,
         cache_subdir='models',
-        md5_hash='9df0843bdadb58ed24d360564c45b119')
+        file_hash='9df0843bdadb58ed24d360564c45b119')
     return load_keras_weights(scopes, weights_path)
 
 
@@ -90,7 +90,7 @@ def load_resnet101(scopes):
     weights_path = get_file(
         filename, __model_url__ + 'resnet/' + filename,
         cache_subdir='models',
-        md5_hash='e2434bec605870fb4747e1b93f9f0e47')
+        file_hash='e2434bec605870fb4747e1b93f9f0e47')
     return load_keras_weights(scopes, weights_path)
 
 
@@ -100,7 +100,7 @@ def load_resnet152(scopes):
     weights_path = get_file(
         filename, __model_url__ + 'resnet/' + filename,
         cache_subdir='models',
-        md5_hash='e588285d1f919e538515c1f1b1c07b5b')
+        file_hash='e588285d1f919e538515c1f1b1c07b5b')
     return load_keras_weights(scopes, weights_path)
 
 
@@ -110,7 +110,7 @@ def load_keras_resnet50(scopes):
     weights_path = get_file(
         filename, __keras_url__ + filename,
         cache_subdir='models',
-        md5_hash='a7b3fe01876f51b976af0dea6bc144eb')
+        file_hash='a7b3fe01876f51b976af0dea6bc144eb')
     move_rules = []
     for i in range(2, 6):
         move_rules.append(("bn%da_branch2c" % i, -1))
@@ -135,7 +135,7 @@ def load_torch_resnet50(scopes):
     weights_path = get_file(
         filename, __model_url__ + 'resnet/' + filename,
         cache_subdir='models',
-        md5_hash='5b38c39802c94de00b55596145d304aa')
+        file_hash='5b38c39802c94de00b55596145d304aa')
     return load_torch_weights(scopes, weights_path, move_rules_fb_resnet_torch)
 
 
@@ -145,7 +145,7 @@ def load_torch_resnet101(scopes):
     weights_path = get_file(
         filename, __model_url__ + 'resnet/' + filename,
         cache_subdir='models',
-        md5_hash='cb3f0ac4687cb63d5f0861d651da844b')
+        file_hash='cb3f0ac4687cb63d5f0861d651da844b')
     return load_torch_weights(scopes, weights_path, move_rules_fb_resnet_torch)
 
 
@@ -155,7 +155,7 @@ def load_torch_resnet152(scopes):
     weights_path = get_file(
         filename, __model_url__ + 'resnet/' + filename,
         cache_subdir='models',
-        md5_hash='3339f6aca7f746f8ae7f6ce577efc0c0')
+        file_hash='3339f6aca7f746f8ae7f6ce577efc0c0')
     return load_torch_weights(scopes, weights_path, move_rules_fb_resnet_torch)
 
 
@@ -165,7 +165,7 @@ def load_resnet200v2(scopes):
     weights_path = get_file(
         filename, __model_url__ + 'resnet/' + filename,
         cache_subdir='models',
-        md5_hash='220df3970701d3e0608eed887fb95d82')
+        file_hash='220df3970701d3e0608eed887fb95d82')
     return load_torch_weights(scopes, weights_path, move_rules_fb_resnet_torch)
 
 
@@ -177,7 +177,7 @@ def load_resnext50(scopes):
     weights_path = get_file(
         filename, __model_url__ + 'resnet/' + filename,
         cache_subdir='models',
-        md5_hash='fdfc372bc47f7bf55313c04aebcef8ca')
+        file_hash='fdfc372bc47f7bf55313c04aebcef8ca')
     return load_torch_weights(scopes, weights_path, move_rules)
 
 
@@ -189,7 +189,7 @@ def load_resnext101(scopes):
     weights_path = get_file(
         filename, __model_url__ + 'resnet/' + filename,
         cache_subdir='models',
-        md5_hash='5e97757d9f898aa8174fe8bc6e59bce8')
+        file_hash='5e97757d9f898aa8174fe8bc6e59bce8')
     return load_torch_weights(scopes, weights_path, move_rules)
 
 
@@ -199,7 +199,7 @@ def load_densenet121(scopes):
     weights_path = get_file(
         filename, __model_url__ + 'densenet/' + filename,
         cache_subdir='models',
-        md5_hash='9817430b1d3634645f6b04b8c663c34f')
+        file_hash='9817430b1d3634645f6b04b8c663c34f')
     return load_torch_weights(scopes, weights_path)
 
 
@@ -209,7 +209,7 @@ def load_densenet169(scopes):
     weights_path = get_file(
         filename, __model_url__ + 'densenet/' + filename,
         cache_subdir='models',
-        md5_hash='98c5cac06124192627391adf17d66493')
+        file_hash='98c5cac06124192627391adf17d66493')
     return load_torch_weights(scopes, weights_path)
 
 
@@ -219,7 +219,7 @@ def load_densenet201(scopes):
     weights_path = get_file(
         filename, __model_url__ + 'densenet/' + filename,
         cache_subdir='models',
-        md5_hash='fa3aa0454be559b81409e92f3bafd155')
+        file_hash='fa3aa0454be559b81409e92f3bafd155')
     return load_torch_weights(scopes, weights_path)
 
 

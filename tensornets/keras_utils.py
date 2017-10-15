@@ -4,10 +4,16 @@ from __future__ import absolute_import
 import numpy as np
 import tensorflow as tf
 
-from tensorflow.contrib.keras.python.keras.applications.imagenet_utils \
-    import decode_predictions
-from tensorflow.contrib.keras.python.keras.utils.data_utils \
-    import get_file
+from distutils.version import LooseVersion
+if LooseVersion(tf.__version__) > LooseVersion('1.3.0'):
+    from tensorflow.python.keras._impl.keras.applications.imagenet_utils \
+        import decode_predictions
+    from tensorflow.python.keras.utils import get_file
+else:
+    from tensorflow.contrib.keras.python.keras.applications.imagenet_utils \
+        import decode_predictions
+    from tensorflow.contrib.keras.python.keras.utils.data_utils \
+        import get_file
 
 
 def load_img(path, grayscale=False, target_size=None, crop_size=None):
@@ -86,9 +92,10 @@ def load_keras_weights(scopes, weights_path, move_rules=None):
             g = f[name]
             w = [n.decode('utf8') for n in g.attrs['weight_names']]
             v = [np.asarray(g[n]) for n in w]
-            if len(v) == 4:
-                w[0], w[1] = w[1], w[0]
-                v[0], v[1] = v[1], v[0]
+            if not LooseVersion(tf.__version__) > LooseVersion('1.3.0'):
+                if len(v) == 4:
+                    w[0], w[1] = w[1], w[0]
+                    v[0], v[1] = v[1], v[0]
             values += v
 
     for scope in scopes:
