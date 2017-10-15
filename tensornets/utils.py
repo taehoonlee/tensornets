@@ -210,4 +210,3 @@ def remove_utils(module_name, exceptions):
             except:
                 None
     delattr(module, 'keras_utils')
-    delattr(module, 'utils')

@@ -20,7 +20,9 @@ from .densenets import DenseNet121
 from .densenets import DenseNet169
 from .densenets import DenseNet201
 
-from .pretrained import *
+from .preprocess import preprocess
+from .pretrained import pretrained
+
 from .utils import *
 
 remove_utils(__name__, ['init'])

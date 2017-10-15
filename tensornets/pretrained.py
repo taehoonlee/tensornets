@@ -34,6 +34,27 @@ __model_url__ = 'https://github.com/taehoonlee/deep-learning-models/' \
                 'releases/download/'
 
 
+def pretrained(scopes):
+    import warnings
+    from .utils import parse_scopes
+    for scope in scopes:
+        model_name = parse_scopes(scope)[0]
+        try:
+            __load_dict__[model_name](scope)
+        except KeyError:
+            found = False
+            for (key, fun) in __load_dict__.items():
+                if key in model_name.lower():
+                    found = True
+                    fun(scope)
+                    break
+            if not found:
+                warnings.warn('Random initialization will be performed '
+                              'because the pre-trained weights for ' +
+                              model_name + ' are not found.')
+                init(scope)
+
+
 def load_inception1(scopes):
     """Converted from the [BAIR Caffe Model Zoo][1]."""
     filename = 'inception1.h5'
@@ -227,3 +248,24 @@ def load_densenet201(scopes):
 load_resnet50v2 = init  # TODO
 load_resnet101v2 = init  # TODO
 load_resnet152v2 = init  # TODO
+
+
+# Dictionary for loading functions.
+__load_dict__ = {
+    'inception1': load_inception1,
+    'inception2': load_inception2,
+    'inception3': load_inception3,
+    'inception4': load_inception4,
+    'resnet50': load_resnet50,
+    'resnet101': load_resnet101,
+    'resnet152': load_resnet152,
+    'resnet50v2': load_resnet50v2,
+    'resnet101v2': load_resnet101v2,
+    'resnet152v2': load_resnet152v2,
+    'resnet200v2': load_resnet200v2,
+    'resnext50': load_resnext50,
+    'resnext101': load_resnext101,
+    'densenet121': load_densenet121,
+    'densenet169': load_densenet169,
+    'densenet201': load_densenet201,
+}

@@ -70,9 +70,9 @@ def resnet50(x, is_training=True, classes=1000, scope=None, reuse=None):
     return resnet(x, stack, is_training, classes, scope, reuse)
 
 
-@var_scope('resnet50_v2')
+@var_scope('resnet50v2')
 @layers_common_args(True)
-def resnet50_v2(x, is_training=True, classes=1000, scope=None, reuse=None):
+def resnet50v2(x, is_training=True, classes=1000, scope=None, reuse=None):
     def stack(x):
         x = _stack(x, _block2, 64, 3, stride1=1, scope='conv2')
         x = _stack(x, _block2, 128, 4, scope='conv3')
@@ -96,9 +96,9 @@ def resnet101(x, is_training=True, classes=1000, scope=None, reuse=None):
     return resnet(x, stack, is_training, classes, scope, reuse)
 
 
-@var_scope('resnet101_v2')
+@var_scope('resnet101v2')
 @layers_common_args(True)
-def resnet101_v2(x, is_training=True, classes=1000, scope=None, reuse=None):
+def resnet101v2(x, is_training=True, classes=1000, scope=None, reuse=None):
     def stack(x):
         x = _stack(x, _block2, 64, 3, stride1=1, scope='conv2')
         x = _stack(x, _block2, 128, 4, scope='conv3')
@@ -122,9 +122,9 @@ def resnet152(x, is_training=True, classes=1000, scope=None, reuse=None):
     return resnet(x, stack, is_training, classes, scope, reuse)
 
 
-@var_scope('resnet152_v2')
+@var_scope('resnet152v2')
 @layers_common_args(True)
-def resnet152_v2(x, is_training=True, classes=1000, scope=None, reuse=None):
+def resnet152v2(x, is_training=True, classes=1000, scope=None, reuse=None):
     def stack(x):
         x = _stack(x, _block2, 64, 3, stride1=1, scope='conv2')
         x = _stack(x, _block2, 128, 8, scope='conv3')
@@ -136,9 +136,9 @@ def resnet152_v2(x, is_training=True, classes=1000, scope=None, reuse=None):
     return resnet(x, stack, is_training, classes, scope, reuse)
 
 
-@var_scope('resnet200_v2')
+@var_scope('resnet200v2')
 @layers_common_args(True)
-def resnet200_v2(x, is_training=True, classes=1000, scope=None, reuse=None):
+def resnet200v2(x, is_training=True, classes=1000, scope=None, reuse=None):
     def stack(x):
         x = _stack(x, _block2, 64, 3, stride1=1, scope='conv2')
         x = _stack(x, _block2, 128, 24, scope='conv3')
@@ -245,35 +245,13 @@ def _block3(x, filters, kernel_size=3, stride=1,
     return x
 
 
-def preprocess(x):
-    # Copied from keras
-    x = x[:, :, :, ::-1]
-    x[:, :, :, 0] -= 103.939
-    x[:, :, :, 1] -= 116.779
-    x[:, :, :, 2] -= 123.68
-    return x
-
-
-def fb_preprocess(x):
-    # Refer to the following Torch ResNets
-    # https://github.com/facebook/fb.resnet.torch/blob/master/pretrained/classify.lua
-    x /= 255.
-    x[:, :, :, 0] -= 0.485
-    x[:, :, :, 1] -= 0.456
-    x[:, :, :, 2] -= 0.406
-    x[:, :, :, 0] /= 0.229
-    x[:, :, :, 1] /= 0.224
-    x[:, :, :, 2] /= 0.225
-    return x
-
-
 # Simple alias.
 ResNet50 = resnet50
 ResNet101 = resnet101
 ResNet152 = resnet152
-ResNet50v2 = resnet50_v2
-ResNet101v2 = resnet101_v2
-ResNet152v2 = resnet152_v2
-ResNet200v2 = resnet200_v2
+ResNet50v2 = resnet50v2
+ResNet101v2 = resnet101v2
+ResNet152v2 = resnet152v2
+ResNet200v2 = resnet200v2
 ResNeXt50 = resnext50
 ResNeXt101 = resnext101

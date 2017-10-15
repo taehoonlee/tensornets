@@ -109,19 +109,6 @@ def block(x, growth_rate=32, scope=None):
     return x
 
 
-def preprocess(x):
-    # Refer to the following Torch ResNets
-    # https://github.com/facebook/fb.resnet.torch/blob/master/pretrained/classify.lua
-    x /= 255.
-    x[:, :, :, 0] -= 0.485
-    x[:, :, :, 1] -= 0.456
-    x[:, :, :, 2] -= 0.406
-    x[:, :, :, 0] /= 0.229
-    x[:, :, :, 1] /= 0.224
-    x[:, :, :, 2] /= 0.225
-    return x
-
-
 # Simple alias.
 DenseNet121 = densenet121
 DenseNet169 = densenet169

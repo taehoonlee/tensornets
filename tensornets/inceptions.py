@@ -345,24 +345,6 @@ def inceptionC(x, filters, scope=None):
     return x
 
 
-def preprocess1(x):
-    # Refer to the following BAIR Caffe Model Zoo
-    # https://github.com/BVLC/caffe/blob/master/models/bvlc_googlenet/train_val.prototxt
-    x = x[:, :, :, ::-1]
-    x[:, :, :, 0] -= 104.
-    x[:, :, :, 1] -= 117.
-    x[:, :, :, 2] -= 123.
-    return x
-
-
-def preprocess(x):
-    # Copied from keras
-    x /= 255.
-    x -= 0.5
-    x *= 2.
-    return x
-
-
 # Simple alias.
 GoogLeNet = Inception1 = inception1
 Inception2 = inception2

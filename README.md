@@ -24,34 +24,33 @@ assert all(isinstance(m, tf.Tensor) for m in [model1, model2])
 ```
 
 ```python
-from tensornets.utils import *
+from tensornets import utils
 
-img = load_img('cat.png', target_size=256, crop_size=224)
-img = nets.resnets.preprocess(img)
+img = utils.load_img('cat.png', target_size=256, crop_size=224)
 
 assert img.shape == (1, 224, 224, 3)
 ```
 
 ```python
+img = nets.preprocess('resnet', img)
 with tf.Session() as sess:
-    nets.load_resnet50(model1)
-    nets.load_resnet152(model2)
+    nets.pretrained([model1, model2])
     preds = sess.run([model1, model2], {inputs: img})
 ```
 
 ```python
 for pred in preds:
-    print('Predicted:', decode_predictions(pred, top=3)[0])
+    print('Predicted:', utils.decode_predictions(pred, top=3)[0])
 ```
 
 ```
-('Predicted:', [(u'n02124075', u'Egyptian_cat', 0.27387387), (u'n02127052', u'lynx', 0.11052437), (u'n02123045', u'tabby', 0.074132949)])
-('Predicted:', [(u'n02124075', u'Egyptian_cat', 0.13528407), (u'n02123045', u'tabby', 0.094977126), (u'n04033995', u'quilt', 0.070704058)])
+('Predicted:', [(u'n02124075', u'Egyptian_cat', 0.28067607), (u'n02127052', u'lynx', 0.16826589), (u'n02123597', u'Siamese_cat', 0.088474944)])
+('Predicted:', [(u'n02124075', u'Egyptian_cat', 0.10482649), (u'n03482405', u'hamper', 0.08210019), (u'n02808304', u'bath_towel', 0.066759109)])
 ```
 
 ```python
-print_summary(model1)
-print_summary(model2)
+utils.print_summary(model1)
+utils.print_summary(model2)
 ```
 
 ```
@@ -66,7 +65,7 @@ Total parameters: 60,419,944
 ```
 
 ```python
-print_weights(model1)
+utils.print_weights(model1)
 ```
 
 ```
@@ -85,7 +84,7 @@ conv2/block1/0/bn/gamma:0 (256,)
 ```
 
 ```python
-print_outputs(model2)
+utils.print_outputs(model2)
 ```
 
 ```
