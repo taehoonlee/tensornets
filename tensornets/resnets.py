@@ -1,3 +1,31 @@
+"""Collection of ResNet variants
+
+The reference papers:
+
+1. Original (a.k.a. v1)
+ - Deep Residual Learning for Image Recognition, CVPR 2016 (Best Paper Award)
+ - Kaiming He, Xiangyu Zhang, Shaoqing Ren, Jian Sun
+ - https://arxiv.org/abs/1512.03385
+2. Pre-activation (a.k.a. v2)
+ - Identity Mappings in Deep Residual Networks, ECCV 2016
+ - Kaiming He, Xiangyu Zhang, Shaoqing Ren, Jian Sun
+ - https://arxiv.org/abs/1603.05027
+3. ResNeXt
+ - Aggregated Residual Transformations for Deep Neural Networks, arXiv 2016
+ - Saining Xie, Ross Girshick, Piotr Dollar, Zhuowen Tu, Kaiming He
+ - https://arxiv.org/abs/1611.05431
+
+The reference implementations:
+
+1. (initially and mainly) Keras
+ - https://github.com/fchollet/keras/blob/master/keras/applications/resnet50.py
+2. (to reproduce the oricginal results) Caffe ResNet
+ - https://github.com/KaimingHe/deep-residual-networks/tree/master/prototxt
+3. (to factorize over v2) Torch ResNets
+ - https://github.com/facebook/fb.resnet.torch/blob/master/models/preresnet.lua
+4. (to factorize over v3) Torch ResNeXts
+ - https://github.com/facebookresearch/ResNeXt/blob/master/models/resnext.lua
+"""
 from __future__ import absolute_import
 
 import tensorflow as tf

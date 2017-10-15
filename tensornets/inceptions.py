@@ -1,3 +1,38 @@
+"""Collection of Inception variants
+
+The reference papers:
+
+1. GoogLeNet, Inception (a.k.a. v1)
+ - Going Deeper with Convolutions, CVPR 2015
+ - Christian Szegedy et al.
+ - https://arxiv.org/abs/1409.4842
+2. BN-Inception (a.k.a. v2)
+ - Batch Normalization: Accelerating Deep Network Training by Reducing Internal
+   Covariate Shift, ICML 2015
+ - Sergey Ioffe, Christian Szegedy
+ - https://arxiv.org/abs/1502.03167
+3. Inception3
+ - Rethinking the Inception Architecture for Computer Vision, CVPR 2016
+ - Christian Szegedy et al.
+ - https://arxiv.org/abs/1512.00567
+4. Inception4
+ - Inception-v4, Inception-ResNet and the Impact of Residual Connections on
+   Learning, AAAI 2017
+ - Christian Szegedy et al.
+ - https://arxiv.org/abs/1602.07261
+
+The reference implementations:
+
+1. (initially and mainly for v3) Keras
+ - https://github.com/fchollet/keras/blob/master/keras/applications/
+   inception_v3.py
+2. (mainly for v1,2,4) TF Slim
+ - https://github.com/tensorflow/models/blob/master/research/slim/nets/
+   inception_v{1,2,3,4}.py
+3. (to reproduce the original results) BAIR Caffe Model Zoo
+ - https://github.com/BVLC/caffe/blob/master/models/bvlc_googlenet/
+   deploy.prototxt
+"""
 from __future__ import absolute_import
 
 import tensorflow as tf

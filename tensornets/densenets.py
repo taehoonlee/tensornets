@@ -1,3 +1,16 @@
+"""Collection of DenseNet variants
+
+The reference paper:
+
+ - Densely Connected Convolutional Networks, CVPR 2017 (Best Paper Award)
+ - Gao Huang, Zhuang Liu, Kilian Q. Weinberger, Laurens van der Maaten
+ - https://arxiv.org/abs/1608.06993
+
+The reference implementation:
+
+1. Torch DenseNets
+ - https://github.com/liuzhuang13/DenseNet/blob/master/models/densenet.lua
+"""
 from __future__ import absolute_import
 
 import tensorflow as tf
