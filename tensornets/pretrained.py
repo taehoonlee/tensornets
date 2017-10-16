@@ -37,6 +37,8 @@ __model_url__ = 'https://github.com/taehoonlee/deep-learning-models/' \
 def pretrained(scopes):
     import warnings
     from .utils import parse_scopes
+    if not isinstance(scopes, list):
+        scopes = [scopes]
     for scope in scopes:
         model_name = parse_scopes(scope)[0]
         try:
