@@ -20,6 +20,13 @@ from .densenets import DenseNet121
 from .densenets import DenseNet169
 from .densenets import DenseNet201
 
+from .mobilenets import MobileNet25
+from .mobilenets import MobileNet50
+from .mobilenets import MobileNet75
+from .mobilenets import MobileNet100
+
+from .squeezenets import SqueezeNet
+
 from .preprocess import preprocess
 from .pretrained import pretrained
 

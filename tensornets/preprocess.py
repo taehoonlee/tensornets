@@ -93,4 +93,10 @@ __preprocess_dict__ = {
     'densenet121': fb_preprocess,
     'densenet169': fb_preprocess,
     'densenet201': fb_preprocess,
+    'mobilenet': keras_inception_preprocess,
+    'mobilenet25': keras_inception_preprocess,
+    'mobilenet50': keras_inception_preprocess,
+    'mobilenet75': keras_inception_preprocess,
+    'mobilenet100': keras_inception_preprocess,
+    'squeezenet': bair_preprocess,
 }

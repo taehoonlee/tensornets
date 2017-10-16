@@ -23,6 +23,11 @@ import pytest
     (nets.DenseNet121, (224, 224, 3)),
     (nets.DenseNet169, (224, 224, 3)),
     (nets.DenseNet201, (224, 224, 3)),
+    (nets.MobileNet25, (224, 224, 3)),
+    (nets.MobileNet50, (224, 224, 3)),
+    (nets.MobileNet75, (224, 224, 3)),
+    (nets.MobileNet100, (224, 224, 3)),
+    (nets.SqueezeNet, (224, 224, 3)),
 ])
 def test_basics(net, shape):
     inputs = tf.placeholder(tf.float32, [None] + list(shape))

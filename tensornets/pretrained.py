@@ -18,6 +18,8 @@ serializes every single tensor from the following repositories:
      "Torch ResNeXts"
 [7]: https://github.com/liuzhuang13/DenseNet
      "Torch DenseNets"
+[8]: https://github.com/DeepScale/SqueezeNet/tree/master/SqueezeNet_v1.1
+     "Caffe SqueezeNets"
 """
 from __future__ import absolute_import
 
@@ -246,6 +248,56 @@ def load_densenet201(scopes):
     return load_torch_weights(scopes, weights_path)
 
 
+def load_mobilenet25(scopes):
+    """Converted from the [TF Slim][2]."""
+    filename = 'mobilenet25.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'mobilenet/' + filename,
+        cache_subdir='models',
+        file_hash='aa1f5ccfb8be3d1ef45948a396e04e0a')
+    return load_weights(scopes, weights_path)
+
+
+def load_mobilenet50(scopes):
+    """Converted from the [TF Slim][2]."""
+    filename = 'mobilenet50.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'mobilenet/' + filename,
+        cache_subdir='models',
+        file_hash='0c0b667bc9d707e0e5bd4f383c5dece0')
+    return load_weights(scopes, weights_path)
+
+
+def load_mobilenet75(scopes):
+    """Converted from the [TF Slim][2]."""
+    filename = 'mobilenet75.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'mobilenet/' + filename,
+        cache_subdir='models',
+        file_hash='d4557a46a44eebfeaf08c82ae33765ed')
+    return load_weights(scopes, weights_path)
+
+
+def load_mobilenet100(scopes):
+    """Converted from the [TF Slim][2]."""
+    filename = 'mobilenet100.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'mobilenet/' + filename,
+        cache_subdir='models',
+        file_hash='3d14409e3e119c8881baf7dd1d54e714')
+    return load_weights(scopes, weights_path)
+
+
+def load_squeezenet(scopes):
+    """Converted from the [Caffe SqueezeNets][8]."""
+    filename = 'squeezenet.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'squeezenet/' + filename,
+        cache_subdir='models',
+        file_hash='1d474f6540f7ec34cb56e6440419b5c5')
+    return load_weights(scopes, weights_path)
+
+
 # Simple alias.
 load_resnet50v2 = init  # TODO
 load_resnet101v2 = init  # TODO
@@ -270,4 +322,9 @@ __load_dict__ = {
     'densenet121': load_densenet121,
     'densenet169': load_densenet169,
     'densenet201': load_densenet201,
+    'mobilenet25': load_mobilenet25,
+    'mobilenet50': load_mobilenet50,
+    'mobilenet75': load_mobilenet75,
+    'mobilenet100': load_mobilenet100,
+    'squeezenet': load_squeezenet,
 }

@@ -11,6 +11,7 @@ lrn = ops_to_outputs(tf.nn.lrn)
 pad = ops_to_outputs(tf.pad)
 reduce_mean = ops_to_outputs(tf.reduce_mean)
 relu = ops_to_outputs(tf.nn.relu)
+relu6 = ops_to_outputs(tf.nn.relu6)
 softmax = ops_to_outputs(tf.nn.softmax)
 
 
