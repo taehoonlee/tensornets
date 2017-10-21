@@ -52,14 +52,13 @@ def layers_common_args(func):
 def conv(*args, **kwargs):
     scope = kwargs.pop('scope', None)
     with tf.variable_scope(scope):
-        return batch_norm(conv2d(*args, **kwargs))
+        return relu(batch_norm(conv2d(*args, **kwargs)))
 
 
 @layers_common_args
 def densenet(x, blocks, is_training, classes, scope=None, reuse=None):
     x = pad(x, [[0, 0], [3, 3], [3, 3], [0, 0]], name='conv1/pad')
     x = conv(x, 64, 7, stride=2, scope='conv1')
-    x = relu(x, name='conv1/relu')
     x = pad(x, [[0, 0], [1, 1], [1, 1], [0, 0]], name='pool1/pad')
     x = max_pool2d(x, 3, stride=2, scope='pool1')
 
@@ -104,7 +103,7 @@ def dense(x, blocks, scope=None):
 @var_scope('transition')
 def transition(x, reduction=0.5, scope=None):
     x = batch_norm(x)
-    x = relu(x, name='relu')
+    x = relu(x)
     x = conv2d(x, x.shape[-1].value * reduction, 1, stride=1)
     x = avg_pool2d(x, 2, stride=2, scope='pool')
     return x
@@ -113,11 +112,9 @@ def transition(x, reduction=0.5, scope=None):
 @var_scope('block')
 def block(x, growth_rate=32, scope=None):
     x1 = batch_norm(x)
-    x1 = relu(x1, name='relu1')
+    x1 = relu(x1)
     x1 = conv(x1, 4 * growth_rate, 1, stride=1, scope='1')
-    x1 = relu(x1, name='relu2')
-    x1 = pad(x1, [[0, 0], [1, 1], [1, 1], [0, 0]], name='2/pad')
-    x1 = conv2d(x1, growth_rate, 3, stride=1, scope='2/conv')
+    x1 = conv2d(x1, growth_rate, 3, stride=1, padding='SAME', scope='2/conv')
     x = concat([x, x1], axis=3, name='concat')
     return x
 
