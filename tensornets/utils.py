@@ -5,6 +5,8 @@ from __future__ import print_function
 import numpy as np
 import tensorflow as tf
 
+from distutils.version import LooseVersion
+
 from tensorflow.contrib.framework import arg_scope
 from tensorflow.python.framework import ops
 
@@ -143,6 +145,11 @@ def load_weights(scopes, weights_path):
 
     data = np.load(weights_path)
     values = data['values']
+
+    if LooseVersion(tf.__version__) > LooseVersion('1.3.0'):
+        for (i, name) in enumerate(data['names']):
+            if '/beta' in name:
+                values[i], values[i+1] = values[i+1], values[i]
 
     for scope in scopes:
         weights = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=scope)
