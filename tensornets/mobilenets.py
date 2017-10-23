@@ -109,22 +109,22 @@ def mobilenet(x, depth_multiplier, is_training, classes,
 
 
 @var_scope('mobilenet25')
-def mobilenet25(x, is_training=True, classes=1000, scope=None, reuse=None):
+def mobilenet25(x, is_training=False, classes=1000, scope=None, reuse=None):
     return mobilenet(x, 0.25, is_training, classes, scope, reuse)
 
 
 @var_scope('mobilenet50')
-def mobilenet50(x, is_training=True, classes=1000, scope=None, reuse=None):
+def mobilenet50(x, is_training=False, classes=1000, scope=None, reuse=None):
     return mobilenet(x, 0.5, is_training, classes, scope, reuse)
 
 
 @var_scope('mobilenet75')
-def mobilenet75(x, is_training=True, classes=1000, scope=None, reuse=None):
+def mobilenet75(x, is_training=False, classes=1000, scope=None, reuse=None):
     return mobilenet(x, 0.75, is_training, classes, scope, reuse)
 
 
 @var_scope('mobilenet100')
-def mobilenet100(x, is_training=True, classes=1000, scope=None, reuse=None):
+def mobilenet100(x, is_training=False, classes=1000, scope=None, reuse=None):
     return mobilenet(x, 1.0, is_training, classes, scope, reuse)
 
 

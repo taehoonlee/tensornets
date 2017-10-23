@@ -47,8 +47,9 @@ __layers__ = [batch_norm, conv2d, fully_connected, max_pool2d]
 def layers_common_args(conv_bias):
     def real_layers_common_args(func):
         def wrapper(*args, **kwargs):
+            is_training = kwargs.get('is_training', False)
             b_kwargs = {'scale': True,
-                        'is_training': kwargs['is_training'],
+                        'is_training': is_training,
                         'scope': 'bn',
                         'epsilon': 1e-5}
             c_kwargs = {'padding': 'VALID',
@@ -88,7 +89,7 @@ def resnet(x, stack_fn, is_training, classes, scope=None, reuse=None):
 
 @var_scope('resnet50')
 @layers_common_args(True)
-def resnet50(x, is_training=True, classes=1000, scope=None, reuse=None):
+def resnet50(x, is_training=False, classes=1000, scope=None, reuse=None):
     def stack(x):
         x = _stack(x, _block1, 64, 3, stride1=1, scope='conv2')
         x = _stack(x, _block1, 128, 4, scope='conv3')
@@ -100,7 +101,7 @@ def resnet50(x, is_training=True, classes=1000, scope=None, reuse=None):
 
 @var_scope('resnet50v2')
 @layers_common_args(True)
-def resnet50v2(x, is_training=True, classes=1000, scope=None, reuse=None):
+def resnet50v2(x, is_training=False, classes=1000, scope=None, reuse=None):
     def stack(x):
         x = _stack(x, _block2, 64, 3, stride1=1, scope='conv2')
         x = _stack(x, _block2, 128, 4, scope='conv3')
@@ -114,7 +115,7 @@ def resnet50v2(x, is_training=True, classes=1000, scope=None, reuse=None):
 
 @var_scope('resnet101')
 @layers_common_args(True)
-def resnet101(x, is_training=True, classes=1000, scope=None, reuse=None):
+def resnet101(x, is_training=False, classes=1000, scope=None, reuse=None):
     def stack(x):
         x = _stack(x, _block1, 64, 3, stride1=1, scope='conv2')
         x = _stack(x, _block1, 128, 4, scope='conv3')
@@ -126,7 +127,7 @@ def resnet101(x, is_training=True, classes=1000, scope=None, reuse=None):
 
 @var_scope('resnet101v2')
 @layers_common_args(True)
-def resnet101v2(x, is_training=True, classes=1000, scope=None, reuse=None):
+def resnet101v2(x, is_training=False, classes=1000, scope=None, reuse=None):
     def stack(x):
         x = _stack(x, _block2, 64, 3, stride1=1, scope='conv2')
         x = _stack(x, _block2, 128, 4, scope='conv3')
@@ -140,7 +141,7 @@ def resnet101v2(x, is_training=True, classes=1000, scope=None, reuse=None):
 
 @var_scope('resnet152')
 @layers_common_args(True)
-def resnet152(x, is_training=True, classes=1000, scope=None, reuse=None):
+def resnet152(x, is_training=False, classes=1000, scope=None, reuse=None):
     def stack(x):
         x = _stack(x, _block1, 64, 3, stride1=1, scope='conv2')
         x = _stack(x, _block1, 128, 8, scope='conv3')
@@ -152,7 +153,7 @@ def resnet152(x, is_training=True, classes=1000, scope=None, reuse=None):
 
 @var_scope('resnet152v2')
 @layers_common_args(True)
-def resnet152v2(x, is_training=True, classes=1000, scope=None, reuse=None):
+def resnet152v2(x, is_training=False, classes=1000, scope=None, reuse=None):
     def stack(x):
         x = _stack(x, _block2, 64, 3, stride1=1, scope='conv2')
         x = _stack(x, _block2, 128, 8, scope='conv3')
@@ -166,7 +167,7 @@ def resnet152v2(x, is_training=True, classes=1000, scope=None, reuse=None):
 
 @var_scope('resnet200v2')
 @layers_common_args(True)
-def resnet200v2(x, is_training=True, classes=1000, scope=None, reuse=None):
+def resnet200v2(x, is_training=False, classes=1000, scope=None, reuse=None):
     def stack(x):
         x = _stack(x, _block2, 64, 3, stride1=1, scope='conv2')
         x = _stack(x, _block2, 128, 24, scope='conv3')
@@ -180,7 +181,7 @@ def resnet200v2(x, is_training=True, classes=1000, scope=None, reuse=None):
 
 @var_scope('resnext50')
 @layers_common_args(False)
-def resnext50(x, is_training=True, classes=1000, scope=None, reuse=None):
+def resnext50(x, is_training=False, classes=1000, scope=None, reuse=None):
     def stack(x):
         x = _stack(x, _block3, 128, 3, stride1=1, scope='conv2')
         x = _stack(x, _block3, 256, 4, scope='conv3')
@@ -192,7 +193,7 @@ def resnext50(x, is_training=True, classes=1000, scope=None, reuse=None):
 
 @var_scope('resnext101')
 @layers_common_args(False)
-def resnext101(x, is_training=True, classes=1000, scope=None, reuse=None):
+def resnext101(x, is_training=False, classes=1000, scope=None, reuse=None):
     def stack(x):
         x = _stack(x, _block3, 128, 3, stride1=1, scope='conv2')
         x = _stack(x, _block3, 256, 4, scope='conv3')

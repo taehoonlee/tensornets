@@ -79,17 +79,17 @@ def densenet(x, blocks, is_training, classes, scope=None, reuse=None):
 
 
 @var_scope('densenet121')
-def densenet121(x, is_training=True, classes=1000, scope=None, reuse=None):
+def densenet121(x, is_training=False, classes=1000, scope=None, reuse=None):
     return densenet(x, [6, 12, 24, 16], is_training, classes, scope, reuse)
 
 
 @var_scope('densenet169')
-def densenet169(x, is_training=True, classes=1000, scope=None, reuse=None):
+def densenet169(x, is_training=False, classes=1000, scope=None, reuse=None):
     return densenet(x, [6, 12, 32, 32], is_training, classes, scope, reuse)
 
 
 @var_scope('densenet201')
-def densenet201(x, is_training=True, classes=1000, scope=None, reuse=None):
+def densenet201(x, is_training=False, classes=1000, scope=None, reuse=None):
     return densenet(x, [6, 12, 48, 32], is_training, classes, scope, reuse)
 
 

@@ -57,14 +57,15 @@ __layers__ = [avg_pool2d, batch_norm, conv2d, dropout,
 
 def layers_common_args(func):
     def wrapper(*args, **kwargs):
+        is_training = kwargs.get('is_training', False)
         with collect_outputs(__layers__), \
-             arg_scope([avg_pool2d], stride=1, padding='SAME', scope='pool'), \
-             arg_scope([batch_norm], is_training=kwargs['is_training']), \
-             arg_scope([conv2d], padding='SAME', activation_fn=None,
-                       biases_initializer=None), \
-             arg_scope([fully_connected], activation_fn=None), \
-             arg_scope([max_pool2d], stride=1, padding='SAME', scope='pool'), \
-             arg_scope([separable_conv2d], padding='SAME'):
+                arg_scope([avg_pool2d, max_pool2d],
+                          stride=1, padding='SAME', scope='pool'), \
+                arg_scope([batch_norm], is_training=is_training), \
+                arg_scope([conv2d], padding='SAME', activation_fn=None,
+                          biases_initializer=None), \
+                arg_scope([fully_connected], activation_fn=None), \
+                arg_scope([separable_conv2d], padding='SAME'):
             return func(*args, **kwargs)
     return wrapper
 
@@ -84,7 +85,7 @@ def conv(*args, **kwargs):
 
 @var_scope('inception1')
 @layers_common_args
-def inception1(x, is_training=True, classes=1000, scope=None, reuse=None):
+def inception1(x, is_training=False, classes=1000, scope=None, reuse=None):
     x = pad(x, [[0, 0], [3, 3], [3, 3], [0, 0]], name='pad')
     x = conv0(x, 64, 7, stride=2, padding='VALID', scope='block1')
     x = max_pool2d(x, 3, stride=2, scope='pool1')
@@ -121,7 +122,7 @@ def inception1(x, is_training=True, classes=1000, scope=None, reuse=None):
 
 @var_scope('inception2')
 @layers_common_args
-def inception2(x, is_training=True, classes=1000, scope=None, reuse=None):
+def inception2(x, is_training=False, classes=1000, scope=None, reuse=None):
     x = separable_conv2d(x, 64, 7, stride=2, depth_multiplier=8.,
                          activation_fn=None, scope='block1')
     x = max_pool2d(x, 3, stride=2, scope='pool1')
@@ -158,7 +159,7 @@ def inception2(x, is_training=True, classes=1000, scope=None, reuse=None):
 
 @var_scope('inception3')
 @layers_common_args
-def inception3(x, is_training=True, classes=1000, scope=None, reuse=None):
+def inception3(x, is_training=False, classes=1000, scope=None, reuse=None):
     x = conv(x, 32, 3, stride=2, padding='VALID', scope='block1a')
     x = conv(x, 32, 3, padding='VALID', scope='block2a')
     x = conv(x, 64, 3, scope='block2b')
@@ -193,7 +194,7 @@ def inception3(x, is_training=True, classes=1000, scope=None, reuse=None):
 
 @var_scope('inception4')
 @layers_common_args
-def inception4(x, is_training=True, classes=1000, scope=None, reuse=None):
+def inception4(x, is_training=False, classes=1000, scope=None, reuse=None):
     x = conv(x, 32, 3, stride=2, padding='VALID', scope='block1a')
 
     x = conv(x, 32, 3, padding='VALID', scope='block2a')

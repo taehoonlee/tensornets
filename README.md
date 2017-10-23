@@ -17,8 +17,8 @@ import tensornets as nets
 inputs = tf.placeholder(tf.float32, [None, 224, 224, 3])
 
 with tf.device('cpu:0'):
-    model1 = nets.ResNet50(inputs, is_training=False, scope='myresnet')
-    model2 = nets.ResNet152(inputs, is_training=False)
+    model1 = nets.ResNet50(inputs)
+    model2 = nets.ResNet152(inputs)
 
 assert all(isinstance(m, tf.Tensor) for m in [model1, model2])
 ```

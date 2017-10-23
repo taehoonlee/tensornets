@@ -60,7 +60,7 @@ def fire(x, squeeze, expand, scope=None):
 
 @var_scope('squeezenet')
 @layers_common_args
-def squeezenet(x, is_training=True, classes=1000, scope=None, reuse=None):
+def squeezenet(x, is_training=False, classes=1000, scope=None, reuse=None):
     x = conv(x, 64, 3, stride=2, padding='VALID', scope='conv1')
     x = max_pool2d(x, 3, stride=2, scope='pool1')
 
