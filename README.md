@@ -1,75 +1,68 @@
-# Tensornets
+# TensorNets
 
-High level network definitions in [TensorFlow](https://github.com/tensorflow/tensorflow).
+High level network definitions with pre-trained weights in [TensorFlow](https://github.com/tensorflow/tensorflow) (tested with `>= 1.2.0`).
 
 ## Guiding principles
 
-- 1
-- 2
-- 3
+- **Applicability.** Many people already have their own ML workflows, and want to put a new model on their workflows. TensorNets can be easily plugged together because it is designed as simple functional interfaces without custom classes.
+- **Manageability.** Models are written in `tf.contrib.layers`, which is lightweight like PyTorch and Keras, and allows for ease of accessibility to every weight and end-point. Also, it is easy to deploy and expand a collection of pre-processing and pre-trained weights.
+- **Readability.** With recent TensorFlow APIs, more factoring and less indenting can be possible. For example, Inception 1-4 have 388 lines in [TensorNets](tensornets/inceptions.py) while 1756 lines in [official TensorFlow models](https://github.com/tensorflow/models/blob/master/research/slim/nets/inception_v3.py).
 
 ## A quick example
+
+Each network (see [full list](#performances)) is not a custom class but a function that takes and returns `tf.Tensor` as its input and output. Here is an example of `ResNet50`:
 
 ```python
 import tensorflow as tf
 import tensornets as nets
 
 inputs = tf.placeholder(tf.float32, [None, 224, 224, 3])
+model = nets.ResNet50(inputs)
 
-with tf.device('cpu:0'):
-    model1 = nets.ResNet50(inputs)
-    model2 = nets.ResNet152(inputs)
-
-assert all(isinstance(m, tf.Tensor) for m in [model1, model2])
+assert isinstance(model, tf.Tensor)
 ```
+
+You can load an example image by using `utils.load_img` returning a `np.ndarray` as the NHWC format:
 
 ```python
 from tensornets import utils
-
 img = utils.load_img('cat.png', target_size=256, crop_size=224)
-
 assert img.shape == (1, 224, 224, 3)
 ```
 
+Once your network is created, you can run with regular TensorFlow APIs 😊 because all the networks in TensorNets always return `tf.Tensor`. Using pre-trained weights and pre-processing are as easy as [`pretrained()`](tensornets/pretrained.py) and [`preprocess()`](tensornets/preprocess.py) to reproduce the original results:
+
 ```python
-img = nets.preprocess('resnet', img)
 with tf.Session() as sess:
-    nets.pretrained([model1, model2])
-    preds = sess.run([model1, model2], {inputs: img})
+    nets.pretrained(model)
+    img = nets.preprocess(model, img)
+    preds = sess.run(model, {inputs: img})
 ```
+
+You can see the most probable classes:
 
 ```python
-for pred in preds:
-    print('Predicted:', utils.decode_predictions(pred, top=3)[0])
+print(utils.decode_predictions(preds, top=2)[0])
+[(u'n02124075', u'Egyptian_cat', 0.28067636), (u'n02127052', u'lynx', 0.16826575)]
 ```
 
-```
-('Predicted:', [(u'n02124075', u'Egyptian_cat', 0.28067607), (u'n02127052', u'lynx', 0.16826589), (u'n02123597', u'Siamese_cat', 0.088474944)])
-('Predicted:', [(u'n02124075', u'Egyptian_cat', 0.10482649), (u'n03482405', u'hamper', 0.08210019), (u'n02808304', u'bath_towel', 0.066759109)])
-```
+TensorNets enables us to deploy well-known architectures and benchmark those results faster ⚡️. For more information, you can check out the lists of [utilities](#utilities), [examples](#examples), and [architectures](#performances).
 
-```python
-utils.print_summary(model1)
-utils.print_summary(model2)
-```
+## Utilities
+
+An example output of `utils.print_summary(model)`:
 
 ```
-Scope: myresnet
+Scope: resnet50
 Total layers: 54
 Total weights: 320
 Total parameters: 25,636,712
-Scope: resnet152
-Total layers: 156
-Total weights: 932
-Total parameters: 60,419,944
 ```
 
-```python
-utils.print_weights(model1)
-```
+An example output of `utils.print_weights(model)`:
 
 ```
-Scope: myresnet
+Scope: resnet50
 conv1/conv/weights:0 (7, 7, 3, 64)
 conv1/conv/biases:0 (64,)
 conv1/bn/beta:0 (64,)
@@ -83,31 +76,95 @@ conv2/block1/0/bn/gamma:0 (256,)
 ...
 ```
 
-```python
-utils.print_outputs(model2)
-```
+- `utils.get_weights(model)` returns a list of all the `tf.Tensor` weights as shown in the above
+
+An example output of `utils.print_outputs(model)`:
 
 ```
-Scope: resnet152
-pad:0 (?, 230, 230, 3)
+Scope: resnet50
+conv1/pad:0 (?, 230, 230, 3)
 conv1/conv/BiasAdd:0 (?, 112, 112, 64)
 conv1/bn/batchnorm/add_1:0 (?, 112, 112, 64)
 conv1/relu:0 (?, 112, 112, 64)
-pool1/MaxPool:0 (?, 55, 55, 64)
-conv2/block1/0/conv/BiasAdd:0 (?, 55, 55, 256)
-conv2/block1/0/bn/batchnorm/add_1:0 (?, 55, 55, 256)
-conv2/block1/1/conv/BiasAdd:0 (?, 55, 55, 64)
-conv2/block1/1/bn/batchnorm/add_1:0 (?, 55, 55, 64)
-conv2/block1/1/relu:0 (?, 55, 55, 64)
+pool1/pad:0 (?, 114, 114, 64)
+pool1/MaxPool:0 (?, 56, 56, 64)
+conv2/block1/0/conv/BiasAdd:0 (?, 56, 56, 256)
+conv2/block1/0/bn/batchnorm/add_1:0 (?, 56, 56, 256)
+conv2/block1/1/conv/BiasAdd:0 (?, 56, 56, 64)
+conv2/block1/1/bn/batchnorm/add_1:0 (?, 56, 56, 64)
+conv2/block1/1/relu:0 (?, 56, 56, 64)
 ...
+```
+
+- `utils.get_outputs(model)` returns a list of all the `tf.Tensor` end-points as shown in the above
+
+## Examples
+
+- Comparison of different networks:
+
+```python
+inputs = tf.placeholder(tf.float32, [None, 224, 224, 3])
+models = [
+    nets.MobileNet75(inputs),
+    nets.MobileNet100(inputs),
+    nets.SqueezeNet(inputs),
+]
+
+img = utils.load_img('cat.png', target_size=256, crop_size=224)
+imgs = nets.preprocess(models, img)
+
+with tf.Session() as sess:
+    nets.pretrained(models)
+    for (model, img) in zip(models, imgs):
+        preds = sess.run(model, {inputs: img})
+        print(utils.decode_predictions(preds, top=2)[0])
+```
+
+- Transfer learning:
+
+```python
+inputs = tf.placeholder(tf.float32, [None, 224, 224, 3])
+outputs = tf.placeholder(tf.float32, [None, 50])
+model = nets.DenseNet169(inputs, is_training=True, classes=50)
+
+loss = tf.losses.softmax_cross_entropy(outputs, model)
+train = tf.train.AdamOptimizer(learning_rate=1e-5).minimize(loss)
+
+with tf.Session() as sess:
+    nets.pretrained(model)
+    # for (x, y) in your NumPy data (the NHWC and one-hot format):
+        sess.run(train, {inputs: x, outputs: y})
+```
+
+- Using multi-GPU:
+
+```python
+inputs = tf.placeholder(tf.float32, [None, 224, 224, 3])
+models = []
+
+with tf.device('gpu:0'):
+    models.append(nets.ResNeXt50(inputs))
+
+with tf.device('gpu:1'):
+    models.append(nets.DenseNet201(inputs))
+
+from tensornets.preprocess import fb_preprocess
+img = utils.load_img('cat.png', target_size=256, crop_size=224)
+img = fb_preprocess(img)
+
+with tf.Session() as sess:
+    nets.pretrained(models)
+    preds = sess.run(models, {inputs: img})
+    for pred in preds:
+        print(utils.decode_predictions(pred, top=2)[0])
 ```
 
 ## Performances
 
-- Currently,
-- Speed: ms for inferences of 100 images on P100
+- The top-k errors were obtained with TensorNets (single center crop 224x224 except Inception2-4 299x299) and may slightly differ from the original ones.
+- The computation times were measured on NVIDIA Tesla P100 (3584 cores, 16 GB global memory) with cuDNN 6.0 and CUDA 8.0.
 
-|             | Top-1 error | Top-5 error | Speed | References                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+|             | Top-1 error | Top-5 error | Speed (ms) | References                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 |-------------|-------------|-------------|-------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | ResNet50    | 25.076      | 7.884       | 195.4 | [[paper]](https://arxiv.org/abs/1512.03385) [[tf-slim]](https://github.com/tensorflow/models/blob/master/research/slim/nets/resnet_v1.py) [[torch-fb]](https://github.com/facebook/fb.resnet.torch/blob/master/models/resnet.lua) [[caffe]](https://github.com/KaimingHe/deep-residual-networks/blob/master/prototxt/ResNet-50-deploy.prototxt) [[keras]](https://github.com/fchollet/keras/blob/master/keras/applications/resnet50.py) |
 | ResNet101   | 23.574      | 7.208       | 311.7 | [[paper]](https://arxiv.org/abs/1512.03385) [[tf-slim]](https://github.com/tensorflow/models/blob/master/research/slim/nets/resnet_v1.py) [[torch-fb]](https://github.com/facebook/fb.resnet.torch/blob/master/models/resnet.lua) [[caffe]](https://github.com/KaimingHe/deep-residual-networks/blob/master/prototxt/ResNet-101-deploy.prototxt) |
