@@ -129,6 +129,36 @@ def load_resnet152(scopes):
     return load_keras_weights(scopes, weights_path)
 
 
+def load_resnet50v2(scopes):
+    """Converted from the [TF Slim][2]."""
+    filename = 'resnet_v2_50.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'resnet/' + filename,
+        cache_subdir='models',
+        file_hash='fa2ac006361fd5e79792d163c0130667')
+    return load_weights(scopes, weights_path)
+
+
+def load_resnet101v2(scopes):
+    """Converted from the [TF Slim][2]."""
+    filename = 'resnet_v2_101.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'resnet/' + filename,
+        cache_subdir='models',
+        file_hash='fbc179d55c817e4656992fa582fdc460')
+    return load_weights(scopes, weights_path)
+
+
+def load_resnet152v2(scopes):
+    """Converted from the [TF Slim][2]."""
+    filename = 'resnet_v2_152.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'resnet/' + filename,
+        cache_subdir='models',
+        file_hash='184c9b439e925762f006d288445997a8')
+    return load_weights(scopes, weights_path)
+
+
 def load_keras_resnet50(scopes):
     """Copied from [keras][3]."""
     filename = 'resnet50_weights_tf_dim_ordering_tf_kernels.h5'
@@ -296,12 +326,6 @@ def load_squeezenet(scopes):
         cache_subdir='models',
         file_hash='1d474f6540f7ec34cb56e6440419b5c5')
     return load_weights(scopes, weights_path)
-
-
-# Simple alias.
-load_resnet50v2 = init  # TODO
-load_resnet101v2 = init  # TODO
-load_resnet152v2 = init  # TODO
 
 
 # Dictionary for loading functions.
