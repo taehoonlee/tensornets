@@ -161,7 +161,7 @@ with tf.Session() as sess:
 
 ## Performances
 
-- The top-k errors were obtained with TensorNets (single center crop 224x224 except Inception2-4 and ResNet50-152v2 299x299) and may slightly differ from the original ones.
+- The top-k errors were obtained with TensorNets (single center crop 224x224 except Inception3,4 and ResNet50-152v2 299x299) and may slightly differ from the original ones.
 - The computation times were measured on NVIDIA Tesla P100 (3584 cores, 16 GB global memory) with cuDNN 6.0 and CUDA 8.0.
 
 |             | Top-1 error | Top-5 error | Speed (ms) | References                                                                                                                                                                                                                                                                                                                                                                                                                                         |
