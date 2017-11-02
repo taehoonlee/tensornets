@@ -99,6 +99,16 @@ def load_inception4(scopes):
     return load_weights(scopes, weights_path)
 
 
+def load_inceptionresnet2(scopes):
+    """Converted from the [TF Slim][2]."""
+    filename = 'inception_resnet_v2_2016_08_30.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'inception/' + filename,
+        cache_subdir='models',
+        file_hash='32d685e68e6be6ba1da64e41f939bc49')
+    return load_weights(scopes, weights_path)
+
+
 def load_resnet50(scopes):
     """Converted from the original [Caffe ResNets][4]."""
     filename = 'resnet50.h5'
@@ -334,6 +344,7 @@ __load_dict__ = {
     'inception2': load_inception2,
     'inception3': load_inception3,
     'inception4': load_inception4,
+    'inceptionresnet2': load_inceptionresnet2,
     'resnet50': load_resnet50,
     'resnet101': load_resnet101,
     'resnet152': load_resnet152,

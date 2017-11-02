@@ -15,7 +15,7 @@ The reference papers:
  - Rethinking the Inception Architecture for Computer Vision, CVPR 2016
  - Christian Szegedy et al.
  - https://arxiv.org/abs/1512.00567
-4. Inception4
+4. Inception4, InceptionResNet1, InceptionResNet2
  - Inception-v4, Inception-ResNet and the Impact of Residual Connections on
    Learning, AAAI 2017
  - Christian Szegedy et al.
@@ -26,9 +26,9 @@ The reference implementations:
 1. (initially and mainly for v3) Keras
  - https://github.com/fchollet/keras/blob/master/keras/applications/
    inception_v3.py
-2. (mainly for v1,2,4) TF Slim
+2. (mainly for v1,2,4,resnetv2) TF Slim
  - https://github.com/tensorflow/models/blob/master/research/slim/nets/
-   inception_v{1,2,3,4}.py
+   inception_{v1,v2,v3,v4,resnet_v2}.py
 3. (to reproduce the original results) BAIR Caffe Model Zoo
  - https://github.com/BVLC/caffe/blob/master/models/bvlc_googlenet/
    deploy.prototxt
@@ -61,7 +61,7 @@ def layers_common_args(func):
         with collect_outputs(__layers__), \
                 arg_scope([avg_pool2d, max_pool2d],
                           stride=1, padding='SAME', scope='pool'), \
-                arg_scope([batch_norm], is_training=is_training), \
+                arg_scope([batch_norm, dropout], is_training=is_training), \
                 arg_scope([conv2d], padding='SAME', activation_fn=None,
                           biases_initializer=None), \
                 arg_scope([fully_connected], activation_fn=None), \
@@ -113,7 +113,7 @@ def inception1(x, is_training=False, classes=1000, scope=None, reuse=None):
     x = inception(x, [384, [192, 384], [48, 128], 128], scope='block5b')
 
     x = reduce_mean(x, [1, 2], name='avgpool')
-    x = dropout(x, keep_prob=0.8, is_training=is_training, scope='dropout')
+    x = dropout(x, keep_prob=0.8, scope='dropout')
     x = fully_connected(x, classes, scope='logits')
     x = softmax(x, name='probs')
     x.aliases = [tf.get_variable_scope().name]
@@ -150,7 +150,7 @@ def inception2(x, is_training=False, classes=1000, scope=None, reuse=None):
                    pool_fn=max_pool2d, scope='block5b')
 
     x = reduce_mean(x, [1, 2], name='avgpool')
-    x = dropout(x, keep_prob=0.8, is_training=is_training, scope='dropout')
+    x = dropout(x, keep_prob=0.8, scope='dropout')
     x = fully_connected(x, classes, scope='logits')
     x = softmax(x, name='probs')
     x.aliases = [tf.get_variable_scope().name]
@@ -175,15 +175,15 @@ def inception3(x, is_training=False, classes=1000, scope=None, reuse=None):
 
     x = reductionA(x, [384, [64, 96, 96]], scope='block6a')
 
-    x = inceptionB(x, [192, 128, 128, 192], scope='block6b')
-    x = inceptionB(x, [192, 160, 160, 192], scope='block6c')
-    x = inceptionB(x, [192, 160, 160, 192], scope='block6d')
-    x = inceptionB(x, [192, 192, 192, 192], scope='block6e')
+    x = inceptionB(x, [192, [128, 128, 192], [128, 128], 192], scope='block6b')
+    x = inceptionB(x, [192, [160, 160, 192], [160, 160], 192], scope='block6c')
+    x = inceptionB(x, [192, [160, 160, 192], [160, 160], 192], scope='block6d')
+    x = inceptionB(x, [192, [192, 192, 192], [192, 192], 192], scope='block6e')
 
-    x = reductionB(x, [[192, 320], 192], scope='block7a')
+    x = reductionB(x, [[192, 320], [192, 192]], scope='block7a')
 
-    x = inceptionC(x, [320, 384, [448, 384], 192], scope='block7b')
-    x = inceptionC(x, [320, 384, [448, 384], 192], scope='block7c')
+    x = inceptionC(x, [320, [384] * 3, [448, 384], 192], scope='block7b')
+    x = inceptionC(x, [320, [384] * 3, [448, 384], 192], scope='block7c')
 
     x = reduce_mean(x, [1, 2], name='avgpool')
     x = fully_connected(x, classes, scope='logits')
@@ -195,8 +195,104 @@ def inception3(x, is_training=False, classes=1000, scope=None, reuse=None):
 @var_scope('inception4')
 @layers_common_args
 def inception4(x, is_training=False, classes=1000, scope=None, reuse=None):
-    x = conv(x, 32, 3, stride=2, padding='VALID', scope='block1a')
+    x = stemA(x)
+    for i in range(4):
+        x = inceptionA(x, [96, [64, 96], [64, 96], 96],
+                       scope="block5%c" % (98 + i))
+    x = reductionA(x, [384, [192, 224, 256]], scope='block6a')
 
+    for i in range(7):
+        x = inceptionB(x, [384, [192, 224, 256], [192, 224], 128],
+                       scope="block6%c" % (98 + i))
+    x = reductionB(x, [[192, 192], [256, 320]], scope='block7a')
+
+    for i in range(3):
+        x = inceptionC(x, [256, [384, 256, 256], [384, 448, 512, 256], 256],
+                       scope="block7%c" % (98 + i))
+
+    x = reduce_mean(x, [1, 2], name='avgpool')
+    x = dropout(x, keep_prob=0.8, scope='dropout')
+    x = fully_connected(x, classes, scope='logits')
+    x = softmax(x, name='probs')
+    x.aliases = [tf.get_variable_scope().name]
+    return x
+
+
+def inceptionresnet(x, stem_fn, A, B, C, is_training, classes,
+                    scope=None, reuse=None):
+    x = stem_fn(x)
+    for i in range(A['blocks']):
+        x = inceptionRA(x, A['filters'], scale=0.17,
+                        scope="block5%c" % (99 + i))
+    x = reductionA(x, A['reduction'], scope='block6a')
+
+    for i in range(B['blocks']):
+        x = inceptionRB(x, B['filters'], k=7, scale=0.1,
+                        scope="block6%c" % (98 + i))
+    x = reductionRB(x, B['reduction'], scope='block7a')
+
+    for i in range(C['blocks']):
+        x = inceptionRB(x, C['filters'], k=3, scale=0.2,
+                        scope="block7%c" % (98 + i))
+
+    if C['blocks'] == 9:
+        x = inceptionRB(x, C['filters'], k=3, activation_fn=None,
+                        scope="block7%c" % (98 + C['blocks']))
+        x = conv(x, 1536, 1, scope='conv')
+
+    x = reduce_mean(x, [1, 2], name='avgpool')
+    x = dropout(x, keep_prob=0.8, scope='dropout')
+    x = fully_connected(x, classes, scope='logits')
+    x = softmax(x, name='probs')
+    x.aliases = [tf.get_variable_scope().name]
+    return x
+
+
+@var_scope('inceptionresnet1')
+@layers_common_args
+def inceptionresnet1(x, is_training=False, classes=1000,
+                     scope=None, reuse=None):
+    return inceptionresnet(
+        x, stemB,
+        {'blocks': 5, 'filters': [32, 32, [32, 32, 32], 256],
+         'reduction': [384, [192, 192, 256]]},
+        {'blocks': 10, 'filters': [128, [128, 128, 128], 896],
+         'reduction': [256, 384, 256, 256]},
+        {'blocks': 5, 'filters': [192, [192, 192, 192], 1792]},
+        is_training, classes, scope, reuse)
+
+
+@var_scope('inceptionresnet2')
+@layers_common_args
+def inceptionresnet2(x, is_training=False, classes=1000,
+                     scope=None, reuse=None):
+    return inceptionresnet(
+        x, stemA,
+        {'blocks': 10, 'filters': [32, 32, [32, 48, 64], 384],
+         'reduction': [384, [256, 256, 384]]},
+        {'blocks': 20, 'filters': [192, [128, 160, 192], 1154],
+         'reduction': [256, 384, 288, 320]},
+        {'blocks': 10, 'filters': [192, [192, 224, 256], 2048]},
+        is_training, classes, scope, reuse)
+
+
+@var_scope('inceptionresnet2_tfslim')
+@layers_common_args
+def inceptionresnetS(x, is_training=False, classes=1000,
+                     scope=None, reuse=None):
+    return inceptionresnet(
+        x, stemS,
+        {'blocks': 10, 'filters': [32, 32, [32, 48, 64], 320],
+         'reduction': [384, [256, 256, 384]]},
+        {'blocks': 20, 'filters': [192, [128, 160, 192], 1088],
+         'reduction': [256, 384, 288, 320]},
+        {'blocks': 9, 'filters': [192, [192, 224, 256], 2080]},
+        is_training, classes, scope, reuse)
+
+
+def stemA(x):
+    """Stem for Inception-v4,-ResNet-v2 (Fig. 3 in the v4 paper)"""
+    x = conv(x, 32, 3, stride=2, padding='VALID', scope='block1a')
     x = conv(x, 32, 3, padding='VALID', scope='block2a')
     x = conv(x, 64, 3, scope='block2b')
 
@@ -219,77 +315,90 @@ def inception4(x, is_training=False, classes=1000, scope=None, reuse=None):
         x_2 = max_pool2d(x, 3, stride=2, padding='VALID', scope='pool')
         x = concat([x_1, x_2], axis=3, name='concat')
 
-    for i in range(4):
-        x = inceptionA(x, [96, [64, 96], [64, 96], 96],
-                       scope="block5%c" % (98 + i))
+    return x
 
-    x = reductionA(x, [384, [192, 224, 256]], scope='block6a')
 
-    for i in range(7):
-        x = inceptionB(x, [384, [192, 224, 256], [192, 224, 256], 128],
-                       scope="block6%c" % (98 + i))
+def stemB(x):
+    """Stem for Inception-ResNet-v1 (Fig. 14 in the v4 paper)"""
+    x = conv(x, 32, 3, stride=2, padding='VALID', scope='block1a')
 
-    x = reductionB(x, [[192, 192], [256, 320]], scope='block7a')
+    x = conv(x, 32, 3, padding='VALID', scope='block2a')
+    x = conv(x, 64, 3, scope='block2b')
 
-    for i in range(3):
-        x = inceptionC(x, [256, [384, 256], [384, 448, 512, 256], 256],
-                       scope="block7%c" % (98 + i))
+    x = max_pool2d(x, 3, stride=2, padding='VALID', scope='block3a/pool')
+    x = conv(x, 80, 1, padding='VALID', scope='block3a/conv')
 
-    x = reduce_mean(x, [1, 2], name='avgpool')
-    x = dropout(x, keep_prob=0.8, is_training=is_training, scope='dropout')
-    x = fully_connected(x, classes, scope='logits')
-    x = softmax(x, name='probs')
-    x.aliases = [tf.get_variable_scope().name]
+    x = conv(x, 192, 3, padding='VALID', scope='block4a')
+    x = max_pool2d(x, 3, stride=2, padding='VALID', scope='block5a')
+
+    x = conv(x, 256, 3, stride=2, padding='VALID', scope='block5b')
+    return x
+
+
+def stemS(x):
+    """Stem for Inception-ResNet-v2 in TF Slim which differs from the paper"""
+    x = conv(x, 32, 3, stride=2, padding='VALID', scope='block1a')
+
+    x = conv(x, 32, 3, padding='VALID', scope='block2a')
+    x = conv(x, 64, 3, scope='block2b')
+
+    x = max_pool2d(x, 3, stride=2, padding='VALID', scope='block3a/pool')
+    x = conv(x, 80, 1, padding='VALID', scope='block3a/conv')
+
+    x = conv(x, 192, 3, padding='VALID', scope='block4a')
+    x = max_pool2d(x, 3, stride=2, padding='VALID', scope='block5a')
+
+    x = inceptionA(x, [96, [48, 64], [64, 96], 64], fs=5, scope='block5b')
     return x
 
 
 @var_scope('inception')
-def inception(x, filters, scope=None):
-    conv1 = conv0(x, filters[0], 1, scope='1x1')
+def inception(x, f, scope=None):
+    conv1 = conv0(x, f[0], 1, scope='1x1')
 
-    conv2 = conv0(x, filters[1][0], 1, scope='3x3/r')
-    conv2 = conv0(conv2, filters[1][1], 3, scope='3x3/1')
+    conv2 = conv0(x, f[1][0], 1, scope='3x3/r')
+    conv2 = conv0(conv2, f[1][1], 3, scope='3x3/1')
 
-    conv3 = conv0(x, filters[2][0], 1, scope='5x5/r')
-    conv3 = conv0(conv3, filters[2][1], 5, scope='5x5/1')
+    conv3 = conv0(x, f[2][0], 1, scope='5x5/r')
+    conv3 = conv0(conv3, f[2][1], 5, scope='5x5/1')
 
     pool = max_pool2d(x, 3)
-    pool = conv0(pool, filters[3], 1, scope='proj')
+    pool = conv0(pool, f[3], 1, scope='proj')
 
     x = concat([conv1, conv2, conv3, pool], axis=3, name='concat')
     return x
 
 
 @var_scope('inceptionA')
-def inceptionA(x, filters, fs=3, pool_fn=avg_pool2d, scope=None):
-    conv1 = conv(x, filters[0], 1, scope='1x1')
+def inceptionA(x, f, fs=3, pool_fn=avg_pool2d, scale=1.0, scope=None):
+    conv1 = conv(x, f[0], 1, scope='1x1')
 
-    conv2 = conv(x, filters[1][0], 1, scope='3x3/r')
-    conv2 = conv(conv2, filters[1][1], fs, scope='3x3/1')
+    conv2 = conv(x, f[1][0], 1, scope='3x3/r')
+    conv2 = conv(conv2, f[1][1], fs, scope='3x3/1')
 
-    conv3 = conv(x, filters[2][0], 1, scope='d3x3/r')
-    conv3 = conv(conv3, filters[2][1], 3, scope='d3x3/1')
-    conv3 = conv(conv3, filters[2][1], 3, scope='d3x3/2')
+    conv3 = conv(x, f[2][0], 1, scope='d3x3/r')
+    conv3 = conv(conv3, f[2][1], 3, scope='d3x3/1')
+    conv3 = conv(conv3, f[2][1], 3, scope='d3x3/2')
 
     pool = pool_fn(x, 3)
-    pool = conv(pool, filters[3], 1, scope='proj')
+    pool = conv(pool, f[3], 1, scope='proj')
 
     x = concat([conv1, conv2, conv3, pool], axis=3, name='concat')
     return x
 
 
 @var_scope('reductionA')
-def reductionA(x, filters, padding='VALID', scope=None):
+def reductionA(x, f, padding='VALID', scope=None):
     if padding == 'VALID':
-        conv2 = conv(x, filters[0], 3, stride=2, padding=padding, scope='3x3')
+        # Reduction-A (Fig. 7 in the v4 paper)
+        conv2 = conv(x, f[0], 3, stride=2, padding=padding, scope='3x3')
     else:
-        conv2 = conv(x, filters[0][0], 1, scope='3x3/r')
-        conv2 = conv(conv2, filters[0][1], 3, stride=2, scope='3x3/1')
+        conv2 = conv(x, f[0][0], 1, scope='3x3/r')
+        conv2 = conv(conv2, f[0][1], 3, stride=2, scope='3x3/1')
 
-    f = filters[1]
-    conv3 = conv(x, f[0], 1, scope='d3x3/r')
-    conv3 = conv(conv3, f[1], 3, scope='d3x3/1')
-    conv3 = conv(conv3, f[2], 3, stride=2, padding=padding, scope='d3x3/2')
+    conv3 = conv(x, f[1][0], 1, scope='d3x3/r')
+    conv3 = conv(conv3, f[1][1], 3, scope='d3x3/1')
+    conv3 = conv(conv3, f[1][2], 3, stride=2, padding=padding, scope='d3x3/2')
 
     pool = max_pool2d(x, 3, stride=2, padding=padding)
 
@@ -298,49 +407,35 @@ def reductionA(x, filters, padding='VALID', scope=None):
 
 
 @var_scope('inceptionB')
-def inceptionB(x, filters, scope=None):
-    conv1 = conv(x, filters[0], 1, scope='1x1')
+def inceptionB(x, f, scale=1.0, scope=None):
+    conv1 = conv(x, f[0], 1, scope='1x1')
 
-    f = filters[1]
-    if not isinstance(f, list):
-        f = [f] * 2 + [filters[0]]
-    conv2 = conv(x, f[0], 1, scope='7x7/r')
-    conv2 = conv(conv2, f[1], (1, 7), scope='7x7/1')
-    conv2 = conv(conv2, f[2], (7, 1), scope='7x7/2')
+    conv2 = conv(x, f[1][0], 1, scope='7x7/r')
+    conv2 = conv(conv2, f[1][1], (1, 7), scope='7x7/1')
+    conv2 = conv(conv2, f[1][2], (7, 1), scope='7x7/2')
 
-    f = filters[2]
-    if isinstance(f, list):
-        f = [f[0], f[0], f[1], f[1], f[2]]
-    else:
-        f = [f] * 4 + [filters[0]]
-    conv3 = conv(x, f[0], 1, scope='d7x7/r')
-    conv3 = conv(conv3, f[1], (7, 1), scope='d7x7/1')
-    conv3 = conv(conv3, f[2], (1, 7), scope='d7x7/2')
-    conv3 = conv(conv3, f[3], (7, 1), scope='d7x7/3')
-    conv3 = conv(conv3, f[4], (1, 7), scope='d7x7/4')
+    conv3 = conv(x, f[2][0], 1, scope='d7x7/r')
+    conv3 = conv(conv3, f[2][0], (7, 1), scope='d7x7/1')
+    conv3 = conv(conv3, f[2][1], (1, 7), scope='d7x7/2')
+    conv3 = conv(conv3, f[2][1], (7, 1), scope='d7x7/3')
+    conv3 = conv(conv3, f[1][2], (1, 7), scope='d7x7/4')
 
     pool = avg_pool2d(x, 3)
-    pool = conv(pool, filters[3], 1, scope='proj')
+    pool = conv(pool, f[3], 1, scope='proj')
 
     x = concat([conv1, conv2, conv3, pool], axis=3, name='concat')
     return x
 
 
 @var_scope('reductionB')
-def reductionB(x, filters, scope=None):
-    f = filters[0]
-    conv2 = conv(x, f[0], 1, scope='3x3/r')
-    conv2 = conv(conv2, f[1], 3, stride=2, padding='VALID', scope='3x3/1')
+def reductionB(x, f, scope=None):
+    conv2 = conv(x, f[0][0], 1, scope='3x3/r')
+    conv2 = conv(conv2, f[0][1], 3, stride=2, padding='VALID', scope='3x3/1')
 
-    f = filters[1]
-    if isinstance(f, list):
-        f = [f[0], f[0], f[1], f[1]]
-    else:
-        f = [f] * 4
-    conv3 = conv(x, f[0], 1, scope='7x7/r')
-    conv3 = conv(conv3, f[1], (1, 7), scope='7x7/1')
-    conv3 = conv(conv3, f[2], (7, 1), scope='7x7/2')
-    conv3 = conv(conv3, f[3], 3, stride=2, padding='VALID', scope='7x7/3')
+    conv3 = conv(x, f[1][0], 1, scope='7x7/r')
+    conv3 = conv(conv3, f[1][0], (1, 7), scope='7x7/1')
+    conv3 = conv(conv3, f[1][1], (7, 1), scope='7x7/2')
+    conv3 = conv(conv3, f[1][1], 3, stride=2, padding='VALID', scope='7x7/3')
 
     pool = max_pool2d(x, 3, stride=2, padding='VALID')
 
@@ -349,33 +444,87 @@ def reductionB(x, filters, scope=None):
 
 
 @var_scope('inceptionC')
-def inceptionC(x, filters, scope=None):
-    conv1 = conv(x, filters[0], 1, scope='1x1')
+def inceptionC(x, f, scale=1.0, scope=None):
+    conv1 = conv(x, f[0], 1, scope='1x1')
 
-    f = filters[1]
-    if isinstance(f, list):
-        f = [f[0], f[1], f[1]]
-    else:
-        f = [f] * 3
-    conv2 = conv(x, f[0], 1, scope='3x3/r')
-    conv2_1 = conv(conv2, f[1], (1, 3), scope='3x3/1')
-    conv2_2 = conv(conv2, f[2], (3, 1), scope='3x3/2')
+    conv2 = conv(x, f[1][0], 1, scope='3x3/r')
+    conv2_1 = conv(conv2, f[1][1], (1, 3), scope='3x3/1')
+    conv2_2 = conv(conv2, f[1][2], (3, 1), scope='3x3/2')
     conv2 = concat([conv2_1, conv2_2], axis=3, name='3x3/c')
 
-    conv3 = conv(x, filters[2][0], 1, scope='d3x3/r')
-    if len(filters[2]) > 2:
-        conv3 = conv(conv3, filters[2][1], (3, 1), scope='d3x3/11')
-        conv3 = conv(conv3, filters[2][2], (1, 3), scope='d3x3/12')
-        f = filters[2][3]
+    conv3 = conv(x, f[2][0], 1, scope='d3x3/r')
+    if len(f[2]) < 3:
+        conv3 = conv(conv3, f[2][1], (3, 3), scope='d3x3/1')
     else:
-        f = filters[2][1]
-        conv3 = conv(conv3, f, (3, 3), scope='d3x3/1')
-    conv3_1 = conv(conv3, f, (1, 3), scope='d3x3/21')
-    conv3_2 = conv(conv3, f, (3, 1), scope='d3x3/22')
+        conv3 = conv(conv3, f[2][1], (3, 1), scope='d3x3/11')
+        conv3 = conv(conv3, f[2][2], (1, 3), scope='d3x3/12')
+    conv3_1 = conv(conv3, f[2][-1], (1, 3), scope='d3x3/21')
+    conv3_2 = conv(conv3, f[2][-1], (3, 1), scope='d3x3/22')
     conv3 = concat([conv3_1, conv3_2], axis=3, name='d3x3/c')
 
     pool = avg_pool2d(x, 3)
-    pool = conv(pool, filters[3], 1, scope='proj')
+    pool = conv(pool, f[3], 1, scope='proj')
+
+    x = concat([conv1, conv2, conv3, pool], axis=3, name='concat')
+    return x
+
+
+@var_scope('inceptionRA')
+def inceptionRA(x, f, scale=1.0, scope=None):
+    """Inception-ResNet-A (Fig. 10 and 16 in the v4 paper)"""
+    conv1 = conv(x, f[0], 1, scope='1x1')
+
+    conv2 = conv(x, f[1], 1, scope='3x3/r')
+    conv2 = conv(conv2, f[1], 3, scope='3x3/1')
+
+    conv3 = conv(x, f[2][0], 1, scope='d3x3/r')
+    conv3 = conv(conv3, f[2][1], 3, scope='d3x3/1')
+    conv3 = conv(conv3, f[2][2], 3, scope='d3x3/2')
+
+    convs = concat([conv1, conv2, conv3], axis=3, name='concat')
+    convs = conv2d(convs, f[3], 1, biases_initializer=tf.zeros_initializer(),
+                   scope='linear')
+
+    x = relu(x + scale * convs, name='out')
+    return x
+
+
+@var_scope('inceptionRB')
+def inceptionRB(x, f, k=7, scale=1.0, activation_fn=relu, scope=None):
+    """Inception-ResNet-B (Fig. 11 and 17 in the v4 paper) and
+    Inception-ResNet-C (Fig. 13 and 19 in the v4 paper)
+    """
+    conv1 = conv(x, f[0], 1, scope='1x1')
+
+    conv2 = conv(x, f[1][0], 1, scope="%dx%d/r" % (k, k))
+    conv2 = conv(conv2, f[1][1], (1, k), scope="%dx%d/1" % (k, k))
+    conv2 = conv(conv2, f[1][2], (k, 1), scope="%dx%d/2" % (k, k))
+
+    convs = concat([conv1, conv2], axis=3, name='concat')
+    convs = conv2d(convs, f[2], 1, biases_initializer=tf.zeros_initializer(),
+                   scope='linear')
+
+    if activation_fn is not None:
+        x = activation_fn(x + scale * convs, name='out')
+    else:
+        x = add(x, scale * convs, name='out')
+    return x
+
+
+@var_scope('reductionRB')
+def reductionRB(x, f, scope=None):
+    """Reduction-B (Fig. 12 and 18 in the v4 paper)"""
+    conv1 = conv(x, f[0], 1, scope='3x3a/r')
+    conv1 = conv(conv1, f[1], 3, stride=2, padding='VALID', scope='3x3a/1')
+
+    conv2 = conv(x, f[0], 1, scope='3x3b/r')
+    conv2 = conv(conv2, f[2], 3, stride=2, padding='VALID', scope='3x3b/1')
+
+    conv3 = conv(x, f[0], 1, scope='3x3c/r')
+    conv3 = conv(conv3, f[2], 3, scope='3x3c/1')
+    conv3 = conv(conv3, f[3], 3, stride=2, padding='VALID', scope='3x3c/2')
+
+    pool = max_pool2d(x, 3, stride=2, padding='VALID')
 
     x = concat([conv1, conv2, conv3, pool], axis=3, name='concat')
     return x
@@ -386,3 +535,4 @@ GoogLeNet = Inception1 = inception1
 Inception2 = inception2
 Inception3 = inception3
 Inception4 = inception4
+InceptionResNet2 = inceptionresnetS

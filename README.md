@@ -6,7 +6,7 @@ High level network definitions with pre-trained weights in [TensorFlow](https://
 
 - **Applicability.** Many people already have their own ML workflows, and want to put a new model on their workflows. TensorNets can be easily plugged together because it is designed as simple functional interfaces without custom classes.
 - **Manageability.** Models are written in `tf.contrib.layers`, which is lightweight like PyTorch and Keras, and allows for ease of accessibility to every weight and end-point. Also, it is easy to deploy and expand a collection of pre-processing and pre-trained weights.
-- **Readability.** With recent TensorFlow APIs, more factoring and less indenting can be possible. For example, Inception 1-4 have 388 lines in [TensorNets](tensornets/inceptions.py) while 1756 lines in [official TensorFlow models](https://github.com/tensorflow/models/blob/master/research/slim/nets/inception_v3.py).
+- **Readability.** With recent TensorFlow APIs, more factoring and less indenting can be possible. For example, all the inception variants are implemented as about 500 lines of code in [TensorNets](tensornets/inceptions.py) while 2000+ lines in [official TensorFlow models](https://github.com/tensorflow/models/blob/master/research/slim/nets/inception_v3.py).
 
 ## A quick example
 
@@ -161,7 +161,7 @@ with tf.Session() as sess:
 
 ## Performances
 
-- The top-k errors were obtained with TensorNets (single center crop 224x224 except Inception3,4 and ResNet50-152v2 299x299) and may slightly differ from the original ones.
+- The top-k errors were obtained with TensorNets (single center crop 224x224 except Inception3,4,ResNet2 and ResNet50-152v2 299x299) and may slightly differ from the original ones.
 - The computation times were measured on NVIDIA Tesla P100 (3584 cores, 16 GB global memory) with cuDNN 6.0 and CUDA 8.0.
 
 |             | Top-1 error | Top-5 error | Speed (ms) | References                                                                                                                                                                                                                                                                                                                                                                                                                                         |
@@ -179,6 +179,7 @@ with tf.Session() as sess:
 | Inception2  | 26.420      | 8.450       | 134.3 | [[paper]](https://arxiv.org/abs/1502.03167) [[tf-slim]](https://github.com/tensorflow/models/blob/master/research/slim/nets/inception_v2.py) |
 | Inception3  | 22.092      | 6.220       | 314.6 | [[paper]](https://arxiv.org/abs/1512.00567) [[tf-slim]](https://github.com/tensorflow/models/blob/master/research/slim/nets/inception_v3.py) [[keras]](https://github.com/fchollet/keras/blob/master/keras/applications/inception_v3.py) |
 | Inception4  | 19.854      | 5.032       | 582.1 | [[paper]](https://arxiv.org/abs/1602.07261) [[tf-slim]](https://github.com/tensorflow/models/blob/master/research/slim/nets/inception_v4.py) |
+| InceptionResNet2 | 19.660 | 4.806       | 656.8 | [[paper]](https://arxiv.org/abs/1602.07261) [[tf-slim]](https://github.com/tensorflow/models/blob/master/research/slim/nets/inception_resnet_v2.py) |
 | DenseNet121  | 25.550      | 8.174       | 202.9 | [[paper]](https://arxiv.org/abs/1608.06993) [[torch]](https://github.com/liuzhuang13/DenseNet/blob/master/models/densenet.lua) |
 | DenseNet169  | 24.092      | 7.172       | 219.1 | [[paper]](https://arxiv.org/abs/1608.06993) [[torch]](https://github.com/liuzhuang13/DenseNet/blob/master/models/densenet.lua) |
 | DenseNet201  | 22.988      | 6.700       | 272.0 | [[paper]](https://arxiv.org/abs/1608.06993) [[torch]](https://github.com/liuzhuang13/DenseNet/blob/master/models/densenet.lua) |

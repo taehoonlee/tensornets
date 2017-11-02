@@ -39,8 +39,8 @@ def bair_preprocess(x):
     return x
 
 
-def keras_inception_preprocess(x):
-    # Copied from keras
+def tfslim_preprocess(x):
+    # Copied from keras (equivalent to the same as in TF Slim)
     x = x.copy()
     x /= 255.
     x -= 0.5
@@ -74,19 +74,20 @@ def fb_preprocess(x):
 
 # Dictionary for pre-processing functions.
 __preprocess_dict__ = {
-    'inception': keras_inception_preprocess,
+    'inception': tfslim_preprocess,
     'inception1': bair_preprocess,
-    'inception2': keras_inception_preprocess,
-    'inception3': keras_inception_preprocess,
-    'inception4': keras_inception_preprocess,
+    'inception2': tfslim_preprocess,
+    'inception3': tfslim_preprocess,
+    'inception4': tfslim_preprocess,
+    'inceptionresnet2_tfslim': tfslim_preprocess,
     'resnet': keras_resnet_preprocess,
     'resnet50': keras_resnet_preprocess,
     'resnet101': keras_resnet_preprocess,
     'resnet152': keras_resnet_preprocess,
-    'resnetv2': keras_inception_preprocess,
-    'resnet50v2': keras_inception_preprocess,
-    'resnet101v2': keras_inception_preprocess,
-    'resnet152v2': keras_inception_preprocess,
+    'resnetv2': tfslim_preprocess,
+    'resnet50v2': tfslim_preprocess,
+    'resnet101v2': tfslim_preprocess,
+    'resnet152v2': tfslim_preprocess,
     'resnet200v2': fb_preprocess,
     'resnext50': fb_preprocess,
     'resnext101': fb_preprocess,
@@ -94,10 +95,10 @@ __preprocess_dict__ = {
     'densenet121': fb_preprocess,
     'densenet169': fb_preprocess,
     'densenet201': fb_preprocess,
-    'mobilenet': keras_inception_preprocess,
-    'mobilenet25': keras_inception_preprocess,
-    'mobilenet50': keras_inception_preprocess,
-    'mobilenet75': keras_inception_preprocess,
-    'mobilenet100': keras_inception_preprocess,
+    'mobilenet': tfslim_preprocess,
+    'mobilenet25': tfslim_preprocess,
+    'mobilenet50': tfslim_preprocess,
+    'mobilenet75': tfslim_preprocess,
+    'mobilenet100': tfslim_preprocess,
     'squeezenet': bair_preprocess,
 }
