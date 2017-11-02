@@ -72,6 +72,20 @@ def fb_preprocess(x):
     return x
 
 
+def wrn_preprocess(x):
+    # Refer to the following Torch WideResNets
+    # https://github.com/szagoruyko/wide-residual-networks/blob/master/pytorch/main.py
+    x = x.copy()
+    x /= 255.
+    x[:, :, :, 0] -= 0.491
+    x[:, :, :, 1] -= 0.482
+    x[:, :, :, 2] -= 0.447
+    x[:, :, :, 0] /= 0.247
+    x[:, :, :, 1] /= 0.244
+    x[:, :, :, 2] /= 0.262
+    return x
+
+
 # Dictionary for pre-processing functions.
 __preprocess_dict__ = {
     'inception': tfslim_preprocess,
@@ -91,6 +105,7 @@ __preprocess_dict__ = {
     'resnet200v2': fb_preprocess,
     'resnext50': fb_preprocess,
     'resnext101': fb_preprocess,
+    'wideresnet50': wrn_preprocess,
     'densenet': fb_preprocess,
     'densenet121': fb_preprocess,
     'densenet169': fb_preprocess,

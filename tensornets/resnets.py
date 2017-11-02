@@ -14,6 +14,10 @@ The reference papers:
  - Aggregated Residual Transformations for Deep Neural Networks, arXiv 2016
  - Saining Xie, Ross Girshick, Piotr Dollar, Zhuowen Tu, Kaiming He
  - https://arxiv.org/abs/1611.05431
+4. WideResNet
+ - Wide Residual Networks
+ - Sergey Zagoruyko, Nikos Komodakis
+ - https://arxiv.org/abs/1605.07146
 
 The reference implementations:
 
@@ -25,6 +29,8 @@ The reference implementations:
  - https://github.com/facebook/fb.resnet.torch/blob/master/models/preresnet.lua
 4. (to factorize over v3) Torch ResNeXts
  - https://github.com/facebookresearch/ResNeXt/blob/master/models/resnext.lua
+5. (mainly) Torch WideResNets
+ - https://github.com/szagoruyko/wide-residual-networks/blob/master/pretrained
 """
 from __future__ import absolute_import
 from __future__ import division
@@ -207,6 +213,18 @@ def resnext101(x, is_training=False, classes=1000, scope=None, reuse=None):
     return resnet(x, False, stack, is_training, classes, scope, reuse)
 
 
+@var_scope('wideresnet50')
+@layers_common_args(False)
+def wideresnet50(x, is_training=False, classes=1000, scope=None, reuse=None):
+    def stack(x):
+        x = _stack(x, _blockw, 128, 3, stride1=1, scope='conv2')
+        x = _stack(x, _blockw, 256, 4, scope='conv3')
+        x = _stack(x, _blockw, 512, 6, scope='conv4')
+        x = _stack(x, _blockw, 1024, 3, scope='conv5')
+        return x
+    return resnet(x, False, stack, is_training, classes, scope, reuse)
+
+
 @var_scope('stack')
 def _stack(x, block_fn, filters, blocks, stride1=2, scope=None):
     x = block_fn(x, filters, stride=stride1, scope='block1')
@@ -307,6 +325,23 @@ def _block3(x, filters, kernel_size=3, stride=1,
     return x
 
 
+@var_scope('blockw')
+def _blockw(x, filters, kernel_size=3, stride=1,
+            conv_shortcut=True, scope=None):
+    if conv_shortcut is True:
+        shortcut = conv(x, 2 * filters, 1, stride=stride, scope='0')
+    else:
+        shortcut = x
+    x = conv(x, filters, 1, stride=1, scope='1')
+    x = relu(x, name='1/relu')
+    x = pad(x, [[0, 0], [1, 1], [1, 1], [0, 0]], name='2/pad')
+    x = conv(x, filters, kernel_size, stride=stride, scope='2')
+    x = relu(x, name='2/relu')
+    x = conv(x, 2 * filters, 1, stride=1, scope='3')
+    x = relu(shortcut + x, name='out')
+    return x
+
+
 # Simple alias.
 ResNet50 = resnet50
 ResNet101 = resnet101
@@ -317,3 +352,4 @@ ResNet152v2 = resnet152v2
 ResNet200v2 = resnet200v2
 ResNeXt50 = resnext50
 ResNeXt101 = resnext101
+WideResNet50 = wideresnet50

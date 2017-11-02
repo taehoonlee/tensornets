@@ -20,6 +20,8 @@ serializes every single tensor from the following repositories:
      "Torch DenseNets"
 [8]: https://github.com/DeepScale/SqueezeNet/tree/master/SqueezeNet_v1.1
      "Caffe SqueezeNets"
+[9]: https://github.com/szagoruyko/wide-residual-networks
+     "Torch WideResNets"
 """
 from __future__ import absolute_import
 
@@ -258,6 +260,18 @@ def load_resnext101(scopes):
     return load_torch_weights(scopes, weights_path, move_rules)
 
 
+def load_wideresnet50(scopes):
+    """Converted from the [Torch WideResNets][9]."""
+    filename = 'wrn_50_2_cpu.pth'
+    move_rules = [(r, -15) for (r, i) in move_rules_fb_resnet_torch
+                  if '1.0.bias' not in r]
+    weights_path = get_file(
+        filename, __model_url__ + 'resnet/' + filename,
+        cache_subdir='models',
+        file_hash='7879cd9f3840f92593a87b6be8192206')
+    return load_torch_weights(scopes, weights_path, move_rules)
+
+
 def load_densenet121(scopes):
     """Converted from the [Torch DenseNets][7]."""
     filename = 'densenet_121_cpu.pth'
@@ -354,6 +368,7 @@ __load_dict__ = {
     'resnet200v2': load_resnet200v2,
     'resnext50': load_resnext50,
     'resnext101': load_resnext101,
+    'wideresnet50': load_wideresnet50,
     'densenet121': load_densenet121,
     'densenet169': load_densenet169,
     'densenet201': load_densenet201,

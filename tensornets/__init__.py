@@ -16,6 +16,7 @@ from .resnets import ResNet152v2
 from .resnets import ResNet200v2
 from .resnets import ResNeXt50
 from .resnets import ResNeXt101
+from .resnets import WideResNet50
 
 from .densenets import DenseNet121
 from .densenets import DenseNet169
