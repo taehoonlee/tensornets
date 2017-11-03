@@ -37,17 +37,18 @@ from __future__ import absolute_import
 
 import tensorflow as tf
 
-from tensorflow.contrib.layers import avg_pool2d
-from tensorflow.contrib.layers import batch_norm
-from tensorflow.contrib.layers import conv2d
-from tensorflow.contrib.layers import dropout
-from tensorflow.contrib.layers import fully_connected
-from tensorflow.contrib.layers import max_pool2d
-from tensorflow.contrib.layers import separable_conv2d
+from .layers import avg_pool2d
+from .layers import batch_norm
+from .layers import conv2d
+from .layers import dropout
+from .layers import fully_connected
+from .layers import max_pool2d
+from .layers import separable_conv2d
+from .layers import convrelu0 as conv0
+from .layers import convbnrelu as conv
 
 from .ops import *
-from .utils import arg_scope
-from .utils import collect_outputs
+from .utils import set_args
 from .utils import var_scope
 
 
@@ -55,36 +56,19 @@ __layers__ = [avg_pool2d, batch_norm, conv2d, dropout,
               fully_connected, max_pool2d, separable_conv2d]
 
 
-def layers_common_args(func):
-    def wrapper(*args, **kwargs):
-        is_training = kwargs.get('is_training', False)
-        with collect_outputs(__layers__), \
-                arg_scope([avg_pool2d, max_pool2d],
-                          stride=1, padding='SAME', scope='pool'), \
-                arg_scope([batch_norm, dropout], is_training=is_training), \
-                arg_scope([conv2d], padding='SAME', activation_fn=None,
-                          biases_initializer=None), \
-                arg_scope([fully_connected], activation_fn=None), \
-                arg_scope([separable_conv2d], padding='SAME'):
-            return func(*args, **kwargs)
-    return wrapper
-
-
-def conv0(*args, **kwargs):
-    scope = kwargs.pop('scope', None)
-    kwargs['biases_initializer'] = tf.zeros_initializer()
-    with tf.variable_scope(scope):
-        return relu(conv2d(*args, **kwargs))
-
-
-def conv(*args, **kwargs):
-    scope = kwargs.pop('scope', None)
-    with tf.variable_scope(scope):
-        return relu(batch_norm(conv2d(*args, **kwargs)))
+def __args__(is_training):
+    return [([avg_pool2d, max_pool2d], {'stride': 1, 'padding': 'SAME',
+                                        'scope': 'pool'}),
+            ([batch_norm], {'is_training': is_training, 'scope': 'bn'}),
+            ([conv2d], {'padding': 'SAME', 'activation_fn': None,
+                        'biases_initializer': None, 'scope': 'conv'}),
+            ([dropout], {'is_training': is_training, 'scope': 'dropout'}),
+            ([fully_connected], {'activation_fn': None, 'scope': 'fc'}),
+            ([separable_conv2d], {'padding': 'SAME', 'scope': 'sconv'})]
 
 
 @var_scope('inception1')
-@layers_common_args
+@set_args(__layers__, __args__)
 def inception1(x, is_training=False, classes=1000, scope=None, reuse=None):
     x = pad(x, [[0, 0], [3, 3], [3, 3], [0, 0]], name='pad')
     x = conv0(x, 64, 7, stride=2, padding='VALID', scope='block1')
@@ -121,7 +105,7 @@ def inception1(x, is_training=False, classes=1000, scope=None, reuse=None):
 
 
 @var_scope('inception2')
-@layers_common_args
+@set_args(__layers__, __args__)
 def inception2(x, is_training=False, classes=1000, scope=None, reuse=None):
     x = separable_conv2d(x, 64, 7, stride=2, depth_multiplier=8.,
                          activation_fn=None, scope='block1')
@@ -158,7 +142,7 @@ def inception2(x, is_training=False, classes=1000, scope=None, reuse=None):
 
 
 @var_scope('inception3')
-@layers_common_args
+@set_args(__layers__, __args__)
 def inception3(x, is_training=False, classes=1000, scope=None, reuse=None):
     x = conv(x, 32, 3, stride=2, padding='VALID', scope='block1a')
     x = conv(x, 32, 3, padding='VALID', scope='block2a')
@@ -193,7 +177,7 @@ def inception3(x, is_training=False, classes=1000, scope=None, reuse=None):
 
 
 @var_scope('inception4')
-@layers_common_args
+@set_args(__layers__, __args__)
 def inception4(x, is_training=False, classes=1000, scope=None, reuse=None):
     x = stemA(x)
     for i in range(4):
@@ -249,7 +233,7 @@ def inceptionresnet(x, stem_fn, A, B, C, is_training, classes,
 
 
 @var_scope('inceptionresnet1')
-@layers_common_args
+@set_args(__layers__, __args__)
 def inceptionresnet1(x, is_training=False, classes=1000,
                      scope=None, reuse=None):
     return inceptionresnet(
@@ -263,7 +247,7 @@ def inceptionresnet1(x, is_training=False, classes=1000,
 
 
 @var_scope('inceptionresnet2')
-@layers_common_args
+@set_args(__layers__, __args__)
 def inceptionresnet2(x, is_training=False, classes=1000,
                      scope=None, reuse=None):
     return inceptionresnet(
@@ -277,7 +261,7 @@ def inceptionresnet2(x, is_training=False, classes=1000,
 
 
 @var_scope('inceptionresnet2_tfslim')
-@layers_common_args
+@set_args(__layers__, __args__)
 def inceptionresnetS(x, is_training=False, classes=1000,
                      scope=None, reuse=None):
     return inceptionresnet(

@@ -15,47 +15,30 @@ from __future__ import absolute_import
 
 import tensorflow as tf
 
-from tensorflow.contrib.layers import avg_pool2d
-from tensorflow.contrib.layers import batch_norm
-from tensorflow.contrib.layers import conv2d
-from tensorflow.contrib.layers import fully_connected
-from tensorflow.contrib.layers import max_pool2d
+from .layers import avg_pool2d
+from .layers import batch_norm
+from .layers import conv2d
+from .layers import fully_connected
+from .layers import max_pool2d
+from .layers import convbnrelu as conv
 
 from .ops import *
-from .utils import arg_scope
-from .utils import collect_outputs
+from .utils import set_args
 from .utils import var_scope
 
 
 __layers__ = [avg_pool2d, batch_norm, conv2d, fully_connected, max_pool2d]
 
 
-def layers_common_args(func):
-    def wrapper(*args, **kwargs):
-        b_kwargs = {'scale': True,
-                    'is_training': args[2],
-                    'scope': 'bn',
-                    'epsilon': 1e-5}
-        c_kwargs = {'padding': 'VALID',
-                    'activation_fn': None,
-                    'biases_initializer': None,
-                    'scope': 'conv'}
-        f_kwargs = {'activation_fn': None}
-        with collect_outputs(__layers__), \
-                arg_scope([batch_norm], **b_kwargs), \
-                arg_scope([conv2d], **c_kwargs), \
-                arg_scope([fully_connected], **f_kwargs):
-            return func(*args, **kwargs)
-    return wrapper
+def __args__(is_training):
+    return [([avg_pool2d, max_pool2d], {'scope': 'pool'}),
+            ([batch_norm], {'scale': True, 'is_training': is_training,
+                            'epsilon': 1e-5, 'scope': 'bn'}),
+            ([conv2d], {'padding': 'VALID', 'activation_fn': None,
+                        'biases_initializer': None, 'scope': 'conv'}),
+            ([fully_connected], {'activation_fn': None, 'scope': 'fc'})]
 
 
-def conv(*args, **kwargs):
-    scope = kwargs.pop('scope', None)
-    with tf.variable_scope(scope):
-        return relu(batch_norm(conv2d(*args, **kwargs)))
-
-
-@layers_common_args
 def densenet(x, blocks, is_training, classes, scope=None, reuse=None):
     x = pad(x, [[0, 0], [3, 3], [3, 3], [0, 0]], name='conv1/pad')
     x = conv(x, 64, 7, stride=2, scope='conv1')
@@ -79,16 +62,19 @@ def densenet(x, blocks, is_training, classes, scope=None, reuse=None):
 
 
 @var_scope('densenet121')
+@set_args(__layers__, __args__)
 def densenet121(x, is_training=False, classes=1000, scope=None, reuse=None):
     return densenet(x, [6, 12, 24, 16], is_training, classes, scope, reuse)
 
 
 @var_scope('densenet169')
+@set_args(__layers__, __args__)
 def densenet169(x, is_training=False, classes=1000, scope=None, reuse=None):
     return densenet(x, [6, 12, 32, 32], is_training, classes, scope, reuse)
 
 
 @var_scope('densenet201')
+@set_args(__layers__, __args__)
 def densenet201(x, is_training=False, classes=1000, scope=None, reuse=None):
     return densenet(x, [6, 12, 48, 32], is_training, classes, scope, reuse)
 

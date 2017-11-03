@@ -16,37 +16,24 @@ from __future__ import absolute_import
 
 import tensorflow as tf
 
-from tensorflow.contrib.layers import conv2d
-from tensorflow.contrib.layers import dropout
-from tensorflow.contrib.layers import fully_connected
-from tensorflow.contrib.layers import max_pool2d
+from .layers import conv2d
+from .layers import dropout
+from .layers import fully_connected
+from .layers import max_pool2d
+from .layers import convrelu as conv
 
 from .ops import *
-from .utils import arg_scope
-from .utils import collect_outputs
+from .utils import set_args
 from .utils import var_scope
 
 
 __layers__ = [conv2d, dropout, fully_connected, max_pool2d]
 
 
-def layers_common_args(func):
-    def wrapper(*args, **kwargs):
-        c_kwargs = {'padding': 'SAME',
-                    'activation_fn': None,
-                    'scope': 'conv'}
-        f_kwargs = {'activation_fn': None}
-        with collect_outputs(__layers__), \
-                arg_scope([conv2d], **c_kwargs), \
-                arg_scope([fully_connected], **f_kwargs):
-            return func(*args, **kwargs)
-    return wrapper
-
-
-def conv(*args, **kwargs):
-    scope = kwargs.pop('scope', None)
-    with tf.variable_scope(scope):
-        return relu(conv2d(*args, **kwargs))
+def __args__(is_training):
+    return [([conv2d], {'padding': 'SAME', 'activation_fn': None,
+                        'scope': 'conv'}),
+            ([fully_connected], {'activation_fn': None, 'scope': 'fc'})]
 
 
 @var_scope('fire')
@@ -59,7 +46,7 @@ def fire(x, squeeze, expand, scope=None):
 
 
 @var_scope('squeezenet')
-@layers_common_args
+@set_args(__layers__, __args__)
 def squeezenet(x, is_training=False, classes=1000, scope=None, reuse=None):
     x = conv(x, 64, 3, stride=2, padding='VALID', scope='conv1')
     x = max_pool2d(x, 3, stride=2, scope='pool1')

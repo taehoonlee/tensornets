@@ -5,6 +5,7 @@ from __future__ import print_function
 import numpy as np
 import tensorflow as tf
 
+from contextlib import contextmanager
 from distutils.version import LooseVersion
 
 from tensorflow.contrib.framework import arg_scope
@@ -12,6 +13,7 @@ from tensorflow.python.framework import ops
 
 from .imagenet_utils import *
 from .keras_utils import *
+from .layers import conv2d
 
 
 __outputs__ = 'outputs'
@@ -132,15 +134,31 @@ def ops_to_outputs(func):
     return wrapper
 
 
-def collect_outputs(layers):
-    return arg_scope(layers, outputs_collections=__outputs__)
+@contextmanager
+def arg_scopes(l):
+    for x in l:
+        x.__enter__()
+    yield
+
+
+def set_args(layers, largs, conv_bias=True):
+    def real_set_args(func):
+        def wrapper(*args, **kwargs):
+            is_training = kwargs.get('is_training', False)
+            layers_args = [arg_scope(x, **y) for (x, y) in largs(is_training)]
+            if not conv_bias:
+                layers_args += [arg_scope([conv2d], biases_initializer=None)]
+            with arg_scope(layers, outputs_collections=__outputs__):
+                with arg_scopes(layers_args):
+                    return func(*args, **kwargs)
+        return wrapper
+    return real_set_args
 
 
 def load_weights(scopes, weights_path):
     sess = tf.get_default_session()
     assert sess is not None, 'The default session should be given.'
 
-    from .utils import parse_scopes
     scopes = parse_scopes(scopes)
 
     data = np.load(weights_path)
@@ -171,7 +189,6 @@ def load_torch_weights(scopes, weights_path, move_rules=None):
     sess = tf.get_default_session()
     assert sess is not None, 'The default session should be given.'
 
-    from .utils import parse_scopes
     scopes = parse_scopes(scopes)
 
     model = torch.load(weights_path)

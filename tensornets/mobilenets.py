@@ -17,55 +17,31 @@ from __future__ import absolute_import
 
 import tensorflow as tf
 
-from tensorflow.contrib.layers import batch_norm
-from tensorflow.contrib.layers import conv2d
-from tensorflow.contrib.layers import dropout
-from tensorflow.contrib.layers import fully_connected
-from tensorflow.contrib.layers import separable_conv2d
+from .layers import batch_norm
+from .layers import conv2d
+from .layers import dropout
+from .layers import fully_connected
+from .layers import separable_conv2d
+from .layers import convbnrelu6 as conv
+from .layers import sconvbnrelu6 as sconv
 
 from .ops import *
-from .utils import arg_scope
-from .utils import collect_outputs
+from .utils import set_args
 from .utils import var_scope
 
 
 __layers__ = [batch_norm, conv2d, dropout, fully_connected, separable_conv2d]
 
 
-def layers_common_args(func):
-    def wrapper(*args, **kwargs):
-        b_kwargs = {'decay': 0.9997,
-                    'scale': True,
-                    'epsilon': 0.001,
-                    'is_training': args[2],
-                    'scope': 'bn'}
-        c_kwargs = {'padding': 'SAME',
-                    'activation_fn': None,
-                    'biases_initializer': None,
-                    'scope': 'conv'}
-        f_kwargs = {'activation_fn': None}
-        s_kwargs = {'activation_fn': None,
-                    'biases_initializer': None,
-                    'scope': 'sconv'}
-        with collect_outputs(__layers__), \
-                arg_scope([batch_norm], **b_kwargs), \
-                arg_scope([conv2d], **c_kwargs), \
-                arg_scope([fully_connected], **f_kwargs), \
-                arg_scope([separable_conv2d], **s_kwargs):
-            return func(*args, **kwargs)
-    return wrapper
-
-
-def conv(*args, **kwargs):
-    scope = kwargs.pop('scope', None)
-    with tf.variable_scope(scope):
-        return relu6(batch_norm(conv2d(*args, **kwargs)))
-
-
-def sconv(*args, **kwargs):
-    scope = kwargs.pop('scope', None)
-    with tf.variable_scope(scope):
-        return relu6(batch_norm(separable_conv2d(*args, **kwargs)))
+def __args__(is_training):
+    return [([batch_norm], {'decay': 0.9997, 'scale': True, 'epsilon': 0.001,
+                            'is_training': is_training, 'scope': 'bn'}),
+            ([conv2d], {'padding': 'SAME', 'activation_fn': None,
+                        'biases_initializer': None, 'scope': 'conv'}),
+            ([fully_connected], {'activation_fn': None, 'scope': 'fc'}),
+            ([separable_conv2d],
+             {'activation_fn': None, 'biases_initializer': None,
+              'scope': 'sconv'})]
 
 
 @var_scope('block')
@@ -75,7 +51,6 @@ def block(x, filters, stride=1, scope=None):
     return x
 
 
-@layers_common_args
 def mobilenet(x, depth_multiplier, is_training, classes,
               scope=None, reuse=None):
     def depth(d):
@@ -109,21 +84,25 @@ def mobilenet(x, depth_multiplier, is_training, classes,
 
 
 @var_scope('mobilenet25')
+@set_args(__layers__, __args__)
 def mobilenet25(x, is_training=False, classes=1000, scope=None, reuse=None):
     return mobilenet(x, 0.25, is_training, classes, scope, reuse)
 
 
 @var_scope('mobilenet50')
+@set_args(__layers__, __args__)
 def mobilenet50(x, is_training=False, classes=1000, scope=None, reuse=None):
     return mobilenet(x, 0.5, is_training, classes, scope, reuse)
 
 
 @var_scope('mobilenet75')
+@set_args(__layers__, __args__)
 def mobilenet75(x, is_training=False, classes=1000, scope=None, reuse=None):
     return mobilenet(x, 0.75, is_training, classes, scope, reuse)
 
 
 @var_scope('mobilenet100')
+@set_args(__layers__, __args__)
 def mobilenet100(x, is_training=False, classes=1000, scope=None, reuse=None):
     return mobilenet(x, 1.0, is_training, classes, scope, reuse)
 
