@@ -30,14 +30,12 @@ from .utils import set_args
 from .utils import var_scope
 
 
-__layers__ = [batch_norm, conv2d, dropout, fully_connected, separable_conv2d]
-
-
 def __args__(is_training):
     return [([batch_norm], {'decay': 0.9997, 'scale': True, 'epsilon': 0.001,
                             'is_training': is_training, 'scope': 'bn'}),
             ([conv2d], {'padding': 'SAME', 'activation_fn': None,
                         'biases_initializer': None, 'scope': 'conv'}),
+            ([dropout], {'is_training': is_training, 'scope': 'dropout'}),
             ([fully_connected], {'activation_fn': None, 'scope': 'fc'}),
             ([separable_conv2d],
              {'activation_fn': None, 'biases_initializer': None,
@@ -84,25 +82,25 @@ def mobilenet(x, depth_multiplier, is_training, classes,
 
 
 @var_scope('mobilenet25')
-@set_args(__layers__, __args__)
+@set_args(__args__)
 def mobilenet25(x, is_training=False, classes=1000, scope=None, reuse=None):
     return mobilenet(x, 0.25, is_training, classes, scope, reuse)
 
 
 @var_scope('mobilenet50')
-@set_args(__layers__, __args__)
+@set_args(__args__)
 def mobilenet50(x, is_training=False, classes=1000, scope=None, reuse=None):
     return mobilenet(x, 0.5, is_training, classes, scope, reuse)
 
 
 @var_scope('mobilenet75')
-@set_args(__layers__, __args__)
+@set_args(__args__)
 def mobilenet75(x, is_training=False, classes=1000, scope=None, reuse=None):
     return mobilenet(x, 0.75, is_training, classes, scope, reuse)
 
 
 @var_scope('mobilenet100')
-@set_args(__layers__, __args__)
+@set_args(__args__)
 def mobilenet100(x, is_training=False, classes=1000, scope=None, reuse=None):
     return mobilenet(x, 1.0, is_training, classes, scope, reuse)
 

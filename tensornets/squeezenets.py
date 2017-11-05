@@ -27,13 +27,12 @@ from .utils import set_args
 from .utils import var_scope
 
 
-__layers__ = [conv2d, dropout, fully_connected, max_pool2d]
-
-
 def __args__(is_training):
     return [([conv2d], {'padding': 'SAME', 'activation_fn': None,
                         'scope': 'conv'}),
-            ([fully_connected], {'activation_fn': None, 'scope': 'fc'})]
+            ([dropout], {'is_training': is_training, 'scope': 'dropout'}),
+            ([fully_connected], {'activation_fn': None, 'scope': 'fc'}),
+            ([max_pool2d], {'scope': 'pool'})]
 
 
 @var_scope('fire')
@@ -46,7 +45,7 @@ def fire(x, squeeze, expand, scope=None):
 
 
 @var_scope('squeezenet')
-@set_args(__layers__, __args__)
+@set_args(__args__)
 def squeezenet(x, is_training=False, classes=1000, scope=None, reuse=None):
     x = conv(x, 64, 3, stride=2, padding='VALID', scope='conv1')
     x = max_pool2d(x, 3, stride=2, scope='pool1')
@@ -63,7 +62,7 @@ def squeezenet(x, is_training=False, classes=1000, scope=None, reuse=None):
     x = fire(x, 48, 192, scope='fire7')
     x = fire(x, 64, 256, scope='fire8')
     x = fire(x, 64, 256, scope='fire9')
-    x = dropout(x, keep_prob=0.5, is_training=is_training, scope='drop9')
+    x = dropout(x, keep_prob=0.5, scope='drop9')
 
     x = conv(x, classes, 1, scope='conv10')
     x = reduce_mean(x, [1, 2], name='pool10')

@@ -27,9 +27,6 @@ from .utils import set_args
 from .utils import var_scope
 
 
-__layers__ = [avg_pool2d, batch_norm, conv2d, fully_connected, max_pool2d]
-
-
 def __args__(is_training):
     return [([avg_pool2d, max_pool2d], {'scope': 'pool'}),
             ([batch_norm], {'scale': True, 'is_training': is_training,
@@ -62,19 +59,19 @@ def densenet(x, blocks, is_training, classes, scope=None, reuse=None):
 
 
 @var_scope('densenet121')
-@set_args(__layers__, __args__)
+@set_args(__args__)
 def densenet121(x, is_training=False, classes=1000, scope=None, reuse=None):
     return densenet(x, [6, 12, 24, 16], is_training, classes, scope, reuse)
 
 
 @var_scope('densenet169')
-@set_args(__layers__, __args__)
+@set_args(__args__)
 def densenet169(x, is_training=False, classes=1000, scope=None, reuse=None):
     return densenet(x, [6, 12, 32, 32], is_training, classes, scope, reuse)
 
 
 @var_scope('densenet201')
-@set_args(__layers__, __args__)
+@set_args(__args__)
 def densenet201(x, is_training=False, classes=1000, scope=None, reuse=None):
     return densenet(x, [6, 12, 48, 32], is_training, classes, scope, reuse)
 

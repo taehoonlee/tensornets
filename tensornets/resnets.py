@@ -48,9 +48,6 @@ from .utils import set_args
 from .utils import var_scope
 
 
-__layers__ = [batch_norm, conv2d, fully_connected, max_pool2d]
-
-
 def __args__(is_training):
     return [([batch_norm], {'scale': True, 'is_training': is_training,
                             'epsilon': 1e-5, 'scope': 'bn'}),
@@ -78,7 +75,7 @@ def resnet(x, preact, stack_fn, is_training, classes, scope=None, reuse=None):
 
 
 @var_scope('resnet50')
-@set_args(__layers__, __args__)
+@set_args(__args__)
 def resnet50(x, is_training=False, classes=1000, scope=None, reuse=None):
     def stack(x):
         x = _stack(x, _block1, 64, 3, stride1=1, scope='conv2')
@@ -90,7 +87,7 @@ def resnet50(x, is_training=False, classes=1000, scope=None, reuse=None):
 
 
 @var_scope('resnet50v2')
-@set_args(__layers__, __args__)
+@set_args(__args__)
 def resnet50v2(x, is_training=False, classes=1000, scope=None, reuse=None):
     def stack(x):
         x = _stacks(x, 64, 3, scope='conv2')
@@ -104,7 +101,7 @@ def resnet50v2(x, is_training=False, classes=1000, scope=None, reuse=None):
 
 
 @var_scope('resnet101')
-@set_args(__layers__, __args__)
+@set_args(__args__)
 def resnet101(x, is_training=False, classes=1000, scope=None, reuse=None):
     def stack(x):
         x = _stack(x, _block1, 64, 3, stride1=1, scope='conv2')
@@ -116,7 +113,7 @@ def resnet101(x, is_training=False, classes=1000, scope=None, reuse=None):
 
 
 @var_scope('resnet101v2')
-@set_args(__layers__, __args__)
+@set_args(__args__)
 def resnet101v2(x, is_training=False, classes=1000, scope=None, reuse=None):
     def stack(x):
         x = _stacks(x, 64, 3, scope='conv2')
@@ -130,7 +127,7 @@ def resnet101v2(x, is_training=False, classes=1000, scope=None, reuse=None):
 
 
 @var_scope('resnet152')
-@set_args(__layers__, __args__)
+@set_args(__args__)
 def resnet152(x, is_training=False, classes=1000, scope=None, reuse=None):
     def stack(x):
         x = _stack(x, _block1, 64, 3, stride1=1, scope='conv2')
@@ -142,7 +139,7 @@ def resnet152(x, is_training=False, classes=1000, scope=None, reuse=None):
 
 
 @var_scope('resnet152v2')
-@set_args(__layers__, __args__)
+@set_args(__args__)
 def resnet152v2(x, is_training=False, classes=1000, scope=None, reuse=None):
     def stack(x):
         x = _stacks(x, 64, 3, scope='conv2')
@@ -156,7 +153,7 @@ def resnet152v2(x, is_training=False, classes=1000, scope=None, reuse=None):
 
 
 @var_scope('resnet200v2')
-@set_args(__layers__, __args__)
+@set_args(__args__)
 def resnet200v2(x, is_training=False, classes=1000, scope=None, reuse=None):
     def stack(x):
         x = _stack(x, _block2, 64, 3, stride1=1, scope='conv2')
@@ -170,7 +167,7 @@ def resnet200v2(x, is_training=False, classes=1000, scope=None, reuse=None):
 
 
 @var_scope('resnext50')
-@set_args(__layers__, __args__, conv_bias=False)
+@set_args(__args__, conv_bias=False)
 def resnext50(x, is_training=False, classes=1000, scope=None, reuse=None):
     def stack(x):
         x = _stack(x, _block3, 128, 3, stride1=1, scope='conv2')
@@ -182,7 +179,7 @@ def resnext50(x, is_training=False, classes=1000, scope=None, reuse=None):
 
 
 @var_scope('resnext101')
-@set_args(__layers__, __args__, conv_bias=False)
+@set_args(__args__, conv_bias=False)
 def resnext101(x, is_training=False, classes=1000, scope=None, reuse=None):
     def stack(x):
         x = _stack(x, _block3, 128, 3, stride1=1, scope='conv2')
@@ -194,7 +191,7 @@ def resnext101(x, is_training=False, classes=1000, scope=None, reuse=None):
 
 
 @var_scope('wideresnet50')
-@set_args(__layers__, __args__, conv_bias=False)
+@set_args(__args__, conv_bias=False)
 def wideresnet50(x, is_training=False, classes=1000, scope=None, reuse=None):
     def stack(x):
         x = _stack(x, _blockw, 128, 3, stride1=1, scope='conv2')

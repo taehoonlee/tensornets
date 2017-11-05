@@ -141,10 +141,11 @@ def arg_scopes(l):
     yield
 
 
-def set_args(layers, largs, conv_bias=True):
+def set_args(largs, conv_bias=True):
     def real_set_args(func):
         def wrapper(*args, **kwargs):
             is_training = kwargs.get('is_training', False)
+            layers = sum([x for (x, y) in largs(is_training)], [])
             layers_args = [arg_scope(x, **y) for (x, y) in largs(is_training)]
             if not conv_bias:
                 layers_args += [arg_scope([conv2d], biases_initializer=None)]

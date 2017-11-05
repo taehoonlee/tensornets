@@ -52,10 +52,6 @@ from .utils import set_args
 from .utils import var_scope
 
 
-__layers__ = [avg_pool2d, batch_norm, conv2d, dropout,
-              fully_connected, max_pool2d, separable_conv2d]
-
-
 def __args__(is_training):
     return [([avg_pool2d, max_pool2d], {'stride': 1, 'padding': 'SAME',
                                         'scope': 'pool'}),
@@ -68,7 +64,7 @@ def __args__(is_training):
 
 
 @var_scope('inception1')
-@set_args(__layers__, __args__)
+@set_args(__args__)
 def inception1(x, is_training=False, classes=1000, scope=None, reuse=None):
     x = pad(x, [[0, 0], [3, 3], [3, 3], [0, 0]], name='pad')
     x = conv0(x, 64, 7, stride=2, padding='VALID', scope='block1')
@@ -105,7 +101,7 @@ def inception1(x, is_training=False, classes=1000, scope=None, reuse=None):
 
 
 @var_scope('inception2')
-@set_args(__layers__, __args__)
+@set_args(__args__)
 def inception2(x, is_training=False, classes=1000, scope=None, reuse=None):
     x = separable_conv2d(x, 64, 7, stride=2, depth_multiplier=8.,
                          activation_fn=None, scope='block1')
@@ -142,7 +138,7 @@ def inception2(x, is_training=False, classes=1000, scope=None, reuse=None):
 
 
 @var_scope('inception3')
-@set_args(__layers__, __args__)
+@set_args(__args__)
 def inception3(x, is_training=False, classes=1000, scope=None, reuse=None):
     x = conv(x, 32, 3, stride=2, padding='VALID', scope='block1a')
     x = conv(x, 32, 3, padding='VALID', scope='block2a')
@@ -177,7 +173,7 @@ def inception3(x, is_training=False, classes=1000, scope=None, reuse=None):
 
 
 @var_scope('inception4')
-@set_args(__layers__, __args__)
+@set_args(__args__)
 def inception4(x, is_training=False, classes=1000, scope=None, reuse=None):
     x = stemA(x)
     for i in range(4):
@@ -233,7 +229,7 @@ def inceptionresnet(x, stem_fn, A, B, C, is_training, classes,
 
 
 @var_scope('inceptionresnet1')
-@set_args(__layers__, __args__)
+@set_args(__args__)
 def inceptionresnet1(x, is_training=False, classes=1000,
                      scope=None, reuse=None):
     return inceptionresnet(
@@ -247,7 +243,7 @@ def inceptionresnet1(x, is_training=False, classes=1000,
 
 
 @var_scope('inceptionresnet2')
-@set_args(__layers__, __args__)
+@set_args(__args__)
 def inceptionresnet2(x, is_training=False, classes=1000,
                      scope=None, reuse=None):
     return inceptionresnet(
@@ -261,7 +257,7 @@ def inceptionresnet2(x, is_training=False, classes=1000,
 
 
 @var_scope('inceptionresnet2_tfslim')
-@set_args(__layers__, __args__)
+@set_args(__args__)
 def inceptionresnetS(x, is_training=False, classes=1000,
                      scope=None, reuse=None):
     return inceptionresnet(
