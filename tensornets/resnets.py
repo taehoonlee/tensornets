@@ -287,13 +287,10 @@ def _block3(x, filters, kernel_size=3, stride=1,
     x = conv(x, filters, 1, stride=1, scope='1')
     x = relu(x, name='1/relu')
     x = pad(x, [[0, 0], [1, 1], [1, 1], [0, 0]], name='2/pad')
-    groups = []
-    channels = int(filters / 32)
-    for c in range(32):
-        group = conv2d(x[:, :, :, c*channels:(c+1)*channels], channels,
-                       kernel_size, stride=stride,
-                       biases_initializer=None, scope="2/%d" % c)
-        groups.append(group)
+    channels = filters // 32
+    groups = [conv2d(x[:, :, :, c*channels:(c+1)*channels], channels,
+                     kernel_size, stride=stride, scope="2/%d" % c)
+              for c in range(32)]
     x = concat(groups, axis=3, name='concat')
     x = batch_norm(x, scope='2/bn')
     x = relu(x, name='2/relu')
