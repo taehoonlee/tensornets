@@ -45,6 +45,12 @@ def convbnrelu6(*args, **kwargs):
         return relu6(batch_norm(conv2d(*args, **kwargs)))
 
 
+def sconvbn(*args, **kwargs):
+    scope = kwargs.pop('scope', None)
+    with tf.variable_scope(scope):
+        return batch_norm(separable_conv2d(*args, **kwargs))
+
+
 def sconvbnrelu6(*args, **kwargs):
     scope = kwargs.pop('scope', None)
     with tf.variable_scope(scope):

@@ -161,7 +161,7 @@ with tf.Session() as sess:
 
 ## Performances
 
-- The top-k errors were obtained with TensorNets and may slightly differ from the original ones. The crop size is 224x224 for all but 229x229 for Inception3,4,ResNet2, and ResNet50-152v2.
+- The top-k errors were obtained with TensorNets and may slightly differ from the original ones. The crop size is 224x224 for all but 331x331 for NASNetAlarge, 299x299 for Inception3,4,ResNet2, and ResNet50-152v2.
   * Top-1: single center crop, top-1 error
   * Top-5: single center crop, top-5 error
   * Params: rounded the number of parameters
@@ -184,7 +184,9 @@ with tf.Session() as sess:
 | [Inception2](tensornets/inceptions.py#L103)       | 26.420      | 8.450       | 11M    | 134.3 | [[paper]](https://arxiv.org/abs/1502.03167) [[tf-slim]](https://github.com/tensorflow/models/blob/master/research/slim/nets/inception_v2.py) |
 | [Inception3](tensornets/inceptions.py#L140)       | 22.092      | 6.220       | 24M    | 314.6 | [[paper]](https://arxiv.org/abs/1512.00567) [[tf-slim]](https://github.com/tensorflow/models/blob/master/research/slim/nets/inception_v3.py) [[keras]](https://github.com/fchollet/keras/blob/master/keras/applications/inception_v3.py) |
 | [Inception4](tensornets/inceptions.py#L175)       | 19.854      | 5.032       | 43M    | 582.1 | [[paper]](https://arxiv.org/abs/1602.07261) [[tf-slim]](https://github.com/tensorflow/models/blob/master/research/slim/nets/inception_v4.py) |
-| [InceptionResNet2](tensornets/inceptions.py#L259) | 19.660   | 4.806       | 56M    | 656.8 | [[paper]](https://arxiv.org/abs/1602.07261) [[tf-slim]](https://github.com/tensorflow/models/blob/master/research/slim/nets/inception_resnet_v2.py) |
+| [InceptionResNet2](tensornets/inceptions.py#L259) | 19.660      | 4.806       | 56M    | 656.8 | [[paper]](https://arxiv.org/abs/1602.07261) [[tf-slim]](https://github.com/tensorflow/models/blob/master/research/slim/nets/inception_resnet_v2.py) |
+| [NASNetAlarge](tensornets/nasnets.py#L99)         | 17.486      | 3.940       | 94M    | 2081  | [[paper]](https://arxiv.org/abs/1707.07012) [[tf-slim]](https://github.com/tensorflow/models/tree/master/research/slim/nets/nasnet) |
+| [NASNetAmobile](tensornets/nasnets.py#L106)       | 25.676      | 8.226       | 7.7M   | 1153  | [[paper]](https://arxiv.org/abs/1707.07012) [[tf-slim]](https://github.com/tensorflow/models/tree/master/research/slim/nets/nasnet) |
 | [DenseNet121](tensornets/densenets.py#L61)        | 25.550      | 8.174       | 8.1M   | 202.9 | [[paper]](https://arxiv.org/abs/1608.06993) [[torch]](https://github.com/liuzhuang13/DenseNet/blob/master/models/densenet.lua) |
 | [DenseNet169](tensornets/densenets.py#L67)        | 24.092      | 7.172       | 14M    | 219.1 | [[paper]](https://arxiv.org/abs/1608.06993) [[torch]](https://github.com/liuzhuang13/DenseNet/blob/master/models/densenet.lua) |
 | [DenseNet201](tensornets/densenets.py#L73)        | 22.988      | 6.700       | 20M    | 272.0 | [[paper]](https://arxiv.org/abs/1608.06993) [[torch]](https://github.com/liuzhuang13/DenseNet/blob/master/models/densenet.lua) |

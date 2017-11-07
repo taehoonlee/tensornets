@@ -13,6 +13,7 @@ reduce_mean = ops_to_outputs(tf.reduce_mean)
 relu = ops_to_outputs(tf.nn.relu)
 relu6 = ops_to_outputs(tf.nn.relu6)
 softmax = ops_to_outputs(tf.nn.softmax)
+squeeze = ops_to_outputs(tf.squeeze)
 
 
 @ops_to_outputs

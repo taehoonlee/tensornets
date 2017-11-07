@@ -352,6 +352,26 @@ def load_squeezenet(scopes):
     return load_weights(scopes, weights_path)
 
 
+def load_nasnetAlarge(scopes):
+    """Converted from the [TF Slim][2]."""
+    filename = 'nasnet-a_large_04_10_2017.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'nasnet/' + filename,
+        cache_subdir='models',
+        file_hash='f14c166457ce43b2c44d4cd3b6325bd6')
+    return load_weights(scopes, weights_path)
+
+
+def load_nasnetAmobile(scopes):
+    """Converted from the [TF Slim][2]."""
+    filename = 'nasnet-a_mobile_04_10_2017.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'nasnet/' + filename,
+        cache_subdir='models',
+        file_hash='7d75cfc284185c0a6db5cbf9f0492c59')
+    return load_weights(scopes, weights_path)
+
+
 # Dictionary for loading functions.
 __load_dict__ = {
     'inception1': load_inception1,
@@ -369,6 +389,8 @@ __load_dict__ = {
     'resnext50': load_resnext50,
     'resnext101': load_resnext101,
     'wideresnet50': load_wideresnet50,
+    'nasnetAlarge': load_nasnetAlarge,
+    'nasnetAmobile': load_nasnetAmobile,
     'densenet121': load_densenet121,
     'densenet169': load_densenet169,
     'densenet201': load_densenet201,

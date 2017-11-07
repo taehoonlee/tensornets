@@ -18,6 +18,9 @@ from .resnets import ResNeXt50
 from .resnets import ResNeXt101
 from .resnets import WideResNet50
 
+from .nasnets import NASNetAlarge
+from .nasnets import NASNetAmobile
+
 from .densenets import DenseNet121
 from .densenets import DenseNet169
 from .densenets import DenseNet201

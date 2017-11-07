@@ -106,6 +106,8 @@ __preprocess_dict__ = {
     'resnext50': fb_preprocess,
     'resnext101': fb_preprocess,
     'wideresnet50': wrn_preprocess,
+    'nasnetAlarge': tfslim_preprocess,
+    'nasnetAmobile': tfslim_preprocess,
     'densenet': fb_preprocess,
     'densenet121': fb_preprocess,
     'densenet169': fb_preprocess,
