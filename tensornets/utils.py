@@ -193,7 +193,7 @@ def load_torch_weights(scopes, weights_path, move_rules=None):
     scopes = parse_scopes(scopes)
 
     model = torch.load(weights_path)
-    names = model.keys()
+    names = list(model.keys())
     if move_rules is not None:
         if isinstance(move_rules, list):
             for (name, loc) in move_rules:
