@@ -260,6 +260,18 @@ def load_resnext101(scopes):
     return load_torch_weights(scopes, weights_path, move_rules)
 
 
+def load_resnext101c64(scopes):
+    """Converted from the [Torch ResNeXts][6]."""
+    filename = 'resnext_101_64x4d_cpu.pth'
+    move_rules = [(r, -15) for (r, i) in move_rules_fb_resnet_torch
+                  if '1.0.bias' not in r]
+    weights_path = get_file(
+        filename, __model_url__ + 'resnet/' + filename,
+        cache_subdir='models',
+        file_hash='03c83fe32db97676eace16cc0b577cc2')
+    return load_torch_weights(scopes, weights_path, move_rules)
+
+
 def load_wideresnet50(scopes):
     """Converted from the [Torch WideResNets][9]."""
     filename = 'wrn_50_2_cpu.pth'
@@ -388,6 +400,9 @@ __load_dict__ = {
     'resnet200v2': load_resnet200v2,
     'resnext50': load_resnext50,
     'resnext101': load_resnext101,
+    'resnext50c32': load_resnext50,
+    'resnext101c32': load_resnext101,
+    'resnext101c64': load_resnext101c64,
     'wideresnet50': load_wideresnet50,
     'nasnetAlarge': load_nasnetAlarge,
     'nasnetAmobile': load_nasnetAmobile,

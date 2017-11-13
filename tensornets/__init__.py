@@ -16,6 +16,9 @@ from .resnets import ResNet152v2
 from .resnets import ResNet200v2
 from .resnets import ResNeXt50
 from .resnets import ResNeXt101
+from .resnets import ResNeXt50c32
+from .resnets import ResNeXt101c32
+from .resnets import ResNeXt101c64
 from .resnets import WideResNet50
 
 from .nasnets import NASNetAlarge

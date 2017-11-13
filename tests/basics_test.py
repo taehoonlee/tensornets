@@ -16,6 +16,7 @@ import pytest
     (nets.ResNet200v2, (224, 224, 3)),
     (nets.ResNeXt50, (224, 224, 3)),
     (nets.ResNeXt101, (224, 224, 3)),
+    (nets.ResNeXt101c64, (224, 224, 3)),
     (nets.WideResNet50, (224, 224, 3)),
     (nets.Inception1, (224, 224, 3)),
     (nets.Inception2, (224, 224, 3)),

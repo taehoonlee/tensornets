@@ -166,26 +166,38 @@ def resnet200v2(x, is_training=False, classes=1000, scope=None, reuse=None):
     return resnet(x, False, stack, is_training, classes, scope, reuse)
 
 
-@var_scope('resnext50')
+@var_scope('resnext50c32')
 @set_args(__args__, conv_bias=False)
-def resnext50(x, is_training=False, classes=1000, scope=None, reuse=None):
+def resnext50c32(x, is_training=False, classes=1000, scope=None, reuse=None):
     def stack(x):
-        x = _stack(x, _block3, 128, 3, stride1=1, scope='conv2')
-        x = _stack(x, _block3, 256, 4, scope='conv3')
-        x = _stack(x, _block3, 512, 6, scope='conv4')
-        x = _stack(x, _block3, 1024, 3, scope='conv5')
+        x = _stack(x, _block3c32, 128, 3, stride1=1, scope='conv2')
+        x = _stack(x, _block3c32, 256, 4, scope='conv3')
+        x = _stack(x, _block3c32, 512, 6, scope='conv4')
+        x = _stack(x, _block3c32, 1024, 3, scope='conv5')
         return x
     return resnet(x, False, stack, is_training, classes, scope, reuse)
 
 
-@var_scope('resnext101')
+@var_scope('resnext101c32')
 @set_args(__args__, conv_bias=False)
-def resnext101(x, is_training=False, classes=1000, scope=None, reuse=None):
+def resnext101c32(x, is_training=False, classes=1000, scope=None, reuse=None):
     def stack(x):
-        x = _stack(x, _block3, 128, 3, stride1=1, scope='conv2')
-        x = _stack(x, _block3, 256, 4, scope='conv3')
-        x = _stack(x, _block3, 512, 23, scope='conv4')
-        x = _stack(x, _block3, 1024, 3, scope='conv5')
+        x = _stack(x, _block3c32, 128, 3, stride1=1, scope='conv2')
+        x = _stack(x, _block3c32, 256, 4, scope='conv3')
+        x = _stack(x, _block3c32, 512, 23, scope='conv4')
+        x = _stack(x, _block3c32, 1024, 3, scope='conv5')
+        return x
+    return resnet(x, False, stack, is_training, classes, scope, reuse)
+
+
+@var_scope('resnext101c64')
+@set_args(__args__, conv_bias=False)
+def resnext101c64(x, is_training=False, classes=1000, scope=None, reuse=None):
+    def stack(x):
+        x = _stack(x, _block3c64, 256, 3, stride1=1, scope='conv2')
+        x = _stack(x, _block3c64, 512, 4, scope='conv3')
+        x = _stack(x, _block3c64, 1024, 23, scope='conv4')
+        x = _stack(x, _block3c64, 2048, 3, scope='conv5')
         return x
     return resnet(x, False, stack, is_training, classes, scope, reuse)
 
@@ -277,9 +289,9 @@ def _block2s(x, filters, kernel_size=3, stride=1,
     return x
 
 
-@var_scope('block3')
-def _block3(x, filters, kernel_size=3, stride=1,
-            conv_shortcut=True, scope=None):
+@var_scope('block3c32')
+def _block3c32(x, filters, kernel_size=3, stride=1,
+               conv_shortcut=True, scope=None):
     if conv_shortcut is True:
         shortcut = conv(x, 2 * filters, 1, stride=stride, scope='0')
     else:
@@ -288,13 +300,35 @@ def _block3(x, filters, kernel_size=3, stride=1,
     x = relu(x, name='1/relu')
     x = pad(x, [[0, 0], [1, 1], [1, 1], [0, 0]], name='2/pad')
     channels = filters // 32
-    groups = [conv2d(x[:, :, :, c*channels:(c+1)*channels], channels,
-                     kernel_size, stride=stride, scope="2/%d" % c)
-              for c in range(32)]
-    x = concat(groups, axis=3, name='concat')
+    convgroups = [conv2d(x[:, :, :, c*channels:(c+1)*channels], channels,
+                         kernel_size, stride=stride, scope="2/%d" % c)
+                  for c in range(32)]
+    x = concat(convgroups, axis=3, name='concat')
     x = batch_norm(x, scope='2/bn')
     x = relu(x, name='2/relu')
     x = conv(x, 2 * filters, 1, stride=1, scope='3')
+    x = relu(shortcut + x, name='out')
+    return x
+
+
+@var_scope('block3c64')
+def _block3c64(x, filters, kernel_size=3, stride=1,
+               conv_shortcut=True, scope=None):
+    if conv_shortcut is True:
+        shortcut = conv(x, filters, 1, stride=stride, scope='0')
+    else:
+        shortcut = x
+    x = conv(x, filters, 1, stride=1, scope='1')
+    x = relu(x, name='1/relu')
+    x = pad(x, [[0, 0], [1, 1], [1, 1], [0, 0]], name='2/pad')
+    channels = filters // 64
+    convgroups = [conv2d(x[:, :, :, c*channels:(c+1)*channels], channels,
+                         kernel_size, stride=stride, scope="2/%d" % c)
+                  for c in range(64)]
+    x = concat(convgroups, axis=3, name='concat')
+    x = batch_norm(x, scope='2/bn')
+    x = relu(x, name='2/relu')
+    x = conv(x, filters, 1, stride=1, scope='3')
     x = relu(shortcut + x, name='out')
     return x
 
@@ -324,6 +358,7 @@ ResNet50v2 = resnet50v2
 ResNet101v2 = resnet101v2
 ResNet152v2 = resnet152v2
 ResNet200v2 = resnet200v2
-ResNeXt50 = resnext50
-ResNeXt101 = resnext101
+ResNeXt50 = ResNeXt50c32 = resnext50c32
+ResNeXt101 = ResNeXt101c32 = resnext101c32
+ResNeXt101c64 = resnext101c64
 WideResNet50 = wideresnet50
