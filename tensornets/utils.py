@@ -156,10 +156,25 @@ def set_args(largs, conv_bias=True):
     return real_set_args
 
 
-def load_weights(scopes, weights_path):
+def set_weights(weights, values):
     sess = tf.get_default_session()
     assert sess is not None, 'The default session should be given.'
 
+    if len(weights) > len(values):  # excluding weights in Optimizer
+        weights = weights[:len(values)]
+
+    assert len(weights) == len(values), 'The sizes of symbolic and ' \
+                                        'actual weights do not match.' \
+
+    ops = [w.assign(v) for (w, v) in zip(weights[:-2], values[:-2])]
+    if weights[-1].shape != values[-1].shape:  # for transfer learning
+        ops += [w.initializer for w in weights[-2:]]
+    else:
+        ops += [w.assign(v) for (w, v) in zip(weights[-2:], values[-2:])]
+    sess.run(ops)
+
+
+def load_weights(scopes, weights_path):
     scopes = parse_scopes(scopes)
 
     data = np.load(weights_path, encoding='bytes')
@@ -172,10 +187,7 @@ def load_weights(scopes, weights_path):
 
     for scope in scopes:
         weights = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=scope)
-        assert len(weights) == len(values), 'The sizes of symbolic and ' \
-                                            'actual weights do not match.' \
-
-        sess.run([w.assign(v) for (w, v) in zip(weights, values)])
+        set_weights(weights, values)
 
 
 def load_torch_weights(scopes, weights_path, move_rules=None):
@@ -186,9 +198,6 @@ def load_torch_weights(scopes, weights_path, move_rules=None):
     except ImportError:
         torch = None
     assert torch is not None, '`load_torch_weights` requires `torch`.'
-
-    sess = tf.get_default_session()
-    assert sess is not None, 'The default session should be given.'
 
     scopes = parse_scopes(scopes)
 
@@ -222,10 +231,7 @@ def load_torch_weights(scopes, weights_path, move_rules=None):
 
     for scope in scopes:
         weights = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=scope)
-        assert len(weights) == len(values), 'The sizes of symbolic and ' \
-                                            'actual weights do not match.' \
-
-        sess.run([w.assign(v) for (w, v) in zip(weights, values)])
+        set_weights(weights, values)
 
 
 def remove_utils(module_name, exceptions):

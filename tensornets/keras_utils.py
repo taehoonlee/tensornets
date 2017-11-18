@@ -57,9 +57,7 @@ def load_keras_weights(scopes, weights_path, move_rules=None):
         h5py = None
     assert h5py is not None, '`load_weights` requires `h5py`.'
 
-    sess = tf.get_default_session()
-    assert sess is not None, 'The default session should be given.'
-
+    from .utils import set_weights
     from .utils import parse_scopes
     scopes = parse_scopes(scopes)
 
@@ -100,7 +98,4 @@ def load_keras_weights(scopes, weights_path, move_rules=None):
 
     for scope in scopes:
         weights = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=scope)
-        assert len(weights) == len(values), 'The sizes of symbolic and ' \
-                                            'actual weights do not match.' \
-
-        sess.run([w.assign(v) for (w, v) in zip(weights, values)])
+        set_weights(weights, values)
