@@ -162,7 +162,7 @@ def load_weights(scopes, weights_path):
 
     scopes = parse_scopes(scopes)
 
-    data = np.load(weights_path)
+    data = np.load(weights_path, encoding='bytes')
     values = data['values']
 
     if LooseVersion(tf.__version__) > LooseVersion('1.3.0'):
