@@ -1,4 +1,4 @@
-"""Collection of DenseNet variants
+"""Collection of SqueezeNet variants
 
 The reference paper:
 

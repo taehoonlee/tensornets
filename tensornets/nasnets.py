@@ -1,4 +1,4 @@
-"""Collection of MobileNet variants
+"""Collection of NASNet variants
 
 The reference paper:
 
