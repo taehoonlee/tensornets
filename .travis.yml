@@ -4,6 +4,10 @@ matrix:
     - python: 2.7
       env: TEST_MODE=PEP8
     - python: 2.7
+      env: TF_VERSION=1.2.0
+    - python: 2.7
+      env: TF_VERSION=1.3.0
+    - python: 2.7
     - python: 3.6
 notifications:
   email: false
@@ -31,7 +35,11 @@ install:
   - source activate test-environment
 
   - pip install .
-  - pip install tensorflow
+  - if [ -z "$TF_VERSION" ]; then
+      pip install tensorflow;
+    else
+      pip install tensorflow==$TF_VERSION;
+    fi
 
 script:
   - if [[ "$TEST_MODE" == "PEP8" ]]; then

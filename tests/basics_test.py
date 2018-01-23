@@ -5,6 +5,8 @@ import tensorflow as tf
 import tensornets as nets
 import pytest
 
+from distutils.version import LooseVersion
+
 
 @pytest.mark.parametrize('net,shape', [
     (nets.ResNet50, (224, 224, 3)),
@@ -23,8 +25,16 @@ import pytest
     (nets.Inception3, (299, 299, 3)),
     (nets.Inception4, (299, 299, 3)),
     (nets.InceptionResNet2, (299, 299, 3)),
-    (nets.NASNetAlarge, (331, 331, 3)),
-    (nets.NASNetAmobile, (224, 224, 3)),
+    pytest.param(
+        nets.NASNetAlarge, (331, 331, 3),
+        marks=pytest.mark.xfail(
+            LooseVersion(tf.__version__) < LooseVersion('1.3.0'),
+            reason='NASNetAlarge requires TensorFlow >= 1.3.0')),
+    pytest.param(
+        nets.NASNetAmobile, (224, 224, 3),
+        marks=pytest.mark.xfail(
+            LooseVersion(tf.__version__) < LooseVersion('1.3.0'),
+            reason='NASNetAmobile requires TensorFlow >= 1.3.0')),
     (nets.DenseNet121, (224, 224, 3)),
     (nets.DenseNet169, (224, 224, 3)),
     (nets.DenseNet201, (224, 224, 3)),
