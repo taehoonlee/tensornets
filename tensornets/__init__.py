@@ -35,6 +35,8 @@ from .mobilenets import MobileNet100
 
 from .squeezenets import SqueezeNet
 
+from .capsulenets import CapsuleNet
+
 from .preprocess import preprocess
 from .pretrained import pretrained
 
