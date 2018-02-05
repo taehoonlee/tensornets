@@ -96,7 +96,6 @@ def inception1(x, is_training=False, classes=1000, scope=None, reuse=None):
     x = dropout(x, keep_prob=0.8, scope='dropout')
     x = fully_connected(x, classes, scope='logits')
     x = softmax(x, name='probs')
-    x.aliases = [tf.get_variable_scope().name]
     return x
 
 
@@ -133,7 +132,6 @@ def inception2(x, is_training=False, classes=1000, scope=None, reuse=None):
     x = dropout(x, keep_prob=0.8, scope='dropout')
     x = fully_connected(x, classes, scope='logits')
     x = softmax(x, name='probs')
-    x.aliases = [tf.get_variable_scope().name]
     return x
 
 
@@ -168,7 +166,6 @@ def inception3(x, is_training=False, classes=1000, scope=None, reuse=None):
     x = reduce_mean(x, [1, 2], name='avgpool')
     x = fully_connected(x, classes, scope='logits')
     x = softmax(x, name='probs')
-    x.aliases = [tf.get_variable_scope().name]
     return x
 
 
@@ -194,7 +191,6 @@ def inception4(x, is_training=False, classes=1000, scope=None, reuse=None):
     x = dropout(x, keep_prob=0.8, scope='dropout')
     x = fully_connected(x, classes, scope='logits')
     x = softmax(x, name='probs')
-    x.aliases = [tf.get_variable_scope().name]
     return x
 
 
@@ -224,7 +220,6 @@ def inceptionresnet(x, stem_fn, A, B, C, is_training, classes,
     x = dropout(x, keep_prob=0.8, scope='dropout')
     x = fully_connected(x, classes, scope='logits')
     x = softmax(x, name='probs')
-    x.aliases = [tf.get_variable_scope().name]
     return x
 
 

@@ -54,7 +54,6 @@ def densenet(x, blocks, is_training, classes, scope=None, reuse=None):
     x = reduce_mean(x, [1, 2], name='avgpool')
     x = fully_connected(x, classes, scope='logits')
     x = softmax(x, name='probs')
-    x.aliases = [tf.get_variable_scope().name]
     return x
 
 

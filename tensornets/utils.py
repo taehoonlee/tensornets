@@ -9,6 +9,7 @@ from contextlib import contextmanager
 from distutils.version import LooseVersion
 
 from tensorflow.contrib.framework import arg_scope
+from tensorflow.contrib.layers.python.layers.utils import collect_named_outputs
 from tensorflow.python.framework import ops
 
 from .imagenet_utils import *
@@ -129,7 +130,7 @@ def var_scope(name):
 def ops_to_outputs(func):
     def wrapper(*args, **kwargs):
         x = func(*args, **kwargs)
-        ops.add_to_collection(__outputs__, x)
+        x = collect_named_outputs(__outputs__, tf.get_variable_scope().name, x)
         return x
     return wrapper
 

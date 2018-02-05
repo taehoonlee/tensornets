@@ -88,7 +88,6 @@ def capsulenet_mnist(x, is_training=False, classes=10, scope=None, reuse=None):
     x = conv(x, 256, 9, stride=1, scope='conv1')
     x = primary(x, 32, 8, 9, stride=2, scope='primary')
     x = digit(x, 10, 16, scope='digit')
-    x.aliases = [tf.get_variable_scope().name]
     return x
 
 

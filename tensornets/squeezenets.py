@@ -67,7 +67,6 @@ def squeezenet(x, is_training=False, classes=1000, scope=None, reuse=None):
     x = conv(x, classes, 1, scope='conv10')
     x = reduce_mean(x, [1, 2], name='pool10')
     x = softmax(x, name='probs')
-    x.aliases = [tf.get_variable_scope().name]
     return x
 
 

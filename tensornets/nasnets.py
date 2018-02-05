@@ -92,7 +92,6 @@ def nasnet(x, stem_filters, normals, filters, skip_reduction,
     x = dropout(x, keep_prob=0.5, scope='dropout')
     x = fully_connected(x, classes, scope='logits')
     x = softmax(x, name='probs')
-    x.aliases = [tf.get_variable_scope().name]
     return x
 
 

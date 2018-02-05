@@ -77,7 +77,6 @@ def mobilenet(x, depth_multiplier, is_training, classes,
     x = dropout(x, keep_prob=0.999, is_training=is_training, scope='dropout')
     x = fully_connected(x, classes, scope='logits')
     x = softmax(x, name='probs')
-    x.aliases = [tf.get_variable_scope().name]
     return x
 
 
