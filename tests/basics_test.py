@@ -54,6 +54,22 @@ from distutils.version import LooseVersion
         (nets.MobileNet100, (224, 224, 3)),
     ]),
     (nets.SqueezeNet, (224, 224, 3)),
+], ids=[
+    'ResNet',
+    'ResNetv2',
+    'ResNet200v2',
+    'ResNeXt',
+    'WideResNet50',
+    'Inception1',
+    'Inception2',
+    'Inception3',
+    'Inception4',
+    'InceptionResNet2',
+    'NASNetAlarge',
+    'NASNetAmobile',
+    'DenseNet',
+    'MobileNet',
+    'SqueezeNet',
 ])
 def test_basics(net, shape):
     inputs = tf.placeholder(tf.float32, [None] + list(shape))
