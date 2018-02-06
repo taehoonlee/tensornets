@@ -440,7 +440,7 @@ __load_dict__ = {
     'inception2': load_inception2,
     'inception3': load_inception3,
     'inception4': load_inception4,
-    'inceptionresnet2': load_inceptionresnet2,
+    'inceptionresnet2_tfslim': load_inceptionresnet2,
     'resnet50': load_resnet50,
     'resnet101': load_resnet101,
     'resnet152': load_resnet152,
