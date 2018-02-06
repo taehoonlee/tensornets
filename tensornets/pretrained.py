@@ -25,11 +25,15 @@ serializes every single tensor from the following repositories:
 """
 from __future__ import absolute_import
 
+import tensorflow as tf
+
 from .utils import get_file
 from .utils import init
-from .utils import load_weights
-from .utils import load_keras_weights
-from .utils import load_torch_weights
+from .utils import parse_scopes
+from .utils import parse_weights
+from .utils import parse_keras_weights
+from .utils import parse_torch_weights
+from .utils import pretrained_initializer
 
 
 __keras_url__ = 'https://github.com/fchollet/deep-learning-models/' \
@@ -38,9 +42,8 @@ __model_url__ = 'https://github.com/taehoonlee/deep-learning-models/' \
                 'releases/download/'
 
 
-def pretrained(scopes):
+def assign(scopes):
     import warnings
-    from .utils import parse_scopes
     if not isinstance(scopes, list):
         scopes = [scopes]
     for scope in scopes:
@@ -61,117 +64,145 @@ def pretrained(scopes):
                 init(scope)
 
 
-def load_inception1(scopes):
+def direct(model_name):
+    def _direct():
+        return __load_dict__[model_name](tf.get_variable_scope().name,
+                                         return_fn=pretrained_initializer)
+    return _direct
+
+
+def _assign(scopes, values):
+    sess = tf.get_default_session()
+    assert sess is not None, 'The default session should be given.'
+
+    scopes = parse_scopes(scopes)
+
+    for scope in scopes:
+        sess.run(pretrained_initializer(scope, values))
+
+
+def load_inception1(scopes, return_fn=_assign):
     """Converted from the [BAIR Caffe Model Zoo][1]."""
     filename = 'inception1.h5'
     weights_path = get_file(
         filename, __model_url__ + 'inception/' + filename,
         cache_subdir='models',
         file_hash='6a212e3cb60b33f49c372906f18ae4a8')
-    return load_keras_weights(scopes, weights_path)
+    values = parse_keras_weights(weights_path)
+    return return_fn(scopes, values)
 
 
-def load_inception2(scopes):
+def load_inception2(scopes, return_fn=_assign):
     """Converted from the [TF Slim][2]."""
     filename = 'inception2.npz'
     weights_path = get_file(
         filename, __model_url__ + 'inception/' + filename,
         cache_subdir='models',
         file_hash='0476b876a5d35a99e2747f98248d856d')
-    return load_weights(scopes, weights_path)
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
 
 
-def load_inception3(scopes):
+def load_inception3(scopes, return_fn=_assign):
     """Copied from [keras][3] with modifications on the order of weights."""
     filename = 'inception3.h5'
     weights_path = get_file(
         filename, __model_url__ + 'inception/' + filename,
         cache_subdir='models',
         file_hash='7c4556613c348da3b99b633e1c430fff')
-    return load_keras_weights(scopes, weights_path)
+    values = parse_keras_weights(weights_path)
+    return return_fn(scopes, values)
 
 
-def load_inception4(scopes):
+def load_inception4(scopes, return_fn=_assign):
     """Converted from the [TF Slim][2]."""
     filename = 'inception4.npz'
     weights_path = get_file(
         filename, __model_url__ + 'inception/' + filename,
         cache_subdir='models',
         file_hash='8d5a0e8cb451c85112d5c4e363d77a42')
-    return load_weights(scopes, weights_path)
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
 
 
-def load_inceptionresnet2(scopes):
+def load_inceptionresnet2(scopes, return_fn=_assign):
     """Converted from the [TF Slim][2]."""
     filename = 'inception_resnet_v2_2016_08_30.npz'
     weights_path = get_file(
         filename, __model_url__ + 'inception/' + filename,
         cache_subdir='models',
         file_hash='32d685e68e6be6ba1da64e41f939bc49')
-    return load_weights(scopes, weights_path)
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
 
 
-def load_resnet50(scopes):
+def load_resnet50(scopes, return_fn=_assign):
     """Converted from the original [Caffe ResNets][4]."""
     filename = 'resnet50.h5'
     weights_path = get_file(
         filename, __model_url__ + 'resnet/' + filename,
         cache_subdir='models',
         file_hash='9df0843bdadb58ed24d360564c45b119')
-    return load_keras_weights(scopes, weights_path)
+    values = parse_keras_weights(weights_path)
+    return return_fn(scopes, values)
 
 
-def load_resnet101(scopes):
+def load_resnet101(scopes, return_fn=_assign):
     """Converted from the original [Caffe ResNets][4]."""
     filename = 'resnet101.h5'
     weights_path = get_file(
         filename, __model_url__ + 'resnet/' + filename,
         cache_subdir='models',
         file_hash='e2434bec605870fb4747e1b93f9f0e47')
-    return load_keras_weights(scopes, weights_path)
+    values = parse_keras_weights(weights_path)
+    return return_fn(scopes, values)
 
 
-def load_resnet152(scopes):
+def load_resnet152(scopes, return_fn=_assign):
     """Converted from the original [Caffe ResNets][4]."""
     filename = 'resnet152.h5'
     weights_path = get_file(
         filename, __model_url__ + 'resnet/' + filename,
         cache_subdir='models',
         file_hash='e588285d1f919e538515c1f1b1c07b5b')
-    return load_keras_weights(scopes, weights_path)
+    values = parse_keras_weights(weights_path)
+    return return_fn(scopes, values)
 
 
-def load_resnet50v2(scopes):
+def load_resnet50v2(scopes, return_fn=_assign):
     """Converted from the [TF Slim][2]."""
     filename = 'resnet_v2_50.npz'
     weights_path = get_file(
         filename, __model_url__ + 'resnet/' + filename,
         cache_subdir='models',
         file_hash='fa2ac006361fd5e79792d163c0130667')
-    return load_weights(scopes, weights_path)
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
 
 
-def load_resnet101v2(scopes):
+def load_resnet101v2(scopes, return_fn=_assign):
     """Converted from the [TF Slim][2]."""
     filename = 'resnet_v2_101.npz'
     weights_path = get_file(
         filename, __model_url__ + 'resnet/' + filename,
         cache_subdir='models',
         file_hash='fbc179d55c817e4656992fa582fdc460')
-    return load_weights(scopes, weights_path)
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
 
 
-def load_resnet152v2(scopes):
+def load_resnet152v2(scopes, return_fn=_assign):
     """Converted from the [TF Slim][2]."""
     filename = 'resnet_v2_152.npz'
     weights_path = get_file(
         filename, __model_url__ + 'resnet/' + filename,
         cache_subdir='models',
         file_hash='184c9b439e925762f006d288445997a8')
-    return load_weights(scopes, weights_path)
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
 
 
-def load_keras_resnet50(scopes):
+def load_keras_resnet50(scopes, return_fn=_assign):
     """Copied from [keras][3]."""
     filename = 'resnet50_weights_tf_dim_ordering_tf_kernels.h5'
     weights_path = get_file(
@@ -183,7 +214,8 @@ def load_keras_resnet50(scopes):
         move_rules.append(("bn%da_branch2c" % i, -1))
         move_rules.append(("res%da_branch1" % i, -6))
         move_rules.append(("bn%da_branch1" % i, -6))
-    return load_keras_weights(scopes, weights_path, move_rules)
+    values = parse_keras_weights(weights_path, move_rules)
+    return return_fn(scopes, values)
 
 
 move_rules_fb_resnet_torch = []
@@ -196,47 +228,51 @@ for i in range(4, 8):
     move_rules_fb_resnet_torch.append(("%d.0.0.1.1.running_var" % i, -18))
 
 
-def load_torch_resnet50(scopes):
+def load_torch_resnet50(scopes, return_fn=_assign):
     """Converted from the [Torch ResNets][5]."""
     filename = 'resnet_50_cpu.pth'
     weights_path = get_file(
         filename, __model_url__ + 'resnet/' + filename,
         cache_subdir='models',
         file_hash='5b38c39802c94de00b55596145d304aa')
-    return load_torch_weights(scopes, weights_path, move_rules_fb_resnet_torch)
+    values = parse_torch_weights(weights_path, move_rules_fb_resnet_torch)
+    return return_fn(scopes, values)
 
 
-def load_torch_resnet101(scopes):
+def load_torch_resnet101(scopes, return_fn=_assign):
     """Converted from the [Torch ResNets][5]."""
     filename = 'resnet_101_cpu.pth'
     weights_path = get_file(
         filename, __model_url__ + 'resnet/' + filename,
         cache_subdir='models',
         file_hash='cb3f0ac4687cb63d5f0861d651da844b')
-    return load_torch_weights(scopes, weights_path, move_rules_fb_resnet_torch)
+    values = parse_torch_weights(weights_path, move_rules_fb_resnet_torch)
+    return return_fn(scopes, values)
 
 
-def load_torch_resnet152(scopes):
+def load_torch_resnet152(scopes, return_fn=_assign):
     """Converted from the [Torch ResNets][5]."""
     filename = 'resnet_152_cpu.pth'
     weights_path = get_file(
         filename, __model_url__ + 'resnet/' + filename,
         cache_subdir='models',
         file_hash='3339f6aca7f746f8ae7f6ce577efc0c0')
-    return load_torch_weights(scopes, weights_path, move_rules_fb_resnet_torch)
+    values = parse_torch_weights(weights_path, move_rules_fb_resnet_torch)
+    return return_fn(scopes, values)
 
 
-def load_resnet200v2(scopes):
+def load_resnet200v2(scopes, return_fn=_assign):
     """Converted from the [Torch ResNets][5]."""
     filename = 'resnet_200_cpu.pth'
     weights_path = get_file(
         filename, __model_url__ + 'resnet/' + filename,
         cache_subdir='models',
         file_hash='220df3970701d3e0608eed887fb95d82')
-    return load_torch_weights(scopes, weights_path, move_rules_fb_resnet_torch)
+    values = parse_torch_weights(weights_path, move_rules_fb_resnet_torch)
+    return return_fn(scopes, values)
 
 
-def load_resnext50(scopes):
+def load_resnext50(scopes, return_fn=_assign):
     """Converted from the [Torch ResNeXts][6]."""
     filename = 'resnext_50_32x4d_cpu.pth'
     move_rules = [(r, -15) for (r, i) in move_rules_fb_resnet_torch
@@ -245,10 +281,11 @@ def load_resnext50(scopes):
         filename, __model_url__ + 'resnet/' + filename,
         cache_subdir='models',
         file_hash='fdfc372bc47f7bf55313c04aebcef8ca')
-    return load_torch_weights(scopes, weights_path, move_rules)
+    values = parse_torch_weights(weights_path, move_rules)
+    return return_fn(scopes, values)
 
 
-def load_resnext101(scopes):
+def load_resnext101(scopes, return_fn=_assign):
     """Converted from the [Torch ResNeXts][6]."""
     filename = 'resnext_101_32x4d_cpu.pth'
     move_rules = [(r, -15) for (r, i) in move_rules_fb_resnet_torch
@@ -257,10 +294,11 @@ def load_resnext101(scopes):
         filename, __model_url__ + 'resnet/' + filename,
         cache_subdir='models',
         file_hash='5e97757d9f898aa8174fe8bc6e59bce8')
-    return load_torch_weights(scopes, weights_path, move_rules)
+    values = parse_torch_weights(weights_path, move_rules)
+    return return_fn(scopes, values)
 
 
-def load_resnext101c64(scopes):
+def load_resnext101c64(scopes, return_fn=_assign):
     """Converted from the [Torch ResNeXts][6]."""
     filename = 'resnext_101_64x4d_cpu.pth'
     move_rules = [(r, -15) for (r, i) in move_rules_fb_resnet_torch
@@ -269,10 +307,11 @@ def load_resnext101c64(scopes):
         filename, __model_url__ + 'resnet/' + filename,
         cache_subdir='models',
         file_hash='03c83fe32db97676eace16cc0b577cc2')
-    return load_torch_weights(scopes, weights_path, move_rules)
+    values = parse_torch_weights(weights_path, move_rules)
+    return return_fn(scopes, values)
 
 
-def load_wideresnet50(scopes):
+def load_wideresnet50(scopes, return_fn=_assign):
     """Converted from the [Torch WideResNets][9]."""
     filename = 'wrn_50_2_cpu.pth'
     move_rules = [(r, -15) for (r, i) in move_rules_fb_resnet_torch
@@ -281,107 +320,118 @@ def load_wideresnet50(scopes):
         filename, __model_url__ + 'resnet/' + filename,
         cache_subdir='models',
         file_hash='7879cd9f3840f92593a87b6be8192206')
-    return load_torch_weights(scopes, weights_path, move_rules)
+    values = parse_torch_weights(weights_path, move_rules)
+    return return_fn(scopes, values)
 
 
-def load_densenet121(scopes):
+def load_densenet121(scopes, return_fn=_assign):
     """Converted from the [Torch DenseNets][7]."""
     filename = 'densenet_121_cpu.pth'
     weights_path = get_file(
         filename, __model_url__ + 'densenet/' + filename,
         cache_subdir='models',
         file_hash='9817430b1d3634645f6b04b8c663c34f')
-    return load_torch_weights(scopes, weights_path)
+    values = parse_torch_weights(weights_path)
+    return return_fn(scopes, values)
 
 
-def load_densenet169(scopes):
+def load_densenet169(scopes, return_fn=_assign):
     """Converted from the [Torch DenseNets][7]."""
     filename = 'densenet_169_cpu.pth'
     weights_path = get_file(
         filename, __model_url__ + 'densenet/' + filename,
         cache_subdir='models',
         file_hash='98c5cac06124192627391adf17d66493')
-    return load_torch_weights(scopes, weights_path)
+    values = parse_torch_weights(weights_path)
+    return return_fn(scopes, values)
 
 
-def load_densenet201(scopes):
+def load_densenet201(scopes, return_fn=_assign):
     """Converted from the [Torch DenseNets][7]."""
     filename = 'densenet_201_cpu.pth'
     weights_path = get_file(
         filename, __model_url__ + 'densenet/' + filename,
         cache_subdir='models',
         file_hash='fa3aa0454be559b81409e92f3bafd155')
-    return load_torch_weights(scopes, weights_path)
+    values = parse_torch_weights(weights_path)
+    return return_fn(scopes, values)
 
 
-def load_mobilenet25(scopes):
+def load_mobilenet25(scopes, return_fn=_assign):
     """Converted from the [TF Slim][2]."""
     filename = 'mobilenet25.npz'
     weights_path = get_file(
         filename, __model_url__ + 'mobilenet/' + filename,
         cache_subdir='models',
         file_hash='aa1f5ccfb8be3d1ef45948a396e04e0a')
-    return load_weights(scopes, weights_path)
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
 
 
-def load_mobilenet50(scopes):
+def load_mobilenet50(scopes, return_fn=_assign):
     """Converted from the [TF Slim][2]."""
     filename = 'mobilenet50.npz'
     weights_path = get_file(
         filename, __model_url__ + 'mobilenet/' + filename,
         cache_subdir='models',
         file_hash='0c0b667bc9d707e0e5bd4f383c5dece0')
-    return load_weights(scopes, weights_path)
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
 
 
-def load_mobilenet75(scopes):
+def load_mobilenet75(scopes, return_fn=_assign):
     """Converted from the [TF Slim][2]."""
     filename = 'mobilenet75.npz'
     weights_path = get_file(
         filename, __model_url__ + 'mobilenet/' + filename,
         cache_subdir='models',
         file_hash='d4557a46a44eebfeaf08c82ae33765ed')
-    return load_weights(scopes, weights_path)
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
 
 
-def load_mobilenet100(scopes):
+def load_mobilenet100(scopes, return_fn=_assign):
     """Converted from the [TF Slim][2]."""
     filename = 'mobilenet100.npz'
     weights_path = get_file(
         filename, __model_url__ + 'mobilenet/' + filename,
         cache_subdir='models',
         file_hash='3d14409e3e119c8881baf7dd1d54e714')
-    return load_weights(scopes, weights_path)
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
 
 
-def load_squeezenet(scopes):
+def load_squeezenet(scopes, return_fn=_assign):
     """Converted from the [Caffe SqueezeNets][8]."""
     filename = 'squeezenet.npz'
     weights_path = get_file(
         filename, __model_url__ + 'squeezenet/' + filename,
         cache_subdir='models',
         file_hash='1d474f6540f7ec34cb56e6440419b5c5')
-    return load_weights(scopes, weights_path)
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
 
 
-def load_nasnetAlarge(scopes):
+def load_nasnetAlarge(scopes, return_fn=_assign):
     """Converted from the [TF Slim][2]."""
     filename = 'nasnet-a_large_04_10_2017.npz'
     weights_path = get_file(
         filename, __model_url__ + 'nasnet/' + filename,
         cache_subdir='models',
         file_hash='f14c166457ce43b2c44d4cd3b6325bd6')
-    return load_weights(scopes, weights_path)
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
 
 
-def load_nasnetAmobile(scopes):
+def load_nasnetAmobile(scopes, return_fn=_assign):
     """Converted from the [TF Slim][2]."""
     filename = 'nasnet-a_mobile_04_10_2017.npz'
     weights_path = get_file(
         filename, __model_url__ + 'nasnet/' + filename,
         cache_subdir='models',
         file_hash='7d75cfc284185c0a6db5cbf9f0492c59')
-    return load_weights(scopes, weights_path)
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
 
 
 # Dictionary for loading functions.

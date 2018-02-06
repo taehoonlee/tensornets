@@ -119,10 +119,16 @@ def init(scopes):
 def var_scope(name):
     def decorator(func):
         def wrapper(*args, **kwargs):
+            from .preprocess import direct as p1
+            from .pretrained import direct as p2
             scope = kwargs.get('scope', None)
             reuse = kwargs.get('reuse', None)
             with tf.variable_scope(scope, name, reuse=reuse):
-                return func(*args, **kwargs)
+                x = func(*args, **kwargs)
+                if func.__name__ == 'wrapper':
+                    setattr(x, 'preprocess', p1(name))
+                    setattr(x, 'pretrained', p2(name))
+                return x
         return wrapper
     return decorator
 
@@ -157,9 +163,8 @@ def set_args(largs, conv_bias=True):
     return real_set_args
 
 
-def set_weights(weights, values):
-    sess = tf.get_default_session()
-    assert sess is not None, 'The default session should be given.'
+def pretrained_initializer(scope, values):
+    weights = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=scope)
 
     if len(weights) > len(values):  # excluding weights in Optimizer
         weights = weights[:len(values)]
@@ -172,12 +177,11 @@ def set_weights(weights, values):
         ops += [w.initializer for w in weights[-2:]]
     else:
         ops += [w.assign(v) for (w, v) in zip(weights[-2:], values[-2:])]
-    sess.run(ops)
+
+    return ops
 
 
-def load_weights(scopes, weights_path):
-    scopes = parse_scopes(scopes)
-
+def parse_weights(weights_path, move_rules=None):
     data = np.load(weights_path, encoding='bytes')
     values = data['values']
 
@@ -186,21 +190,62 @@ def load_weights(scopes, weights_path):
             if '/beta' in name:
                 values[i], values[i+1] = values[i+1], values[i]
 
-    for scope in scopes:
-        weights = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=scope)
-        set_weights(weights, values)
+    return values
 
 
-def load_torch_weights(scopes, weights_path, move_rules=None):
+def parse_keras_weights(weights_path, move_rules=None):
+    try:
+        import h5py
+    except ImportError:
+        h5py = None
+    assert h5py is not None, '`get_values_from_keras_file` requires `h5py`.'
+
+    values = []
+    with h5py.File(weights_path, mode='r') as f:
+        names = [n.decode('utf8')
+                 for n in f.attrs['layer_names']
+                 if len(f[n.decode('utf8')].attrs['weight_names']) > 0]
+        if move_rules is not None:
+            if isinstance(move_rules, list):
+                for (name, loc) in move_rules:
+                    idx = names.index(name)
+                    names.insert(idx + loc, names.pop(idx))
+            elif move_rules == 'ordered':
+                bn_names, conv_names, other_names = [], [], []
+                for n in names:
+                    if 'batch' in n:
+                        bn_names.append(n)
+                    elif 'conv' in n:
+                        conv_names.append(n)
+                    else:
+                        other_names.append(n)
+                names = []
+                for n in range(1, len(conv_names) + 1):
+                    names.append("conv2d_%d" % n)
+                    names.append("batch_normalization_%d" % n)
+                names += other_names
+
+        for name in names:
+            g = f[name]
+            w = [n.decode('utf8') for n in g.attrs['weight_names']]
+            v = [np.asarray(g[n]) for n in w]
+            if not LooseVersion(tf.__version__) > LooseVersion('1.3.0'):
+                if len(v) == 4:
+                    w[0], w[1] = w[1], w[0]
+                    v[0], v[1] = v[1], v[0]
+            values += v
+
+    return values
+
+
+def parse_torch_weights(weights_path, move_rules=None):
     try:
         import torch
         import torch.nn as nn
         import torch.nn.functional as F
     except ImportError:
         torch = None
-    assert torch is not None, '`load_torch_weights` requires `torch`.'
-
-    scopes = parse_scopes(scopes)
+    assert torch is not None, '`get_values_from_torch_file` requires `torch`.'
 
     model = torch.load(weights_path)
     names = list(model.keys())
@@ -230,9 +275,7 @@ def load_torch_weights(scopes, weights_path, move_rules=None):
         else:
             values.append(val)
 
-    for scope in scopes:
-        weights = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=scope)
-        set_weights(weights, values)
+    return values
 
 
 def remove_utils(module_name, exceptions):

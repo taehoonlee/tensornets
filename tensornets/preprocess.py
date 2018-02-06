@@ -28,6 +28,12 @@ def preprocess(scopes, inputs):
     return outputs
 
 
+def direct(model_name):
+    def _direct(inputs):
+        return __preprocess_dict__[model_name](inputs)
+    return _direct
+
+
 def bair_preprocess(x):
     # Refer to the following BAIR Caffe Model Zoo
     # https://github.com/BVLC/caffe/blob/master/models/bvlc_googlenet/train_val.prototxt

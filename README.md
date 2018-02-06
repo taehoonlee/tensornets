@@ -34,8 +34,8 @@ Once your network is created, you can run with regular TensorFlow APIs 😊 beca
 
 ```python
 with tf.Session() as sess:
-    nets.pretrained(model)
-    img = nets.preprocess(model, img)
+    img = model.preprocess(img)  # equivalent to img = nets.preprocess(model, img)
+    sess.run(model.pretrained())  # equivalent to nets.pretrained(model)
     preds = sess.run(model, {inputs: img})
 ```
 

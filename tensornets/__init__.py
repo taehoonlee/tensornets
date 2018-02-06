@@ -38,7 +38,7 @@ from .squeezenets import SqueezeNet
 from .capsulenets import CapsuleNet
 
 from .preprocess import preprocess
-from .pretrained import pretrained
+from .pretrained import assign as pretrained
 
 from .utils import *
 
