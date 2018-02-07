@@ -64,9 +64,9 @@ def assign(scopes):
                 init(scope)
 
 
-def direct(model_name):
+def direct(model_name, scope):
     def _direct():
-        return __load_dict__[model_name](tf.get_variable_scope().name,
+        return __load_dict__[model_name](scope,
                                          return_fn=pretrained_initializer)
     return _direct
 

@@ -127,7 +127,8 @@ def var_scope(name):
                 x = func(*args, **kwargs)
                 if func.__name__ == 'wrapper':
                     setattr(x, 'preprocess', p1(name))
-                    setattr(x, 'pretrained', p2(name))
+                    setattr(x, 'pretrained',
+                            p2(name, tf.get_variable_scope().name))
                 return x
         return wrapper
     return decorator
