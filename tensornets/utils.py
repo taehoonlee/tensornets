@@ -187,8 +187,8 @@ def parse_weights(weights_path, move_rules=None):
 
     if LooseVersion(tf.__version__) > LooseVersion('1.3.0'):
         for (i, name) in enumerate(data['names']):
-            if '/beta' in name:
-                values[i], values[i+1] = values[i+1], values[i]
+            if '/beta' in data['names'][i-1] and '/gamma' in name:
+                values[i], values[i-1] = values[i-1], values[i]
 
     return values
 
@@ -255,9 +255,10 @@ def parse_torch_weights(weights_path, move_rules=None):
                 idx = names.index(name)
                 names.insert(idx + loc, names.pop(idx))
 
-    for (i, name) in enumerate(names):
-        if 'running_mean' in name:
-            names[i-1], names[i-2] = names[i-2], names[i-1]
+    if not LooseVersion(tf.__version__) > LooseVersion('1.3.0'):
+        for (i, name) in enumerate(names):
+            if 'running_mean' in name:
+                names[i-1], names[i-2] = names[i-2], names[i-1]
 
     values = []
     for name in names:
