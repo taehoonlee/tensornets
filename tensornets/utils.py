@@ -126,9 +126,14 @@ def var_scope(name):
             with tf.variable_scope(scope, name, reuse=reuse):
                 x = func(*args, **kwargs)
                 if func.__name__ == 'wrapper':
+                    _scope = tf.get_variable_scope().name
                     setattr(x, 'preprocess', p1(name))
-                    setattr(x, 'pretrained',
-                            p2(name, tf.get_variable_scope().name))
+                    setattr(x, 'pretrained', p2(name, _scope))
+                    setattr(x, 'get_outputs', lambda: get_outputs(_scope))
+                    setattr(x, 'get_weights', lambda: get_weights(_scope))
+                    setattr(x, 'print_outputs', lambda: print_outputs(_scope))
+                    setattr(x, 'print_weights', lambda: print_weights(_scope))
+                    setattr(x, 'print_summary', lambda: print_summary(_scope))
                 return x
         return wrapper
     return decorator
