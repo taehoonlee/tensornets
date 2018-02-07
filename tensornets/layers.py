@@ -12,6 +12,7 @@ from tensorflow.contrib.layers import separable_conv2d
 
 from .ops import relu
 from .ops import relu6
+from .utils import remove_commons
 
 
 def convbn(*args, **kwargs):
@@ -55,3 +56,6 @@ def sconvbnrelu6(*args, **kwargs):
     scope = kwargs.pop('scope', None)
     with tf.variable_scope(scope):
         return relu6(batch_norm(separable_conv2d(*args, **kwargs)))
+
+
+remove_commons(__name__)

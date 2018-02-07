@@ -291,3 +291,24 @@ def remove_utils(module_name, exceptions):
             except:
                 None
     delattr(module, 'keras_utils')
+
+
+def remove_commons(module_name, exceptions=[]):
+    import sys
+    _commons = [
+        'absolute_import',
+        'division'
+        'print_function',
+        'remove_commons',
+        'np',
+    ]
+    module = sys.modules[module_name]
+    for _common in _commons:
+        if _common not in exceptions:
+            try:
+                delattr(module, _common)
+            except:
+                None
+
+
+remove_commons(__name__, ['remove_commons'])
