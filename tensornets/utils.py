@@ -17,6 +17,7 @@ from .keras_utils import *
 from .layers import conv2d
 
 
+__middles__ = 'middles'
 __outputs__ = 'outputs'
 __later_tf_version__ = LooseVersion(tf.__version__) > LooseVersion('1.3.0')
 
@@ -43,6 +44,12 @@ def parse_scopes(inputs):
         else:
             outputs.append(None)
     return outputs
+
+
+def print_middles(scopes=None):
+    scopes = parse_scopes(scopes)
+    for scope in scopes:
+        print_collection(__middles__, scope)
 
 
 def print_outputs(scopes=None):
@@ -73,6 +80,16 @@ def print_summary(scopes=None):
         print("Total layers: %d" % layers)
         print("Total weights: %d" % len(weights))
         print("Total parameters: {:,}".format(parameters))
+
+
+def get_bottleneck(scope=None):
+    scope = parse_scopes(scope)[0]
+    return tf.get_collection(__middles__, scope=scope)[-1]
+
+
+def get_middles(scope=None):
+    scope = parse_scopes(scope)[0]
+    return tf.get_collection(__middles__, scope=scope)
 
 
 def get_outputs(scope=None):
@@ -120,18 +137,26 @@ def init(scopes):
 def var_scope(name):
     def decorator(func):
         def wrapper(*args, **kwargs):
-            from .preprocess import direct as p1
-            from .pretrained import direct as p2
             scope = kwargs.get('scope', None)
             reuse = kwargs.get('reuse', None)
             with tf.variable_scope(scope, name, reuse=reuse):
                 x = func(*args, **kwargs)
                 if func.__name__ == 'wrapper':
+                    from .middles import direct as p0
+                    from .preprocess import direct as p1
+                    from .pretrained import direct as p2
                     _scope = tf.get_variable_scope().name
+                    _outs = get_outputs(_scope)
+                    for i in p0(name):
+                        collect_named_outputs(__middles__, _scope, _outs[i])
                     setattr(x, 'preprocess', p1(name))
                     setattr(x, 'pretrained', p2(name, _scope))
+                    setattr(x, 'get_bottleneck',
+                            lambda: get_bottleneck(_scope))
+                    setattr(x, 'get_middles', lambda: get_middles(_scope))
                     setattr(x, 'get_outputs', lambda: get_outputs(_scope))
                     setattr(x, 'get_weights', lambda: get_weights(_scope))
+                    setattr(x, 'print_middles', lambda: print_middles(_scope))
                     setattr(x, 'print_outputs', lambda: print_outputs(_scope))
                     setattr(x, 'print_weights', lambda: print_weights(_scope))
                     setattr(x, 'print_summary', lambda: print_summary(_scope))
