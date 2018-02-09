@@ -97,7 +97,7 @@ def block(x, growth_rate=32, scope=None):
     x1 = relu(x1)
     x1 = conv(x1, 4 * growth_rate, 1, stride=1, scope='1')
     x1 = conv2d(x1, growth_rate, 3, stride=1, padding='SAME', scope='2/conv')
-    x = concat([x, x1], axis=3, name='concat')
+    x = concat([x, x1], axis=3, name='out')
     return x
 
 

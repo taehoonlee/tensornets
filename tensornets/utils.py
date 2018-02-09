@@ -147,7 +147,7 @@ def var_scope(name):
                     from .pretrained import direct as p2
                     _scope = tf.get_variable_scope().name
                     _outs = get_outputs(_scope)
-                    for i in p0(name):
+                    for i in p0(name)[0]:
                         collect_named_outputs(__middles__, _scope, _outs[i])
                     setattr(x, 'preprocess', p1(name))
                     setattr(x, 'pretrained', p2(name, _scope))

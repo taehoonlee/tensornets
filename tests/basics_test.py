@@ -6,6 +6,8 @@ import tensornets as nets
 import pytest
 import random
 
+from tensornets.middles import direct
+
 from distutils.version import LooseVersion
 
 
@@ -81,5 +83,8 @@ def test_basics(net, shape):
     with tf.Session() as sess:
         nets.init(model)
         y = model.eval({inputs: x})
+
+    for (a, b) in zip(model.get_middles(), direct(model.aliases[0])[1]):
+        assert a.name.endswith(b)
 
     assert y.shape == (1, 1000)
