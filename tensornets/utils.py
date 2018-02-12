@@ -331,7 +331,6 @@ def remove_commons(module_name, exceptions=[]):
         'division'
         'print_function',
         'remove_commons',
-        'np',
     ]
     module = sys.modules[module_name]
     for _common in _commons:
