@@ -23,7 +23,7 @@ The reference implementations:
 
 1. (initially and mainly) Keras
  - https://github.com/fchollet/keras/blob/master/keras/applications/resnet50.py
-2. (to reproduce the oricginal results) Caffe ResNet
+2. (to reproduce the original results) Caffe ResNet
  - https://github.com/KaimingHe/deep-residual-networks/tree/master/prototxt
 3. (to factorize over v2) Torch ResNets
  - https://github.com/facebook/fb.resnet.torch/blob/master/models/preresnet.lua
