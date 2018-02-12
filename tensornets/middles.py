@@ -40,6 +40,13 @@ def names_nasnets(k):
     return names
 
 
+def names_vggs(k):
+    names = []
+    for i in range(3):
+        names += ["conv%d/%d/Relu:0" % (i + 3, j + 1) for j in range(k)]
+    return names
+
+
 def direct(model_name):
     return __middles_dict__[model_name]
 
@@ -144,6 +151,8 @@ __middles_dict__ = {
         list(range(618, 754, 45)),
         names_nasnets(12),
     ),
+    'vgg16': (list(range(9, 26, 2)), names_vggs(3),),
+    'vgg19': (list(range(9, 32, 2)), names_vggs(4),),
     'densenet121': (
         list(range(12, 48, 7)) + [51] + list(range(58, 136, 7)) + [139] +
         list(range(146, 308, 7)) + [311] + list(range(318, 424, 7)),

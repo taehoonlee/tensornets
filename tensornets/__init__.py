@@ -24,6 +24,9 @@ from .resnets import WideResNet50
 from .nasnets import NASNetAlarge
 from .nasnets import NASNetAmobile
 
+from .vggs import VGG16
+from .vggs import VGG19
+
 from .densenets import DenseNet121
 from .densenets import DenseNet169
 from .densenets import DenseNet201

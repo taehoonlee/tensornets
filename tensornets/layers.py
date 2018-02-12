@@ -6,6 +6,7 @@ from tensorflow.contrib.layers import avg_pool2d
 from tensorflow.contrib.layers import batch_norm
 from tensorflow.contrib.layers import conv2d
 from tensorflow.contrib.layers import dropout
+from tensorflow.contrib.layers import flatten
 from tensorflow.contrib.layers import fully_connected
 from tensorflow.contrib.layers import max_pool2d
 from tensorflow.contrib.layers import separable_conv2d

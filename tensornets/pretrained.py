@@ -434,6 +434,28 @@ def load_nasnetAmobile(scopes, return_fn=_assign):
     return return_fn(scopes, values)
 
 
+def load_vgg16(scopes, return_fn=_assign):
+    """Copied from [Keras][3]."""
+    filename = 'vgg16_weights_tf_dim_ordering_tf_kernels.h5'
+    weights_path = get_file(
+        filename, __model_url__ + 'vgg/' + filename,
+        cache_subdir='models',
+        file_hash='64373286793e3c8b2b4e3219cbf3544b')
+    values = parse_keras_weights(weights_path)
+    return return_fn(scopes, values)
+
+
+def load_vgg19(scopes, return_fn=_assign):
+    """Copied from [Keras][3]."""
+    filename = 'vgg19_weights_tf_dim_ordering_tf_kernels.h5'
+    weights_path = get_file(
+        filename, __model_url__ + 'vgg/' + filename,
+        cache_subdir='models',
+        file_hash='cbe5617147190e668d6c5d5026f83318')
+    values = parse_keras_weights(weights_path)
+    return return_fn(scopes, values)
+
+
 # Dictionary for loading functions.
 __load_dict__ = {
     'inception1': load_inception1,
@@ -456,6 +478,8 @@ __load_dict__ = {
     'wideresnet50': load_wideresnet50,
     'nasnetAlarge': load_nasnetAlarge,
     'nasnetAmobile': load_nasnetAmobile,
+    'vgg16': load_vgg16,
+    'vgg19': load_vgg19,
     'densenet121': load_densenet121,
     'densenet169': load_densenet169,
     'densenet201': load_densenet201,
