@@ -24,7 +24,7 @@ The reference papers:
 The reference implementations:
 
 1. (initially and mainly for v3) Keras
- - https://github.com/fchollet/keras/blob/master/keras/applications/
+ - https://github.com/keras-team/keras/blob/master/keras/applications/
    inception_v3.py
 2. (mainly for v1,2,4,resnetv2) TF Slim
  - https://github.com/tensorflow/models/blob/master/research/slim/nets/

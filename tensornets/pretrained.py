@@ -8,7 +8,7 @@ serializes every single tensor from the following repositories:
      "BAIR Caffe Model Zoo"
 [2]: https://github.com/tensorflow/models/tree/master/research/slim
      "TF Slim"
-[3]: https://github.com/fchollet/keras/tree/master/keras/applications
+[3]: https://github.com/keras-team/keras/tree/master/keras/applications
      "Keras"
 [4]: https://github.com/KaimingHe/deep-residual-networks
      "Caffe ResNets"
