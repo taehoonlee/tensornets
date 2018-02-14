@@ -3,12 +3,18 @@ from __future__ import absolute_import
 import numpy as np
 import tensorflow as tf
 import tensornets as nets
+import os
 import pytest
 import random
 
 from tensornets.middles import direct
 
 from distutils.version import LooseVersion
+
+
+pytestmark = pytest.mark.skipif(
+    os.environ.get('CORE_CHANGED', 'True') == 'False',
+    reason='Runs only when the relevant files have been modified.')
 
 
 @pytest.mark.parametrize('net,shape', [
