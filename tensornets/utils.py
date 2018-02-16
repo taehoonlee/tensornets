@@ -119,8 +119,27 @@ def crop_idx(total_size, crop_size, crop_loc, crop_grid):
 
 
 def crop(img, crop_size, crop_loc=4, crop_grid=(3, 3)):
-    r, c = crop_idx(img.shape[1:3], crop_size, crop_loc, crop_grid)
-    return img[:, r:r+crop_size, c:c+crop_size, :]
+    if isinstance(crop_loc, list):
+        imgs = np.zeros((img.shape[0], len(crop_loc), crop_size, crop_size, 3),
+                        np.float32)
+        for (i, loc) in enumerate(crop_loc):
+            r, c = crop_idx(img.shape[1:3], crop_size, loc, crop_grid)
+            imgs[:, i] = img[:, r:r+crop_size, c:c+crop_size, :]
+        return imgs
+    elif crop_loc == np.prod(crop_grid) + 1:
+        imgs = np.zeros((img.shape[0], crop_loc, crop_size, crop_size, 3),
+                        np.float32)
+        r, c = crop_idx(img.shape[1:3], crop_size, 4, crop_grid)
+        imgs[:, 0] = img[:, r:r+crop_size, c:c+crop_size, :]
+        imgs[:, 1] = img[:, 0:crop_size, 0:crop_size, :]
+        imgs[:, 2] = img[:, 0:crop_size, -crop_size:, :]
+        imgs[:, 3] = img[:, -crop_size:, 0:crop_size, :]
+        imgs[:, 4] = img[:, -crop_size:, -crop_size:, :]
+        imgs[:, 5:] = np.flip(imgs[:, :5], axis=3)
+        return imgs
+    else:
+        r, c = crop_idx(img.shape[1:3], crop_size, crop_loc, crop_grid)
+        return img[:, r:r+crop_size, c:c+crop_size, :]
 
 
 def init(scopes):
