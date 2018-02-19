@@ -11,11 +11,11 @@ The reference papers:
  - Kaiming He, Xiangyu Zhang, Shaoqing Ren, Jian Sun
  - https://arxiv.org/abs/1603.05027
 3. ResNeXt
- - Aggregated Residual Transformations for Deep Neural Networks, arXiv 2016
+ - Aggregated Residual Transformations for Deep Neural Networks, CVPR 2017
  - Saining Xie, Ross Girshick, Piotr Dollar, Zhuowen Tu, Kaiming He
  - https://arxiv.org/abs/1611.05431
 4. WideResNet
- - Wide Residual Networks
+ - Wide Residual Networks, BMVC 2016
  - Sergey Zagoruyko, Nikos Komodakis
  - https://arxiv.org/abs/1605.07146
 
