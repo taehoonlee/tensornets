@@ -36,7 +36,9 @@ def __args__(is_training):
     return [([conv2d], {'padding': 'SAME', 'activation_fn': None,
                         'scope': 'conv'}),
             ([dropout], {'is_training': is_training}),
-            ([fully_connected], {'activation_fn': None, 'scope': 'fc'})]
+            ([flatten], {'scope': 'flatten'}),
+            ([fully_connected], {'activation_fn': None, 'scope': 'fc'}),
+            ([max_pool2d], {'scope': 'pool'})]
 
 
 def vgg(x, blocks, is_training, classes, scope=None, reuse=None):
@@ -45,13 +47,13 @@ def vgg(x, blocks, is_training, classes, scope=None, reuse=None):
     x = stack(x, 256, blocks[2], scope='conv3')
     x = stack(x, 512, blocks[3], scope='conv4')
     x = stack(x, 512, blocks[4], scope='conv5')
-    x = flatten(x, scope='flatten')
+    x = flatten(x)
     x = fully_connected(x, 4096, scope='fc6')
     x = relu(x, name='relu6')
-    x = dropout(x, keep_prob=0.5, is_training=is_training, scope='drop6')
+    x = dropout(x, keep_prob=0.5, scope='drop6')
     x = fully_connected(x, 4096, scope='fc7')
     x = relu(x, name='relu7')
-    x = dropout(x, keep_prob=0.5, is_training=is_training, scope='drop7')
+    x = dropout(x, keep_prob=0.5, scope='drop7')
     x = fully_connected(x, classes, scope='logits')
     x = softmax(x, name='probs')
     return x
@@ -73,7 +75,7 @@ def vgg19(x, is_training=False, classes=1000, scope=None, reuse=None):
 def stack(x, filters, blocks, scope=None):
     for i in range(1, blocks+1):
         x = conv(x, filters, 3, scope=str(i))
-    x = max_pool2d(x, 2, stride=2, scope='pool')
+    x = max_pool2d(x, 2, stride=2)
     return x
 
 
