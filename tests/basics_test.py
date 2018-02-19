@@ -50,11 +50,10 @@ pytestmark = pytest.mark.skipif(
         marks=pytest.mark.xfail(
             LooseVersion(tf.__version__) < LooseVersion('1.3.0'),
             reason='NASNetAmobile requires TensorFlow >= 1.3.0')),
-    pytest.param(
-        random.choice([nets.VGG16, nets.VGG19]), (224, 224, 3),
-        marks=pytest.mark.xfail(
-            LooseVersion(tf.__version__) < LooseVersion('1.3.0'),
-            reason='VGG naming tests requires TensorFlow >= 1.3.0')),
+    random.choice([
+        (nets.VGG16, (224, 224, 3)),
+        (nets.VGG19, (224, 224, 3)),
+    ]),
     random.choice([
         (nets.DenseNet121, (224, 224, 3)),
         (nets.DenseNet169, (224, 224, 3)),

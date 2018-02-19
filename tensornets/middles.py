@@ -151,8 +151,16 @@ __middles_dict__ = {
         list(range(618, 754, 45)),
         names_nasnets(12),
     ),
-    'vgg16': (list(range(9, 26, 2)), names_vggs(3),),
-    'vgg19': (list(range(9, 32, 2)), names_vggs(4),),
+    'vgg16': (
+        list(range(11, 16, 2)) + list(range(18, 23, 2)) +
+        list(range(25, 30, 2)),
+        names_vggs(3),
+    ),
+    'vgg19': (
+        list(range(11, 18, 2)) + list(range(20, 27, 2)) +
+        list(range(29, 36, 2)),
+        names_vggs(4),
+    ),
     'densenet121': (
         list(range(12, 48, 7)) + [51] + list(range(58, 136, 7)) + [139] +
         list(range(146, 308, 7)) + [311] + list(range(318, 424, 7)),
