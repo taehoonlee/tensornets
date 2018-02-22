@@ -3,6 +3,7 @@ from __future__ import absolute_import
 import tensorflow as tf
 
 from .utils import ops_to_outputs
+from .utils import __later_tf_version__
 
 
 argmax = ops_to_outputs(tf.argmax)
@@ -24,6 +25,9 @@ squeeze = ops_to_outputs(tf.squeeze)
 to_int32 = ops_to_outputs(tf.to_int32)
 
 
-@ops_to_outputs
-def lrelu(x, alpha=0.3, name=None):
-    return tf.add(tf.nn.relu(x), -alpha * tf.nn.relu(-x), name=name)
+if __later_tf_version__:
+    leaky_relu = ops_to_outputs(tf.nn.leaky_relu)
+else:
+    @ops_to_outputs
+    def leaky_relu(x, alpha=0.2, name=None):
+        return tf.add(tf.nn.relu(x), -alpha * tf.nn.relu(-x), name=name)
