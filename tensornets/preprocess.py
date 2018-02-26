@@ -1,5 +1,10 @@
 import numpy as np
 
+try:
+    import cv2
+except ImportError:
+    cv2 = None
+
 
 def preprocess(scopes, inputs):
     import warnings
@@ -28,9 +33,13 @@ def preprocess(scopes, inputs):
     return outputs
 
 
-def direct(model_name):
-    def _direct(inputs):
-        return __preprocess_dict__[model_name](inputs)
+def direct(model_name, target_size):
+    if 'yolo' in model_name:
+        def _direct(inputs):
+            return __preprocess_dict__[model_name](inputs, target_size)
+    else:
+        def _direct(inputs):
+            return __preprocess_dict__[model_name](inputs)
     return _direct
 
 
@@ -92,6 +101,21 @@ def wrn_preprocess(x):
     return x
 
 
+def darknet_preprocess(x, target_size=None):
+    # Refer to the following darkflow
+    # https://github.com/thtrieu/darkflow/blob/master/darkflow/net/yolo/predict.py
+    if target_size is None:
+        y = x.copy()
+    else:
+        assert cv2 is not None, 'resizing requires `cv2`.'
+        y = np.zeros((len(x),) + target_size + (x.shape[3],))
+        for i in range(len(x)):
+            y[i] = cv2.resize(x[i], target_size, interpolation=cv2.INTER_CUBIC)
+    y = y[:, :, :, ::-1]
+    y /= 255.
+    return y
+
+
 # Dictionary for pre-processing functions.
 __preprocess_dict__ = {
     'inception': tfslim_preprocess,
@@ -130,4 +154,7 @@ __preprocess_dict__ = {
     'mobilenet75': tfslim_preprocess,
     'mobilenet100': tfslim_preprocess,
     'squeezenet': bair_preprocess,
+    'REFyolov2': darknet_preprocess,
+    'REFyolov2voc': darknet_preprocess,
+    'REFtinyyolov2voc': darknet_preprocess,
 }

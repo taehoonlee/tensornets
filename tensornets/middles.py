@@ -196,4 +196,8 @@ __middles_dict__ = {
         [9, 16, 17, 24, 31, 32] + list(range(39, 61, 7)) + [63],
         names_squeezenet()
     ),
+    'REFyolov2': ([-1], ['linear/BiasAdd:0']),
+    'REFyolov2voc': ([-1], ['linear/BiasAdd:0']),
+    'REFtinyyolov2': ([-1], ['linear/BiasAdd:0']),
+    'REFtinyyolov2voc': ([-1], ['linear/BiasAdd:0']),
 }

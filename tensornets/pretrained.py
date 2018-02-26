@@ -22,6 +22,10 @@ serializes every single tensor from the following repositories:
      "Caffe SqueezeNets"
 [9]: https://github.com/szagoruyko/wide-residual-networks
      "Torch WideResNets"
+[10]: https://pjreddie.com/darknet/yolo/
+     "Darknet"
+[11]: https://github.com/thtrieu/darkflow
+     "TF darkflow"
 """
 from __future__ import absolute_import
 
@@ -456,6 +460,39 @@ def load_vgg19(scopes, return_fn=_assign):
     return return_fn(scopes, values)
 
 
+def load_ref_yolo_v2(scopes, return_fn=_assign):
+    """Converted from the original [Darknet][10] using the [darkflow][11]."""
+    filename = 'ref_yolo_v2.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'yolo/' + filename,
+        cache_subdir='models',
+        file_hash='bacf9f08bc229d11287a4fa3736a6bad')
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
+
+
+def load_ref_yolo_v2_voc(scopes, return_fn=_assign):
+    """Converted from the original [Darknet][10] using the [darkflow][11]."""
+    filename = 'ref_yolo_v2_voc.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'yolo/' + filename,
+        cache_subdir='models',
+        file_hash='5d7e3c739f8876ee5facbdc5ec6e53d5')
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
+
+
+def load_ref_tiny_yolo_v2_voc(scopes, return_fn=_assign):
+    """Converted from the original [Darknet][10] using the [darkflow][11]."""
+    filename = 'ref_tiny_yolo_v2_voc.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'yolo/' + filename,
+        cache_subdir='models',
+        file_hash='e1ec6a037a217811e08568b105c22c0f')
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
+
+
 # Dictionary for loading functions.
 __load_dict__ = {
     'inception1': load_inception1,
@@ -488,4 +525,7 @@ __load_dict__ = {
     'mobilenet75': load_mobilenet75,
     'mobilenet100': load_mobilenet100,
     'squeezenet': load_squeezenet,
+    'REFyolov2': load_ref_yolo_v2,
+    'REFyolov2voc': load_ref_yolo_v2_voc,
+    'REFtinyyolov2voc': load_ref_tiny_yolo_v2_voc,
 }

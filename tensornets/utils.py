@@ -165,10 +165,11 @@ def var_scope(name):
                     from .preprocess import direct as p1
                     from .pretrained import direct as p2
                     _scope = tf.get_variable_scope().name
+                    _input_shape = tuple([i.value for i in args[0].shape[1:3]])
                     _outs = get_outputs(_scope)
                     for i in p0(name)[0]:
                         collect_named_outputs(__middles__, _scope, _outs[i])
-                    setattr(x, 'preprocess', p1(name))
+                    setattr(x, 'preprocess', p1(name, _input_shape))
                     setattr(x, 'pretrained', p2(name, _scope))
                     setattr(x, 'get_bottleneck',
                             lambda: get_bottleneck(_scope))
