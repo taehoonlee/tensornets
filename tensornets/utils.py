@@ -12,6 +12,11 @@ from tensorflow.contrib.framework import arg_scope
 from tensorflow.contrib.layers.python.layers.utils import collect_named_outputs
 from tensorflow.python.framework import ops
 
+try:
+    from darkflow.cython_utils.cy_yolo2_findboxes import box_constructor
+except ImportError:
+    box_constructor = None
+
 from .imagenet_utils import *
 from .keras_utils import *
 from .layers import conv2d
@@ -329,6 +334,34 @@ def parse_torch_weights(weights_path, move_rules=None):
             values.append(val)
 
     return values
+
+
+def yolo_boxes(opts, outs, source_size):
+    assert box_constructor is not None, '`get_boxes` requires `darkflow`.'
+    h, w = source_size
+    threshold = opts['thresh']
+    boxes = [[] for _ in xrange(opts['classes'])]
+    results = box_constructor(opts, outs[0].copy())
+    for b in results:
+        max_indx = np.argmax(b.probs)
+        max_prob = b.probs[max_indx]
+        if max_prob > threshold:
+            left = int((b.x - b.w / 2) * w)
+            right = int((b.x + b.w / 2) * w)
+            top = int((b.y - b.h / 2) * h)
+            bot = int((b.y + b.h / 2) * h)
+            if left < 0:
+                left = 0
+            if right > w - 1:
+                right = w - 1
+            if top < 0:
+                top = 0
+            if bot > h - 1:
+                bot = h - 1
+            boxes[max_indx].append((left, top, right, bot, max_prob))
+    for i in xrange(opts['classes']):
+        boxes[i] = np.asarray(boxes[i], dtype=np.float32)
+    return boxes
 
 
 def remove_utils(module_name, exceptions):
