@@ -41,12 +41,20 @@ def __args__(is_training):
             ([max_pool2d], {'scope': 'pool'})]
 
 
+@var_scope('stack')
+def _stack(x, filters, blocks, scope=None):
+    for i in range(1, blocks+1):
+        x = conv(x, filters, 3, scope=str(i))
+    x = max_pool2d(x, 2, stride=2)
+    return x
+
+
 def vgg(x, blocks, is_training, classes, scope=None, reuse=None):
-    x = stack(x, 64, blocks[0], scope='conv1')
-    x = stack(x, 128, blocks[1], scope='conv2')
-    x = stack(x, 256, blocks[2], scope='conv3')
-    x = stack(x, 512, blocks[3], scope='conv4')
-    x = stack(x, 512, blocks[4], scope='conv5')
+    x = _stack(x, 64, blocks[0], scope='conv1')
+    x = _stack(x, 128, blocks[1], scope='conv2')
+    x = _stack(x, 256, blocks[2], scope='conv3')
+    x = _stack(x, 512, blocks[3], scope='conv4')
+    x = _stack(x, 512, blocks[4], scope='conv5')
     x = flatten(x)
     x = fully_connected(x, 4096, scope='fc6')
     x = relu(x, name='relu6')
@@ -69,14 +77,6 @@ def vgg16(x, is_training=False, classes=1000, scope=None, reuse=None):
 @set_args(__args__)
 def vgg19(x, is_training=False, classes=1000, scope=None, reuse=None):
     return vgg(x, [2, 2, 4, 4, 4], is_training, classes, scope, reuse)
-
-
-@var_scope('stack')
-def stack(x, filters, blocks, scope=None):
-    for i in range(1, blocks+1):
-        x = conv(x, filters, 3, scope=str(i))
-    x = max_pool2d(x, 2, stride=2)
-    return x
 
 
 # Simple alias.

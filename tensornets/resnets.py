@@ -77,19 +77,19 @@ def resnet(x, preact, stack_fn, is_training, classes, scope=None, reuse=None):
 @var_scope('resnet50')
 @set_args(__args__)
 def resnet50(x, is_training=False, classes=1000, scope=None, reuse=None):
-    def stack(x):
+    def stack_fn(x):
         x = _stack(x, _block1, 64, 3, stride1=1, scope='conv2')
         x = _stack(x, _block1, 128, 4, scope='conv3')
         x = _stack(x, _block1, 256, 6, scope='conv4')
         x = _stack(x, _block1, 512, 3, scope='conv5')
         return x
-    return resnet(x, False, stack, is_training, classes, scope, reuse)
+    return resnet(x, False, stack_fn, is_training, classes, scope, reuse)
 
 
 @var_scope('resnet50v2')
 @set_args(__args__)
 def resnet50v2(x, is_training=False, classes=1000, scope=None, reuse=None):
-    def stack(x):
+    def stack_fn(x):
         x = _stacks(x, 64, 3, scope='conv2')
         x = _stacks(x, 128, 4, scope='conv3')
         x = _stacks(x, 256, 6, scope='conv4')
@@ -97,25 +97,25 @@ def resnet50v2(x, is_training=False, classes=1000, scope=None, reuse=None):
         x = batch_norm(x, scope='postnorm')
         x = relu(x)
         return x
-    return resnet(x, True, stack, is_training, classes, scope, reuse)
+    return resnet(x, True, stack_fn, is_training, classes, scope, reuse)
 
 
 @var_scope('resnet101')
 @set_args(__args__)
 def resnet101(x, is_training=False, classes=1000, scope=None, reuse=None):
-    def stack(x):
+    def stack_fn(x):
         x = _stack(x, _block1, 64, 3, stride1=1, scope='conv2')
         x = _stack(x, _block1, 128, 4, scope='conv3')
         x = _stack(x, _block1, 256, 23, scope='conv4')
         x = _stack(x, _block1, 512, 3, scope='conv5')
         return x
-    return resnet(x, False, stack, is_training, classes, scope, reuse)
+    return resnet(x, False, stack_fn, is_training, classes, scope, reuse)
 
 
 @var_scope('resnet101v2')
 @set_args(__args__)
 def resnet101v2(x, is_training=False, classes=1000, scope=None, reuse=None):
-    def stack(x):
+    def stack_fn(x):
         x = _stacks(x, 64, 3, scope='conv2')
         x = _stacks(x, 128, 4, scope='conv3')
         x = _stacks(x, 256, 23, scope='conv4')
@@ -123,25 +123,25 @@ def resnet101v2(x, is_training=False, classes=1000, scope=None, reuse=None):
         x = batch_norm(x, scope='postnorm')
         x = relu(x)
         return x
-    return resnet(x, True, stack, is_training, classes, scope, reuse)
+    return resnet(x, True, stack_fn, is_training, classes, scope, reuse)
 
 
 @var_scope('resnet152')
 @set_args(__args__)
 def resnet152(x, is_training=False, classes=1000, scope=None, reuse=None):
-    def stack(x):
+    def stack_fn(x):
         x = _stack(x, _block1, 64, 3, stride1=1, scope='conv2')
         x = _stack(x, _block1, 128, 8, scope='conv3')
         x = _stack(x, _block1, 256, 36, scope='conv4')
         x = _stack(x, _block1, 512, 3, scope='conv5')
         return x
-    return resnet(x, False, stack, is_training, classes, scope, reuse)
+    return resnet(x, False, stack_fn, is_training, classes, scope, reuse)
 
 
 @var_scope('resnet152v2')
 @set_args(__args__)
 def resnet152v2(x, is_training=False, classes=1000, scope=None, reuse=None):
-    def stack(x):
+    def stack_fn(x):
         x = _stacks(x, 64, 3, scope='conv2')
         x = _stacks(x, 128, 8, scope='conv3')
         x = _stacks(x, 256, 36, scope='conv4')
@@ -149,13 +149,13 @@ def resnet152v2(x, is_training=False, classes=1000, scope=None, reuse=None):
         x = batch_norm(x, scope='postnorm')
         x = relu(x)
         return x
-    return resnet(x, True, stack, is_training, classes, scope, reuse)
+    return resnet(x, True, stack_fn, is_training, classes, scope, reuse)
 
 
 @var_scope('resnet200v2')
 @set_args(__args__)
 def resnet200v2(x, is_training=False, classes=1000, scope=None, reuse=None):
-    def stack(x):
+    def stack_fn(x):
         x = _stack(x, _block2, 64, 3, stride1=1, scope='conv2')
         x = _stack(x, _block2, 128, 24, scope='conv3')
         x = _stack(x, _block2, 256, 36, scope='conv4')
@@ -163,55 +163,55 @@ def resnet200v2(x, is_training=False, classes=1000, scope=None, reuse=None):
         x = batch_norm(x)
         x = relu(x)
         return x
-    return resnet(x, False, stack, is_training, classes, scope, reuse)
+    return resnet(x, False, stack_fn, is_training, classes, scope, reuse)
 
 
 @var_scope('resnext50c32')
 @set_args(__args__, conv_bias=False)
 def resnext50c32(x, is_training=False, classes=1000, scope=None, reuse=None):
-    def stack(x):
+    def stack_fn(x):
         x = _stack(x, _block3c32, 128, 3, stride1=1, scope='conv2')
         x = _stack(x, _block3c32, 256, 4, scope='conv3')
         x = _stack(x, _block3c32, 512, 6, scope='conv4')
         x = _stack(x, _block3c32, 1024, 3, scope='conv5')
         return x
-    return resnet(x, False, stack, is_training, classes, scope, reuse)
+    return resnet(x, False, stack_fn, is_training, classes, scope, reuse)
 
 
 @var_scope('resnext101c32')
 @set_args(__args__, conv_bias=False)
 def resnext101c32(x, is_training=False, classes=1000, scope=None, reuse=None):
-    def stack(x):
+    def stack_fn(x):
         x = _stack(x, _block3c32, 128, 3, stride1=1, scope='conv2')
         x = _stack(x, _block3c32, 256, 4, scope='conv3')
         x = _stack(x, _block3c32, 512, 23, scope='conv4')
         x = _stack(x, _block3c32, 1024, 3, scope='conv5')
         return x
-    return resnet(x, False, stack, is_training, classes, scope, reuse)
+    return resnet(x, False, stack_fn, is_training, classes, scope, reuse)
 
 
 @var_scope('resnext101c64')
 @set_args(__args__, conv_bias=False)
 def resnext101c64(x, is_training=False, classes=1000, scope=None, reuse=None):
-    def stack(x):
+    def stack_fn(x):
         x = _stack(x, _block3c64, 256, 3, stride1=1, scope='conv2')
         x = _stack(x, _block3c64, 512, 4, scope='conv3')
         x = _stack(x, _block3c64, 1024, 23, scope='conv4')
         x = _stack(x, _block3c64, 2048, 3, scope='conv5')
         return x
-    return resnet(x, False, stack, is_training, classes, scope, reuse)
+    return resnet(x, False, stack_fn, is_training, classes, scope, reuse)
 
 
 @var_scope('wideresnet50')
 @set_args(__args__, conv_bias=False)
 def wideresnet50(x, is_training=False, classes=1000, scope=None, reuse=None):
-    def stack(x):
+    def stack_fn(x):
         x = _stack(x, _blockw, 128, 3, stride1=1, scope='conv2')
         x = _stack(x, _blockw, 256, 4, scope='conv3')
         x = _stack(x, _blockw, 512, 6, scope='conv4')
         x = _stack(x, _blockw, 1024, 3, scope='conv5')
         return x
-    return resnet(x, False, stack, is_training, classes, scope, reuse)
+    return resnet(x, False, stack_fn, is_training, classes, scope, reuse)
 
 
 @var_scope('stack')

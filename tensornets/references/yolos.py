@@ -48,7 +48,7 @@ def conv(*args, **kwargs):
 
 
 @var_scope('stack')
-def stack(x, filters, blocks, scope=None):
+def _stack(x, filters, blocks, scope=None):
     for i in range(1, blocks+1):
         if i % 2 > 0:
             x = conv(x, filters, 3, scope=str(i))
@@ -69,17 +69,17 @@ def local_flatten(x, scope=None):
 
 
 def yolo(x, blocks, filters, is_training, classes, scope=None, reuse=None):
-    x = stack(x, 32, blocks[0], scope='conv1')
+    x = _stack(x, 32, blocks[0], scope='conv1')
     x = max_pool2d(x, 2, stride=2, scope='pool1')
-    x = stack(x, 64, blocks[1], scope='conv2')
+    x = _stack(x, 64, blocks[1], scope='conv2')
     x = max_pool2d(x, 2, stride=2, scope='pool2')
-    x = stack(x, 128, blocks[2], scope='conv3')
+    x = _stack(x, 128, blocks[2], scope='conv3')
     x = max_pool2d(x, 2, stride=2, scope='pool3')
-    x = stack(x, 256, blocks[3], scope='conv4')
+    x = _stack(x, 256, blocks[3], scope='conv4')
     x = max_pool2d(x, 2, stride=2, scope='pool4')
-    x = p = stack(x, 512, blocks[4], scope='conv5')
+    x = p = _stack(x, 512, blocks[4], scope='conv5')
     x = max_pool2d(x, 2, stride=2, scope='pool5')
-    x = stack(x, 1024, blocks[5], scope='conv6')
+    x = _stack(x, 1024, blocks[5], scope='conv6')
 
     x = conv(x, 1024, 3, scope='conv7')
     x = conv(x, 1024, 3, scope='conv8')

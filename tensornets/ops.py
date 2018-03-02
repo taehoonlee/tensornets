@@ -22,6 +22,7 @@ softmax = ops_to_outputs(tf.nn.softmax)
 sqrt = ops_to_outputs(tf.sqrt)
 square = ops_to_outputs(tf.square)
 squeeze = ops_to_outputs(tf.squeeze)
+stack = ops_to_outputs(tf.stack)
 to_int32 = ops_to_outputs(tf.to_int32)
 
 
