@@ -107,10 +107,11 @@ def darknet_preprocess(x, target_size=None):
     if target_size is None:
         y = x.copy()
     else:
+        h, w = target_size
         assert cv2 is not None, 'resizing requires `cv2`.'
-        y = np.zeros((len(x),) + target_size + (x.shape[3],))
+        y = np.zeros((len(x), h, w, x.shape[3]))
         for i in range(len(x)):
-            y[i] = cv2.resize(x[i], target_size, interpolation=cv2.INTER_CUBIC)
+            y[i] = cv2.resize(x[i], (w, h), interpolation=cv2.INTER_CUBIC)
     y = y[:, :, :, ::-1]
     y /= 255.
     return y
