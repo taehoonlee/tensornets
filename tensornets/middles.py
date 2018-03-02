@@ -48,7 +48,10 @@ def names_vggs(k):
 
 
 def direct(model_name):
-    return __middles_dict__[model_name]
+    try:
+        return __middles_dict__[model_name]
+    except KeyError:
+        return ([-1], ['out:0'])
 
 
 # Dictionary for lists of representative endpoints.
