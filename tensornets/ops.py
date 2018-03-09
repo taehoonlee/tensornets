@@ -33,3 +33,17 @@ else:
     @ops_to_outputs
     def leaky_relu(x, alpha=0.2, name=None):
         return tf.add(tf.nn.relu(x), -alpha * tf.nn.relu(-x), name=name)
+
+
+@ops_to_outputs
+def srn(x, depth_radius, alpha=1.0, beta=0.5, name=None):
+    # Refer to the following code snippet
+    # https://github.com/tensorflow/tensorflow/issues/1246#issuecomment-188588051
+    squared_sum = tf.nn.depthwise_conv2d(
+        tf.square(x),
+        tf.ones([depth_radius] * 2 + [tf.shape(x)[3], 1], dtype=tf.float32),
+        [1, 1, 1, 1],
+        'SAME')
+    alpha = tf.constant(alpha / (depth_radius ** 2), dtype=tf.float32)
+    beta = tf.constant(beta, dtype=tf.float32)
+    return tf.divide(x, (1.0 + alpha * squared_sum) ** beta, name=name)
