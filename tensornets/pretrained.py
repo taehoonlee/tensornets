@@ -26,6 +26,8 @@ serializes every single tensor from the following repositories:
      "Darknet"
 [11]: https://github.com/thtrieu/darkflow
      "TF darkflow"
+[12]: https://github.com/rbgirshick/py-faster-rcnn
+     "Caffe Faster RCNN"
 """
 from __future__ import absolute_import
 
@@ -493,6 +495,28 @@ def load_ref_tiny_yolo_v2_voc(scopes, return_fn=_assign):
     return return_fn(scopes, values)
 
 
+def load_ref_faster_rcnn_zf_voc(scopes, return_fn=_assign):
+    """Converted from the [Caffe Faster RCNN][12]."""
+    filename = 'ref_faster_rcnn_zf_voc.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'rcnn/' + filename,
+        cache_subdir='models',
+        file_hash='85334b1bc42f00820bf8ef6658e7ebb8')
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
+
+
+def load_ref_faster_rcnn_vgg16_voc(scopes, return_fn=_assign):
+    """Converted from the [Caffe Faster RCNN][12]."""
+    filename = 'ref_faster_rcnn_vgg16_voc.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'rcnn/' + filename,
+        cache_subdir='models',
+        file_hash='070db4ca24d2ee22336af45a364f8175')
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
+
+
 # Dictionary for loading functions.
 __load_dict__ = {
     'inception1': load_inception1,
@@ -528,4 +552,6 @@ __load_dict__ = {
     'REFyolov2': load_ref_yolo_v2,
     'REFyolov2voc': load_ref_yolo_v2_voc,
     'REFtinyyolov2voc': load_ref_tiny_yolo_v2_voc,
+    'REFfasterrcnnZFvoc': load_ref_faster_rcnn_zf_voc,
+    'REFfasterrcnnVGG16voc': load_ref_faster_rcnn_vgg16_voc,
 }

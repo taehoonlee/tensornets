@@ -40,10 +40,13 @@ from .squeezenets import SqueezeNet
 
 from .capsulenets import CapsuleNet
 
-from .references.yolos import YOLOv2
-from .references.yolos import YOLOv2VOC
-from .references.yolos import TinyYOLOv2
-from .references.yolos import TinyYOLOv2VOC
+from .references import YOLOv2
+from .references import YOLOv2VOC
+from .references import TinyYOLOv2
+from .references import TinyYOLOv2VOC
+
+from .references import FasterRCNN_ZF_VOC
+from .references import FasterRCNN_VGG16_VOC
 
 from .preprocess import preprocess
 from .pretrained import assign as pretrained
