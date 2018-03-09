@@ -48,6 +48,7 @@ from .layers import convrelu0 as conv0
 from .layers import convbnrelu as conv
 
 from .ops import *
+from .utils import pad_info
 from .utils import set_args
 from .utils import var_scope
 
@@ -66,7 +67,7 @@ def __args__(is_training):
 @var_scope('inception1')
 @set_args(__args__)
 def inception1(x, is_training=False, classes=1000, scope=None, reuse=None):
-    x = pad(x, [[0, 0], [3, 3], [3, 3], [0, 0]], name='pad')
+    x = pad(x, pad_info(7), name='pad')
     x = conv0(x, 64, 7, stride=2, padding='VALID', scope='block1')
     x = max_pool2d(x, 3, stride=2, scope='pool1')
     x = lrn(x, depth_radius=2, alpha=0.00002, beta=0.75, name='lrn1')

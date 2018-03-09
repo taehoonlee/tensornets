@@ -45,6 +45,7 @@ from .layers import max_pool2d
 from .layers import convbn as conv
 
 from .ops import *
+from .utils import pad_info
 from .utils import set_args
 from .utils import var_scope
 
@@ -59,13 +60,13 @@ def __args__(is_training):
 
 
 def resnet(x, preact, stack_fn, is_training, classes, scope=None, reuse=None):
-    x = pad(x, [[0, 0], [3, 3], [3, 3], [0, 0]], name='conv1/pad')
+    x = pad(x, pad_info(7), name='conv1/pad')
     if preact:
         x = conv2d(x, 64, 7, stride=2, scope='conv1')
     else:
         x = conv(x, 64, 7, stride=2, scope='conv1')
         x = relu(x, name='conv1/relu')
-    x = pad(x, [[0, 0], [1, 1], [1, 1], [0, 0]], name='pool1/pad')
+    x = pad(x, pad_info(3), name='pool1/pad')
     x = max_pool2d(x, 3, stride=2, scope='pool1')
     x = stack_fn(x)
     x = reduce_mean(x, [1, 2], name='avgpool')
@@ -261,7 +262,7 @@ def _block2(x, filters, kernel_size=3, stride=1,
     x = relu(x)
     x = conv(x, filters, 1, stride=1, scope='1')
     x = relu(x, name='1/relu')
-    x = pad(x, [[0, 0], [1, 1], [1, 1], [0, 0]], name='2/pad')
+    x = pad(x, pad_info(kernel_size), name='2/pad')
     x = conv(x, filters, kernel_size, stride=stride, scope='2')
     x = relu(x, name='2/relu')
     x = conv2d(x, 4 * filters, 1, stride=1, scope='3/conv')
@@ -280,7 +281,7 @@ def _block2s(x, filters, kernel_size=3, stride=1,
         shortcut = max_pool2d(x, 1, stride, scope='0') if stride > 1 else x
     x = conv(preact, filters, 1, stride=1, biases_initializer=None, scope='1')
     x = relu(x, name='1/relu')
-    x = pad(x, [[0, 0], [1, 1], [1, 1], [0, 0]], name='2/pad')
+    x = pad(x, pad_info(kernel_size), name='2/pad')
     x = conv(x, filters, kernel_size, stride=stride, biases_initializer=None,
              scope='2')
     x = relu(x, name='2/relu')
@@ -298,7 +299,7 @@ def _block3c32(x, filters, kernel_size=3, stride=1,
         shortcut = x
     x = conv(x, filters, 1, stride=1, scope='1')
     x = relu(x, name='1/relu')
-    x = pad(x, [[0, 0], [1, 1], [1, 1], [0, 0]], name='2/pad')
+    x = pad(x, pad_info(kernel_size), name='2/pad')
     channels = filters // 32
     convgroups = [conv2d(x[:, :, :, c*channels:(c+1)*channels], channels,
                          kernel_size, stride=stride, scope="2/%d" % c)
@@ -320,7 +321,7 @@ def _block3c64(x, filters, kernel_size=3, stride=1,
         shortcut = x
     x = conv(x, filters, 1, stride=1, scope='1')
     x = relu(x, name='1/relu')
-    x = pad(x, [[0, 0], [1, 1], [1, 1], [0, 0]], name='2/pad')
+    x = pad(x, pad_info(kernel_size), name='2/pad')
     channels = filters // 64
     convgroups = [conv2d(x[:, :, :, c*channels:(c+1)*channels], channels,
                          kernel_size, stride=stride, scope="2/%d" % c)
@@ -342,7 +343,7 @@ def _blockw(x, filters, kernel_size=3, stride=1,
         shortcut = x
     x = conv(x, filters, 1, stride=1, scope='1')
     x = relu(x, name='1/relu')
-    x = pad(x, [[0, 0], [1, 1], [1, 1], [0, 0]], name='2/pad')
+    x = pad(x, pad_info(kernel_size), name='2/pad')
     x = conv(x, filters, kernel_size, stride=stride, scope='2')
     x = relu(x, name='2/relu')
     x = conv(x, 2 * filters, 1, stride=1, scope='3')

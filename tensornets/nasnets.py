@@ -29,6 +29,7 @@ from .layers import convbn as conv
 from .layers import sconvbn
 
 from .ops import *
+from .utils import pad_info
 from .utils import set_args
 from .utils import var_scope
 

@@ -23,6 +23,7 @@ from .layers import max_pool2d
 from .layers import convbnrelu as conv
 
 from .ops import *
+from .utils import pad_info
 from .utils import set_args
 from .utils import var_scope
 
@@ -37,9 +38,9 @@ def __args__(is_training):
 
 
 def densenet(x, blocks, is_training, classes, scope=None, reuse=None):
-    x = pad(x, [[0, 0], [3, 3], [3, 3], [0, 0]], name='conv1/pad')
+    x = pad(x, pad_info(7), name='conv1/pad')
     x = conv(x, 64, 7, stride=2, scope='conv1')
-    x = pad(x, [[0, 0], [1, 1], [1, 1], [0, 0]], name='pool1/pad')
+    x = pad(x, pad_info(3), name='pool1/pad')
     x = max_pool2d(x, 3, stride=2, scope='pool1')
 
     x = dense(x, blocks[0], scope='conv2')
