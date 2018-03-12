@@ -31,13 +31,13 @@ from ..utils import pad_info
 from ..utils import set_args
 from ..utils import var_scope
 
-from ..references.rpn_utils import bbox_transform_inv
-from ..references.rpn_utils import clip_boxes
-from ..references.rpn_utils import filter_boxes
-from ..references.rpn_utils import get_anchors
-from ..references.rpn_utils import get_shifts
-from ..references.rpn_utils import nms
-from ..references.rpn_utils import roi_pooling
+from .rpn_utils import bbox_transform_inv
+from .rpn_utils import clip_boxes
+from .rpn_utils import filter_boxes
+from .rpn_utils import get_anchors
+from .rpn_utils import get_shifts
+from .rpn_utils import nms
+from .rpn_utils import roi_pooling
 
 
 def __args__(is_training):

@@ -1,6 +1,6 @@
 """Collection of region proposal related utils
 
-The codes was largely taken from the original py-faster-rcnn
+The codes were largely taken from the original py-faster-rcnn
 (https://github.com/rbgirshick/py-faster-rcnn), and translated
 into TensorFlow. Especially, each part was from the following:
 
