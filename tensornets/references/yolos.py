@@ -59,13 +59,10 @@ def _stack(x, filters, blocks, scope=None):
 
 @var_scope('localflatten')
 def local_flatten(x, scope=None):
-    filters = x.shape[-1].value
-    x = expand_dims(x, -2, name='pre')
     x = concat([x[:, 0::2, 0::2], x[:, 0::2, 1::2],
                 x[:, 1::2, 0::2], x[:, 1::2, 1::2]],
-               axis=3, name='concat')
-    return reshape(x, [-1] + [s.value for s in x.shape[1:-2]] + [filters * 4],
-                   name='out')
+               axis=-1, name='concat')
+    return x
 
 
 def yolo(x, blocks, filters, is_training, classes, scope=None, reuse=None):

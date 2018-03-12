@@ -104,7 +104,7 @@ def wrn_preprocess(x):
 def darknet_preprocess(x, target_size=None):
     # Refer to the following darkflow
     # https://github.com/thtrieu/darkflow/blob/master/darkflow/net/yolo/predict.py
-    if target_size is None:
+    if target_size is None or target_size[0] is None or target_size[1] is None:
         y = x.copy()
     else:
         h, w = target_size
