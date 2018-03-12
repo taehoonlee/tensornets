@@ -77,43 +77,47 @@ def rp_net(x, meta, filters, anchors=9, feat_stride=16, spatial_scale=0.0625,
 
     x2 = conv2d(x, 4 * anchors, 1, scope='boxes')
 
-    # Enumerate all shifts
-    shifts = get_shifts(width, height, feat_stride)
+    # Force the following operations to use CPU
+    # Note that inference time may increase up to 10x without this designation
+    with tf.device('cpu:0'):
+        # Enumerate all shifts
+        shifts = get_shifts(width, height, feat_stride)
 
-    # Enumerate all shifted anchors
-    shifted_anchors = tf.expand_dims(get_anchors(), 0) + \
-        tf.expand_dims(shifts, 1)
-    shifted_anchors = tf.reshape(shifted_anchors, (-1, 4))
+        # Enumerate all shifted anchors
+        shifted_anchors = tf.expand_dims(get_anchors(), 0) + \
+            tf.expand_dims(shifts, 1)
+        shifted_anchors = tf.reshape(shifted_anchors, (-1, 4))
 
-    # Same story for the scores
-    scores = tf.reshape(x1[:, :, :, anchors:], (-1, height * width * anchors))
-    bbox_deltas = tf.reshape(x2, (-1, height * width * anchors, 4))
+        # Same story for the scores
+        scores = tf.reshape(x1[:, :, :, anchors:],
+                            (-1, height * width * anchors))
+        bbox_deltas = tf.reshape(x2, (-1, height * width * anchors, 4))
 
-    # Convert anchors into proposals via bbox transformations
-    proposals = bbox_transform_inv(shifted_anchors, bbox_deltas)
+        # Convert anchors into proposals via bbox transformations
+        proposals = bbox_transform_inv(shifted_anchors, bbox_deltas)
 
-    # 2. clip predicted boxes to image
-    proposals = clip_boxes(proposals, meta[0, :2])
+        # 2. clip predicted boxes to image
+        proposals = clip_boxes(proposals, meta[0, :2])
 
-    # 3. remove predicted boxes with either height or width < threshold
-    # (NOTE: convert min_size to input image scale stored in im_info[2])
-    keep = filter_boxes(proposals, min_size * meta[0, 2])
-    scores = gather(scores, keep, axis=1, name='filtered/probs')
-    proposals = gather(proposals, keep, axis=1, name='filtered/boxes')
+        # 3. remove predicted boxes with either height or width < threshold
+        # (NOTE: convert min_size to input image scale stored in im_info[2])
+        keep = filter_boxes(proposals, min_size * meta[0, 2])
+        scores = gather(scores, keep, axis=1, name='filtered/probs')
+        proposals = gather(proposals, keep, axis=1, name='filtered/boxes')
 
-    # 4. sort all (proposal, score) pairs by score from highest to lowest
-    # 5. take top pre_nms_topN (e.g. 6000)
-    _, order = tf.nn.top_k(scores[0], k=pre_nms_topN)
-    scores = gather(scores, order, axis=1, name='topk/probs')
-    proposals = gather(proposals, order, axis=1, name='topk/boxes')
+        # 4. sort all (proposal, score) pairs by score from highest to lowest
+        # 5. take top pre_nms_topN (e.g. 6000)
+        _, order = tf.nn.top_k(scores[0], k=pre_nms_topN)
+        scores = gather(scores, order, axis=1, name='topk/probs')
+        proposals = gather(proposals, order, axis=1, name='topk/boxes')
 
-    # 6. apply nms (e.g. threshold = 0.7)
-    # 7. take after_nms_topN (e.g. 300)
-    # 8. return the top proposals (-> RoIs top)
-    keep = nms(proposals[0], scores[0], nms_thresh)
-    keep = keep[:post_nms_topN]
-    scores = gather(scores, keep, axis=1, name='nms/probs')
-    proposals = gather(proposals, keep, axis=1, name='nms/boxes')
+        # 6. apply nms (e.g. threshold = 0.7)
+        # 7. take after_nms_topN (e.g. 300)
+        # 8. return the top proposals (-> RoIs top)
+        keep = nms(proposals[0], scores[0], nms_thresh)
+        keep = keep[:post_nms_topN]
+        scores = gather(scores, keep, axis=1, name='nms/probs')
+        proposals = gather(proposals, keep, axis=1, name='nms/boxes')
 
     return tf.cast(tf.round(proposals * spatial_scale), dtype=tf.int32)
 
