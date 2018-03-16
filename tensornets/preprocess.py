@@ -117,26 +117,15 @@ def darknet_preprocess(x, target_size=None):
     return y
 
 
-def faster_rcnn_preprocess(x, min_shorter_side=None):
+def faster_rcnn_preprocess(x):
     # Refer to the following py-faster-rcnn
     # https://github.com/rbgirshick/py-faster-rcnn/blob/master/lib/fast_rcnn/test.py#L22
     # https://github.com/rbgirshick/py-faster-rcnn/blob/master/lib/fast_rcnn/config.py#L181
-    if min_shorter_side is None:
-        y = x.copy()
-        scale = 1.0
-    else:
-        assert cv2 is not None, 'resizing requires `cv2`.'
-        scale = float(min_shorter_side) / np.min(x.shape[1:3])
-        h = int(x.shape[1] * scale)
-        w = int(x.shape[2] * scale)
-        y = np.zeros((len(x), h, w, x.shape[3]))
-        for i in range(len(x)):
-            y[i] = cv2.resize(x[i], (w, h), interpolation=cv2.INTER_CUBIC)
-    y = y[:, :, :, ::-1]
+    y = x.copy()
     y[:, :, :, 0] -= 102.9801
     y[:, :, :, 1] -= 115.9465
     y[:, :, :, 2] -= 122.7717
-    return y, scale
+    return y
 
 
 # Dictionary for pre-processing functions.
