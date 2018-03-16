@@ -9,4 +9,5 @@ setup(name='tensornets',
       download_url='https://github.com/taehoonlee/tensornets/tarball/0.2.0',
       license='MIT',
       install_requires=['tensorflow'],
-      packages=['tensornets'])
+      packages=['tensornets', 'tensornets.datasets', 'tensornets.references'],
+      include_package_data=True)
