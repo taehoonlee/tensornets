@@ -136,15 +136,15 @@ def bbox_transform_inv(boxes, deltas):
     return pred_boxes
 
 
-def clip_boxes(boxes, im_shape):
+def clip_boxes(boxes, height, width):
     """
     Clip boxes to image boundaries.
     """
     pred_boxes = tf.stack([
-        tf.maximum(tf.minimum(boxes[:, :, 0], im_shape[1] - 1), 0),
-        tf.maximum(tf.minimum(boxes[:, :, 1], im_shape[0] - 1), 0),
-        tf.maximum(tf.minimum(boxes[:, :, 2], im_shape[1] - 1), 0),
-        tf.maximum(tf.minimum(boxes[:, :, 3], im_shape[0] - 1), 0)],
+        tf.maximum(tf.minimum(boxes[:, :, 0], width - 1), 0),
+        tf.maximum(tf.minimum(boxes[:, :, 1], height - 1), 0),
+        tf.maximum(tf.minimum(boxes[:, :, 2], width - 1), 0),
+        tf.maximum(tf.minimum(boxes[:, :, 3], height - 1), 0)],
         axis=-1)
     return pred_boxes
 
@@ -163,7 +163,7 @@ def nms(proposals, scores, thresh):
     x2 = proposals[:, 2]
     y2 = proposals[:, 3]
     areas = (x2 - x1 + 1) * (y2 - y1 + 1)
-    num = tf.range(scores.shape[0])
+    num = tf.range(tf.shape(scores)[0])
 
     def body(i, keep, screen):
         xx1 = tf.maximum(x1[i], x1)
@@ -179,12 +179,12 @@ def nms(proposals, scores, thresh):
         bools = (ovr <= thresh) & (num >= i) & (screen)
         i = tf.cond(tf.count_nonzero(bools) > 0,
                     lambda: tf.cast(tf.where(bools)[0, 0], tf.int32),
-                    lambda: scores.shape[0])
+                    lambda: tf.shape(scores)[0])
 
         return [i, tf.concat([keep, tf.stack([i])], axis=0), bools]
 
     def condition(i, keep, screen):
-        return i < scores.shape[0]
+        return i < tf.shape(scores)[0]
 
     i = tf.constant(0)
     i, keep, screen = tf.while_loop(

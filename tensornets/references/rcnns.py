@@ -58,7 +58,8 @@ def _stack(x, filters, blocks, pool_fn=max_pool2d, scope=None):
 
 
 @var_scope('rp_net')
-def rp_net(x, meta, filters, anchors=9, feat_stride=16, spatial_scale=0.0625,
+def rp_net(x, filters, original_height, original_width, scales,
+           anchors=9, feat_stride=16,
            nms_thresh=0.7,  # NMS threshold used on RPN proposals
            pre_nms_topN=6000,  # Number of top scoring boxes to keep before NMS
            post_nms_topN=300,  # Number of top scoring boxes to keep after NMS
@@ -97,17 +98,18 @@ def rp_net(x, meta, filters, anchors=9, feat_stride=16, spatial_scale=0.0625,
         proposals = bbox_transform_inv(shifted_anchors, bbox_deltas)
 
         # 2. clip predicted boxes to image
-        proposals = clip_boxes(proposals, meta[0, :2])
+        proposals = clip_boxes(proposals, original_height, original_width)
 
         # 3. remove predicted boxes with either height or width < threshold
         # (NOTE: convert min_size to input image scale stored in im_info[2])
-        keep = filter_boxes(proposals, min_size * meta[0, 2])
+        keep = filter_boxes(proposals, min_size * scales[0])
         scores = gather(scores, keep, axis=1, name='filtered/probs')
         proposals = gather(proposals, keep, axis=1, name='filtered/boxes')
 
         # 4. sort all (proposal, score) pairs by score from highest to lowest
         # 5. take top pre_nms_topN (e.g. 6000)
-        _, order = tf.nn.top_k(scores[0], k=pre_nms_topN)
+        _, order = tf.nn.top_k(scores[0], k=tf.shape(scores)[1])
+        order = order[:pre_nms_topN]
         scores = gather(scores, order, axis=1, name='topk/probs')
         proposals = gather(proposals, order, axis=1, name='topk/boxes')
 
@@ -119,19 +121,20 @@ def rp_net(x, meta, filters, anchors=9, feat_stride=16, spatial_scale=0.0625,
         scores = gather(scores, keep, axis=1, name='nms/probs')
         proposals = gather(proposals, keep, axis=1, name='nms/boxes')
 
-    return tf.cast(tf.round(proposals * spatial_scale), dtype=tf.int32)
+    return proposals
 
 
 @var_scope('roi_pool')
-def roi_pool2d(x, rois, kernel_size, scope=None):
-    return roi_pooling(x, tf.pad(rois[0], [[0, 0], [1, 0]]),
-                       kernel_size, kernel_size)
+def roi_pool2d(x, kernel_size, rois, spatial_scale=0.0625, scope=None):
+    rois = tf.cast(tf.round(rois * spatial_scale), dtype=tf.int32)
+    rois = tf.pad(rois[0], [[0, 0], [1, 0]])
+    return roi_pooling(x, rois, kernel_size, kernel_size)
 
 
 def rcnn(x, stem_fn, roi_pool_fn, is_training, classes,
          scope=None, reuse=None):
     x = stem_fn(x)
-    x = roi_pool_fn(x)
+    x, rois = roi_pool_fn(x)
     x = flatten(x)
     x = fully_connected(x, 4096, scope='fc6')
     x = relu(x, name='relu6')
@@ -143,6 +146,7 @@ def rcnn(x, stem_fn, roi_pool_fn, is_training, classes,
         softmax(fully_connected(x, classes, scope='logits'), name='probs'),
         fully_connected(x, 4 * classes, scope='boxes')
         ], axis=1, name='out')
+    x.rois = rois
     return x
 
 
@@ -150,7 +154,9 @@ def rcnn(x, stem_fn, roi_pool_fn, is_training, classes,
 @set_args(__args__)
 def faster_rcnn_zf_voc(x, is_training=False, classes=21,
                        scope=None, reuse=None):
-    metas = tf.placeholder(tf.float32, [None, 3])
+    scales = tf.placeholder(tf.float32, [None])
+    height = tf.cast(tf.shape(x)[1], dtype=tf.float32)
+    width = tf.cast(tf.shape(x)[2], dtype=tf.float32)
 
     def stem_fn(x):
         x = pad(x, pad_info(7), name='pad1')
@@ -171,12 +177,12 @@ def faster_rcnn_zf_voc(x, is_training=False, classes=21,
         return x
 
     def roi_pool_fn(x):
-        rois = rp_net(x, metas, 256)
-        x = roi_pool2d(x, rois, 6)
-        return x
+        rois = rp_net(x, 256, height, width, scales)
+        x = roi_pool2d(x, 6, rois)
+        return x, rois
 
     x = rcnn(x, stem_fn, roi_pool_fn, is_training, classes, scope, reuse)
-    x.metas = metas
+    x.scales = scales
     return x
 
 
@@ -184,7 +190,9 @@ def faster_rcnn_zf_voc(x, is_training=False, classes=21,
 @set_args(__args__)
 def faster_rcnn_vgg16_voc(x, is_training=False, classes=21,
                           scope=None, reuse=None):
-    metas = tf.placeholder(tf.float32, [None, 3])
+    scales = tf.placeholder(tf.float32, [None])
+    height = tf.cast(tf.shape(x)[1], dtype=tf.float32)
+    width = tf.cast(tf.shape(x)[2], dtype=tf.float32)
 
     def stem_fn(x):
         x = _stack(x, 64, 2, scope='conv1')
@@ -195,12 +203,12 @@ def faster_rcnn_vgg16_voc(x, is_training=False, classes=21,
         return x
 
     def roi_pool_fn(x):
-        rois = rp_net(x, metas, 512)
-        x = roi_pool2d(x, rois, 7)
-        return x
+        rois = rp_net(x, 512, height, width, scales)
+        x = roi_pool2d(x, 7, rois)
+        return x, rois
 
     x = rcnn(x, stem_fn, roi_pool_fn, is_training, classes, scope, reuse)
-    x.metas = metas
+    x.scales = scales
     return x
 
 
