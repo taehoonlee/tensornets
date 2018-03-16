@@ -6,13 +6,17 @@ into TensorFlow. Especially, each part was from the following:
 
 1. _whctrs, _mkanchors, _ratio_enum, _scale_enum, get_anchors
  - ${py-faster-rcnn}/lib/rpn/generate_anchors.py
-2. bbox_transform_inv, clip_boxes
+2. bbox_transform_inv, clip_boxes, inv_boxes
  - ${py-faster-rcnn}/lib/fast_rcnn/bbox_transform.py
 3. get_shifts, filter_boxes
  - ${py-faster-rcnn}/lib/rpn/proposal_layer.py
-4. nms
+4. nms, nms_np
  - ${py-faster-rcnn}/lib/nms/py_cpu_nms.py
+5. get_boxes
+ - ${py-faster-rcnn}/lib/fast_rcnn/test.py
 """
+from __future__ import division
+
 import numpy as np
 import tensorflow as tf
 
@@ -149,6 +153,25 @@ def clip_boxes(boxes, height, width):
     return pred_boxes
 
 
+def inv_boxes(boxes, deltas, im_shape):
+    w = boxes[:, 2] - boxes[:, 0] + 1
+    h = boxes[:, 3] - boxes[:, 1] + 1
+    x = boxes[:, 0] + 0.5 * w
+    y = boxes[:, 1] + 0.5 * h
+
+    pred_x = deltas[:, 0::4] * w[:, np.newaxis] + x[:, np.newaxis]
+    pred_y = deltas[:, 1::4] * h[:, np.newaxis] + y[:, np.newaxis]
+    pred_w = np.exp(deltas[:, 2::4]) * w[:, np.newaxis]
+    pred_h = np.exp(deltas[:, 3::4]) * h[:, np.newaxis]
+
+    x1 = np.maximum(np.minimum(pred_x - 0.5 * pred_w, im_shape[1] - 1), 0)
+    y1 = np.maximum(np.minimum(pred_y - 0.5 * pred_h, im_shape[0] - 1), 0)
+    x2 = np.maximum(np.minimum(pred_x + 0.5 * pred_w, im_shape[1] - 1), 0)
+    y2 = np.maximum(np.minimum(pred_y + 0.5 * pred_h, im_shape[0] - 1), 0)
+
+    return np.stack([x1, y1, x2, y2], axis=-1)
+
+
 def filter_boxes(boxes, min_size):
     """Remove all boxes with any side smaller than min_size."""
     ws = boxes[0, :, 2] - boxes[0, :, 0] + 1
@@ -195,3 +218,60 @@ def nms(proposals, scores, thresh):
         back_prop=False)
 
     return keep[:-1]
+
+
+def nms_np(dets, thresh):
+    """Pure Python NMS baseline."""
+    x1 = dets[:, 0]
+    y1 = dets[:, 1]
+    x2 = dets[:, 2]
+    y2 = dets[:, 3]
+    scores = dets[:, 4]
+
+    areas = (x2 - x1 + 1) * (y2 - y1 + 1)
+    order = scores.argsort()[::-1]
+
+    keep = []
+    while order.size > 0:
+        i = order[0]
+        keep.append(i)
+        xx1 = np.maximum(x1[i], x1[order[1:]])
+        yy1 = np.maximum(y1[i], y1[order[1:]])
+        xx2 = np.minimum(x2[i], x2[order[1:]])
+        yy2 = np.minimum(y2[i], y2[order[1:]])
+
+        w = np.maximum(0.0, xx2 - xx1 + 1)
+        h = np.maximum(0.0, yy2 - yy1 + 1)
+        inter = w * h
+        ovr = inter / (areas[i] + areas[order[1:]] - inter)
+
+        inds = np.where(ovr <= thresh)[0]
+        order = order[inds + 1]
+
+    return keep
+
+
+def get_boxes(rois, outs, im_shape, max_per_image=100, thresh=0.05, nmsth=0.3):
+    classes = outs.shape[1] // 5
+    scores, boxes = np.split(outs, [classes + 1], axis=1)
+    pred_boxes = inv_boxes(rois[0], boxes, im_shape)
+    objs = []
+    total_boxes = 0
+    for j in xrange(1, classes + 1):
+        inds = np.where(scores[:, j] > thresh)[0]
+        cls_scores = scores[inds, j]
+        cls_boxes = pred_boxes[inds, j]
+        cls_dets = np.hstack((cls_boxes, cls_scores[:, np.newaxis]))
+        keep = nms_np(cls_dets, nmsth)
+        cls_dets = cls_dets[keep, :]
+        objs.append(cls_dets)
+        total_boxes += cls_dets.shape[0]
+
+    if max_per_image > 0 and total_boxes > max_per_image:
+        image_scores = np.hstack([objs[j][:, -1] for j in xrange(classes)])
+        image_thresh = np.sort(image_scores)[-max_per_image]
+        for j in xrange(classes):
+            keep = np.where(objs[j][:, -1] >= image_thresh)[0]
+            objs[j] = objs[j][keep, :]
+
+    return objs

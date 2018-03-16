@@ -35,6 +35,7 @@ from .rpn_utils import bbox_transform_inv
 from .rpn_utils import clip_boxes
 from .rpn_utils import filter_boxes
 from .rpn_utils import get_anchors
+from .rpn_utils import get_boxes
 from .rpn_utils import get_shifts
 from .rpn_utils import nms
 from .rpn_utils import roi_pooling
@@ -147,6 +148,7 @@ def rcnn(x, stem_fn, roi_pool_fn, is_training, classes,
         fully_connected(x, 4 * classes, scope='boxes')
         ], axis=1, name='out')
     x.rois = rois
+    x.get_boxes = get_boxes
     return x
 
 
