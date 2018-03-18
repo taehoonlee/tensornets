@@ -251,10 +251,10 @@ def nms_np(dets, thresh):
     return keep
 
 
-def get_boxes(rois, outs, im_shape, max_per_image=100, thresh=0.05, nmsth=0.3):
-    classes = outs.shape[1] // 5 - 1
-    scores, boxes = np.split(outs, [classes + 1], axis=1)
-    pred_boxes = inv_boxes(rois[0], boxes, im_shape)
+def get_boxes(outs, im_shape, max_per_image=100, thresh=0.05, nmsth=0.3):
+    classes = (outs.shape[1] - 4) // 5 - 1
+    scores, boxes, rois = np.split(outs, [classes + 1, -4], axis=1)
+    pred_boxes = inv_boxes(rois, boxes, im_shape)
     objs = []
     total_boxes = 0
     for j in xrange(1, classes + 1):

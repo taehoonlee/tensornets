@@ -145,9 +145,8 @@ def rcnn(x, stem_fn, roi_pool_fn, is_training, classes,
     x = dropout(x, keep_prob=0.5, scope='drop7')
     x = concat([
         softmax(fully_connected(x, classes, scope='logits'), name='probs'),
-        fully_connected(x, 4 * classes, scope='boxes')
+        fully_connected(x, 4 * classes, scope='boxes'), rois
         ], axis=1, name='out')
-    x.rois = rois
     x.get_boxes = get_boxes
     return x
 
@@ -181,7 +180,7 @@ def faster_rcnn_zf_voc(x, is_training=False, classes=21,
     def roi_pool_fn(x):
         rois = rp_net(x, 256, height, width, scales)
         x = roi_pool2d(x, 6, rois)
-        return x, rois
+        return x, rois[0] / scales
 
     x = rcnn(x, stem_fn, roi_pool_fn, is_training, classes, scope, reuse)
     x.scales = scales
@@ -207,7 +206,7 @@ def faster_rcnn_vgg16_voc(x, is_training=False, classes=21,
     def roi_pool_fn(x):
         rois = rp_net(x, 512, height, width, scales)
         x = roi_pool2d(x, 7, rois)
-        return x, rois
+        return x, rois[0] / scales
 
     x = rcnn(x, stem_fn, roi_pool_fn, is_training, classes, scope, reuse)
     x.scales = scales
