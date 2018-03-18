@@ -24,7 +24,6 @@ bases['tinyyolov2voc'] = {'anchors': [1.08, 1.19, 3.42, 4.41, 6.63,
 
 def opts(model_name, t=0.1):
     opt = bases[model_name].copy()
-    opt.update({'num': 5, 'thresh': t})
     if 'voc' in model_name:
         opt.update({'classes': len(labels_voc), 'labels': labels_voc})
     else:
@@ -32,11 +31,12 @@ def opts(model_name, t=0.1):
     return opt
 
 
-def get_boxes(opts, outs, source_size):
+def get_boxes(opts, outs, source_size, num=5, threshold=0.1):
     assert box_constructor is not None, '`get_boxes` requires `darkflow`.'
     h, w = source_size
-    threshold = opts['thresh']
     boxes = [[] for _ in xrange(opts['classes'])]
+    opts['num'] = num
+    opts['thresh'] = threshold
     opts['out_size'] = list(outs[0].shape)
     results = box_constructor(opts, outs[0].copy())
     for b in results:

@@ -91,7 +91,6 @@ def yolo(x, blocks, filters, is_training, classes, scope=None, reuse=None):
     x = conv(x, 1024, 3, scope='conv9')
     x = conv2d(x, filters, 1, biases_initializer=tf.zeros_initializer(),
                scope='linear')
-    x.get_boxes = get_boxes
     return x
 
 
@@ -113,39 +112,46 @@ def tinyyolo(x, filters, is_training, classes, scope=None, reuse=None):
     x = conv(x, filters[0], 3, scope='conv8')
     x = conv2d(x, filters[1], 1, biases_initializer=tf.zeros_initializer(),
                scope='linear')
-    x.get_boxes = get_boxes
     return x
 
 
 @var_scope('REFyolov2')
 @set_args(__args__)
 def yolov2(x, is_training=False, classes=1000, scope=None, reuse=None):
+    def _get_boxes(*args, **kwargs):
+        return get_boxes(opts('yolov2'), *args, **kwargs)
     x = yolo(x, [1, 1, 3, 3, 5, 5], 425, is_training, classes, scope, reuse)
-    x.opts = opts('yolov2')
+    x.get_boxes = _get_boxes
     return x
 
 
 @var_scope('REFyolov2voc')
 @set_args(__args__)
 def yolov2voc(x, is_training=False, classes=1000, scope=None, reuse=None):
+    def _get_boxes(*args, **kwargs):
+        return get_boxes(opts('yolov2voc'), *args, **kwargs)
     x = yolo(x, [1, 1, 3, 3, 5, 5], 125, is_training, classes, scope, reuse)
-    x.opts = opts('yolov2voc')
+    x.get_boxes = _get_boxes
     return x
 
 
 @var_scope('REFtinyyolov2')
 @set_args(__args__)
 def tinyyolov2(x, is_training=False, classes=1000, scope=None, reuse=None):
+    def _get_boxes(*args, **kwargs):
+        return get_boxes(opts('tinyyolov2'), *args, **kwargs)
     x = tinyyolo(x, [512, 425], is_training, classes, scope, reuse)
-    x.opts = opts('tinyyolov2')
+    x.get_boxes = _get_boxes
     return x
 
 
 @var_scope('REFtinyyolov2voc')
 @set_args(__args__)
 def tinyyolov2voc(x, is_training=False, classes=1000, scope=None, reuse=None):
+    def _get_boxes(*args, **kwargs):
+        return get_boxes(opts('tinyyolov2voc'), *args, **kwargs)
     x = tinyyolo(x, [1024, 125], is_training, classes, scope, reuse)
-    x.opts = opts('tinyyolov2voc')
+    x.get_boxes = _get_boxes
     return x
 
 
