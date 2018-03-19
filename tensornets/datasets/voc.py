@@ -80,6 +80,9 @@ def load(data_dir, data_name, min_shorter_side=None, max_longer_side=1000,
 
 
 def evaluate_class(ids, scores, boxes, annotations, files, ovthresh):
+    if scores.shape[0] == 0:
+        return 0.0, np.zeros(len(ids)), np.zeros(len(ids))
+
     # extract gt objects for this class
     diff = [np.array([obj['difficult'] for obj in annotations[filename]])
             for filename in files]
