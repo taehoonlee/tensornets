@@ -72,10 +72,9 @@ def rp_net(x, filters, original_height, original_width, scales,
     width = tf.shape(x)[2]
 
     x1 = conv2d(x, 2 * anchors, 1, scope='logits')
-    x1 = tf.stack(tf.split(x1, 2, axis=-1), axis=-1)
-    x1 = tf.nn.softmax(x1)
-    x1 = squeeze(tf.concat(tf.split(x1, 2, axis=-1), axis=3),
-                 axis=4, name='probs')
+    x1 = tf.reshape(x1, (-1, height, width, 2, anchors))
+    x1 = tf.nn.softmax(x1, dim=3)
+    x1 = reshape(x1, (-1, height, width, 2 * anchors), name='probs')
 
     x2 = conv2d(x, 4 * anchors, 1, scope='boxes')
 
