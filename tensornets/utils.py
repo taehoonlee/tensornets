@@ -102,8 +102,12 @@ def get_weights(scope=None):
     return tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=scope)
 
 
-def pad_info(s):
-    return [[0, 0], [s // 2, s // 2], [s // 2, s // 2], [0, 0]]
+def pad_info(s, symmetry=True):
+    pads = [[0, 0], [s // 2, s // 2], [s // 2, s // 2], [0, 0]]
+    if not symmetry:
+        pads[1][1] += 1
+        pads[2][1] += 1
+    return pads
 
 
 def crop_idx(total_size, crop_size, crop_loc, crop_grid):

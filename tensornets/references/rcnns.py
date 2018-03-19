@@ -160,13 +160,13 @@ def faster_rcnn_zf_voc(x, is_training=False, classes=21,
         x = pad(x, pad_info(7), name='pad1')
         x = conv(x, 96, 7, stride=2, padding='VALID', scope='conv1')
         x = srn(x, depth_radius=3, alpha=0.00005, beta=0.75, name='srn1')
-        x = pad(x, pad_info(3), name='pad2')
+        x = pad(x, pad_info(3, symmetry=False), name='pad2')
         x = max_pool2d(x, 3, stride=2, padding='VALID', scope='pool1')
 
         x = pad(x, pad_info(5), name='pad3')
         x = conv(x, 256, 5, stride=2, padding='VALID', scope='conv2')
         x = srn(x, depth_radius=3, alpha=0.00005, beta=0.75, name='srn2')
-        x = pad(x, pad_info(3), name='pad4')
+        x = pad(x, pad_info(3, symmetry=False), name='pad4')
         x = max_pool2d(x, 3, stride=2, padding='VALID', scope='pool2')
 
         x = conv(x, 384, 3, scope='conv3')
