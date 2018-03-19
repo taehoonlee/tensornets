@@ -6,7 +6,7 @@ into TensorFlow. Especially, each part was from the following:
 
 1. _whctrs, _mkanchors, _ratio_enum, _scale_enum, get_anchors
  - ${py-faster-rcnn}/lib/rpn/generate_anchors.py
-2. bbox_transform_inv, clip_boxes, inv_boxes
+2. inv_boxes, inv_boxes_np
  - ${py-faster-rcnn}/lib/fast_rcnn/bbox_transform.py
 3. get_shifts, filter_boxes
  - ${py-faster-rcnn}/lib/rpn/proposal_layer.py
@@ -115,45 +115,26 @@ def get_shifts(width, height, feat_stride):
     return tf.cast(shifts, dtype=tf.float32)
 
 
-def bbox_transform_inv(boxes, deltas):
-    widths = boxes[:, 2] - boxes[:, 0] + 1.0
-    heights = boxes[:, 3] - boxes[:, 1] + 1.0
-    ctr_x = boxes[:, 0] + 0.5 * widths
-    ctr_y = boxes[:, 1] + 0.5 * heights
+def inv_boxes(boxes, deltas, height, width):
+    w = boxes[:, 2] - boxes[:, 0] + 1.0
+    h = boxes[:, 3] - boxes[:, 1] + 1.0
+    x = boxes[:, 0] + 0.5 * w
+    y = boxes[:, 1] + 0.5 * h
 
-    dx = deltas[:, :, 0]
-    dy = deltas[:, :, 1]
-    dw = deltas[:, :, 2]
-    dh = deltas[:, :, 3]
+    pred_x = deltas[:, :, 0] * w + x
+    pred_y = deltas[:, :, 1] * h + y
+    pred_w = tf.exp(deltas[:, :, 2]) * w
+    pred_h = tf.exp(deltas[:, :, 3]) * h
 
-    pred_ctr_x = dx * widths + ctr_x
-    pred_ctr_y = dy * heights + ctr_y
-    pred_w = tf.exp(dw) * widths
-    pred_h = tf.exp(dh) * heights
+    x1 = tf.maximum(tf.minimum(pred_x - 0.5 * pred_w, width - 1), 0)
+    y1 = tf.maximum(tf.minimum(pred_y - 0.5 * pred_h, height - 1), 0)
+    x2 = tf.maximum(tf.minimum(pred_x + 0.5 * pred_w, width - 1), 0)
+    y2 = tf.maximum(tf.minimum(pred_y + 0.5 * pred_h, height - 1), 0)
 
-    pred_boxes = tf.stack([
-        pred_ctr_x - 0.5 * pred_w,  # x1
-        pred_ctr_y - 0.5 * pred_h,  # y1
-        pred_ctr_x + 0.5 * pred_w,  # x2
-        pred_ctr_y + 0.5 * pred_h],  # y2
-        axis=-1)
-    return pred_boxes
+    return tf.stack([x1, y1, x2, y2], axis=-1)
 
 
-def clip_boxes(boxes, height, width):
-    """
-    Clip boxes to image boundaries.
-    """
-    pred_boxes = tf.stack([
-        tf.maximum(tf.minimum(boxes[:, :, 0], width - 1), 0),
-        tf.maximum(tf.minimum(boxes[:, :, 1], height - 1), 0),
-        tf.maximum(tf.minimum(boxes[:, :, 2], width - 1), 0),
-        tf.maximum(tf.minimum(boxes[:, :, 3], height - 1), 0)],
-        axis=-1)
-    return pred_boxes
-
-
-def inv_boxes(boxes, deltas, im_shape):
+def inv_boxes_np(boxes, deltas, im_shape):
     w = boxes[:, 2] - boxes[:, 0] + 1
     h = boxes[:, 3] - boxes[:, 1] + 1
     x = boxes[:, 0] + 0.5 * w
@@ -254,7 +235,7 @@ def nms_np(dets, thresh):
 def get_boxes(outs, im_shape, max_per_image=100, thresh=0.05, nmsth=0.3):
     classes = (outs.shape[1] - 4) // 5 - 1
     scores, boxes, rois = np.split(outs, [classes + 1, -4], axis=1)
-    pred_boxes = inv_boxes(rois, boxes, im_shape)
+    pred_boxes = inv_boxes_np(rois, boxes, im_shape)
     objs = []
     total_boxes = 0
     for j in xrange(1, classes + 1):

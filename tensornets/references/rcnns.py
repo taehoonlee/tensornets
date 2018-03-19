@@ -31,12 +31,11 @@ from ..utils import pad_info
 from ..utils import set_args
 from ..utils import var_scope
 
-from .rpn_utils import bbox_transform_inv
-from .rpn_utils import clip_boxes
 from .rpn_utils import filter_boxes
 from .rpn_utils import get_anchors
 from .rpn_utils import get_boxes
 from .rpn_utils import get_shifts
+from .rpn_utils import inv_boxes
 from .rpn_utils import nms
 from .rpn_utils import roi_pooling
 
@@ -95,10 +94,9 @@ def rp_net(x, filters, original_height, original_width, scales,
         bbox_deltas = tf.reshape(x2, (-1, height * width * anchors, 4))
 
         # Convert anchors into proposals via bbox transformations
-        proposals = bbox_transform_inv(shifted_anchors, bbox_deltas)
-
         # 2. clip predicted boxes to image
-        proposals = clip_boxes(proposals, original_height, original_width)
+        proposals = inv_boxes(shifted_anchors, bbox_deltas,
+                              original_height, original_width)
 
         # 3. remove predicted boxes with either height or width < threshold
         # (NOTE: convert min_size to input image scale stored in im_info[2])
