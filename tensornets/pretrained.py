@@ -57,17 +57,20 @@ def assign(scopes):
         try:
             __load_dict__[model_name](scope)
         except KeyError:
-            found = False
-            for (key, fun) in __load_dict__.items():
-                if key in model_name.lower():
-                    found = True
-                    fun(scope)
-                    break
-            if not found:
-                warnings.warn('Random initialization will be performed '
-                              'because the pre-trained weights for ' +
-                              model_name + ' are not found.')
-                init(scope)
+            try:
+                tf.get_default_session().run(scope.pretrained())
+            except:
+                found = False
+                for (key, fun) in __load_dict__.items():
+                    if key in model_name.lower():
+                        found = True
+                        fun(scope)
+                        break
+                if not found:
+                    warnings.warn('Random initialization will be performed '
+                                  'because the pre-trained weights for ' +
+                                  model_name + ' are not found.')
+                    init(scope)
 
 
 def direct(model_name, scope):
