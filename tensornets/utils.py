@@ -13,13 +13,29 @@ from tensorflow.contrib.layers.python.layers.utils import collect_named_outputs
 from tensorflow.python.framework import ops
 
 from .imagenet_utils import *
-from .keras_utils import *
 from .layers import conv2d
+
+
+try:
+    import cv2
+except ImportError:
+    cv2 = None
 
 
 __middles__ = 'middles'
 __outputs__ = 'outputs'
 __later_tf_version__ = LooseVersion(tf.__version__) > LooseVersion('1.3.0')
+
+
+if __later_tf_version__:
+    from tensorflow.python.keras._impl.keras.applications.imagenet_utils \
+        import decode_predictions
+    from tensorflow.python.keras.utils import get_file
+else:
+    from tensorflow.contrib.keras.python.keras.applications.imagenet_utils \
+        import decode_predictions
+    from tensorflow.contrib.keras.python.keras.utils.data_utils \
+        import get_file
 
 
 def print_collection(collection, scope):
@@ -148,6 +164,28 @@ def crop(img, crop_size, crop_loc=4, crop_grid=(3, 3)):
     else:
         r, c = crop_idx(img.shape[1:3], crop_size, crop_loc, crop_grid)
         return img[:, r:r+crop_size, c:c+crop_size, :]
+
+
+def load_img(path, grayscale=False, target_size=None, crop_size=None,
+             interp=None):
+    assert cv2 is not None, '`load_img` requires `cv2`.'
+    if interp is None:
+        interp = cv2.INTER_LINEAR
+    img = cv2.imread(path)
+    if target_size:
+        if isinstance(target_size, int):
+            hw_tuple = tuple([x * target_size // min(img.shape[:2])
+                              for x in img.shape[1::-1]])
+        else:
+            hw_tuple = (target_size[1], target_size[0])
+        if img.shape[1::-1] != hw_tuple:
+            img = cv2.resize(img, hw_tuple, interpolation=interp)
+    img = np.array([img[:, :, ::-1]], dtype=np.float32)
+    if len(img.shape) == 3:
+        img = np.expand_dims(img, -1)
+    if crop_size is not None:
+        img = crop(img, crop_size)
+    return img
 
 
 def init(scopes):
@@ -349,7 +387,6 @@ def remove_utils(module_name, exceptions):
                 delattr(module, util)
             except:
                 None
-    delattr(module, 'keras_utils')
 
 
 def remove_commons(module_name, exceptions=[]):
