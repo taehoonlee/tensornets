@@ -10,7 +10,7 @@ High level network definitions with pre-trained weights in [TensorFlow](https://
 
 ## A quick example
 
-Each network (see [full list](#performances)) is not a custom class but a function that takes and returns `tf.Tensor` as its input and output. Here is an example of `ResNet50`:
+Each network (see [full list](#image-classification)) is not a custom class but a function that takes and returns `tf.Tensor` as its input and output. Here is an example of `ResNet50`:
 
 ```python
 import tensorflow as tf
@@ -47,6 +47,43 @@ print(utils.decode_predictions(preds, top=2)[0])
 ```
 
 TensorNets enables us to deploy well-known architectures and benchmark those results faster ⚡️. For more information, you can check out the lists of [utilities](#utilities), [examples](#examples), and [architectures](#performances).
+
+## Object detection example
+
+Each object detection network (see [full list](#object-detection)) also takes and returns `tf.Tensor` as its input and output. Here is an example of `YOLOv2VOC`:
+
+```python
+import tensorflow as tf
+import tensornets as nets
+
+inputs = tf.placeholder(tf.float32, [None, 416, 416, 3])
+model = nets.YOLOv2VOC(inputs)
+
+img = nets.utils.load_img('cat.png')
+
+with tf.Session() as sess:
+    sess.run(model.pretrained())
+    preds = sess.run(model, {inputs: model.preprocess(img)})
+    boxes = model.get_boxes(preds, img.shape[1:3])
+```
+
+You can see the bounding box predictions `(x1, y1, x2, y2, score)` and visualize the results:
+
+```python
+from tensornets.datasets import voc
+print("%s: %s" % (voc.classnames[7], boxes[7][0]))  # 7 is cat
+
+import numpy as np
+import matplotlib.pyplot as plt
+box = boxes[7][0]
+plt.imshow(img[0].astype(np.uint8))
+plt.gca().add_patch(plt.Rectangle(
+    (box[0], box[1]), box[2] - box[0], box[3] - box[1],
+    fill=False, edgecolor='r', linewidth=2))
+plt.show()
+```
+
+More detection examples such as FasterRCNN on VOC2007 are [here](notebooks/test_all_voc_models.ipynb) 😎.
 
 ## Utilities
 
@@ -161,7 +198,9 @@ with tf.Session() as sess:
 
 ## Performances
 
-- The top-k errors were obtained with TensorNets and may slightly differ from the original ones. The crop size is 224x224 for all but 331x331 for NASNetAlarge, 299x299 for Inception3,4,ResNet2, and ResNet50-152v2.
+### Image classification
+
+- The top-k errors were obtained with TensorNets on **ImageNet validation set** and may slightly differ from the original ones. The crop size is 224x224 for all but 331x331 for NASNetAlarge, 299x299 for Inception3,4,ResNet2, and ResNet50-152v2.
   * Top-1: single center crop, top-1 error
   * Top-5: single center crop, top-5 error
   * 10-5: ten crops (1 center + 4 corners and those mirrored ones), top-5 error
@@ -199,3 +238,21 @@ with tf.Session() as sess:
 | [MobileNet75](tensornets/mobilenets.py#L95)       | 31.588      | 11.758      | 9.878       | 2.6M   | 57.23 | [[paper]](https://arxiv.org/abs/1704.04861) [[tf-slim]](https://github.com/tensorflow/models/blob/master/research/slim/nets/mobilenet_v1.py) |
 | [MobileNet100](tensornets/mobilenets.py#L101)     | 29.576      | 10.496      | 8.774       | 4.3M   | 70.69 | [[paper]](https://arxiv.org/abs/1704.04861) [[tf-slim]](https://github.com/tensorflow/models/blob/master/research/slim/nets/mobilenet_v1.py) |
 | [SqueezeNet](tensornets/squeezenets.py#L47)       | 45.566      | 21.960      | 18.578      | 1.2M   | 71.43 | [[paper]](https://arxiv.org/abs/1602.07360) [[caffe]](https://github.com/DeepScale/SqueezeNet/blob/master/SqueezeNet_v1.1/train_val.prototxt) |
+
+### Object detection
+
+- The mAPs were obtained with TensorNets on **PASCAL VOC2007 test set** and may slightly differ from the original ones.
+- The test input sizes were the numbers reported as the best in the papers:
+  * `YOLOv2`: 416x416
+  * `FasterRCNN`: min\_shorter\_side=600, max\_longer\_side=1000
+- The sizes stand for rounded the number of parameters.
+- The computation times were measured on NVIDIA Tesla P100 (3584 cores, 16 GB global memory) with cuDNN 6.0 and CUDA 8.0.
+  * Speed: milliseconds only for network inferences of a 416x416 single image
+  * FPS: 1000 / speed
+
+|                                                                        | mAP    | Size   | Speed |  FPS  | References |
+|------------------------------------------------------------------------|--------|--------|-------|-------|------------|
+| [YOLOv2VOC](tensornets/references/yolos.py#L128)                       | 0.7320 | 51M    | 14.75 | 67.80 | [[paper]](https://arxiv.org/abs/1612.08242) [[darknet]](https://pjreddie.com/darknet/yolo/) [[darkflow]](https://github.com/thtrieu/darkflow) |
+| [TinyYOLOv2VOC](tensornets/references/yolos.py#L148)                   | 0.5303 | 16M    | 6.534 | 153.0 | [[paper]](https://arxiv.org/abs/1612.08242) [[darknet]](https://pjreddie.com/darknet/yolo/) [[darkflow]](https://github.com/thtrieu/darkflow) |
+| [FasterRCNN\_ZF\_VOC](tensornets/references/rcnns.py#L151)               | 0.4466 | 59M    | 241.4 | 3.325 | [[paper]](https://arxiv.org/abs/1506.01497) [[caffe]](https://github.com/rbgirshick/py-faster-rcnn) [[roi-pooling]](https://github.com/deepsense-ai/roi-pooling) |
+| [FasterRCNN\_VGG16\_VOC](tensornets/references/rcnns.py#L187)            | 0.6872 | 137M   | 300.7 | 4.143 | [[paper]](https://arxiv.org/abs/1506.01497) [[caffe]](https://github.com/rbgirshick/py-faster-rcnn) [[roi-pooling]](https://github.com/deepsense-ai/roi-pooling) |
