@@ -211,6 +211,69 @@ def load_resnet152v2(scopes, return_fn=_assign):
     return return_fn(scopes, values)
 
 
+def load_resnet200v2(scopes, return_fn=_assign):
+    """Converted from the [Torch ResNets][5]."""
+    filename = 'resnet_v2_200.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'resnet/' + filename,
+        cache_subdir='models',
+        file_hash='5bff85adbbc499e200c4bf4dc89cde87')
+    values = parse_weights(weights_path, move_rules_fb_resnet_torch)
+    return return_fn(scopes, values)
+
+
+def load_resnext50(scopes, return_fn=_assign):
+    """Converted from the [Torch ResNeXts][6]."""
+    filename = 'resnext_50_32x4d.npz'
+    move_rules = [(r, -15) for (r, i) in move_rules_fb_resnet_torch
+                  if '1.0.bias' not in r]
+    weights_path = get_file(
+        filename, __model_url__ + 'resnet/' + filename,
+        cache_subdir='models',
+        file_hash='3eeb3656d95cc9cb7797f638bae56a4e')
+    values = parse_weights(weights_path, move_rules)
+    return return_fn(scopes, values)
+
+
+def load_resnext101(scopes, return_fn=_assign):
+    """Converted from the [Torch ResNeXts][6]."""
+    filename = 'resnext_101_32x4d.npz'
+    move_rules = [(r, -15) for (r, i) in move_rules_fb_resnet_torch
+                  if '1.0.bias' not in r]
+    weights_path = get_file(
+        filename, __model_url__ + 'resnet/' + filename,
+        cache_subdir='models',
+        file_hash='04d3037474bc8500f417758d62a8ff2d')
+    values = parse_weights(weights_path, move_rules)
+    return return_fn(scopes, values)
+
+
+def load_resnext101c64(scopes, return_fn=_assign):
+    """Converted from the [Torch ResNeXts][6]."""
+    filename = 'resnext_101_64x4d.npz'
+    move_rules = [(r, -15) for (r, i) in move_rules_fb_resnet_torch
+                  if '1.0.bias' not in r]
+    weights_path = get_file(
+        filename, __model_url__ + 'resnet/' + filename,
+        cache_subdir='models',
+        file_hash='2f6e5440d6fcdfe72d4cd2fd1da12894')
+    values = parse_weights(weights_path, move_rules)
+    return return_fn(scopes, values)
+
+
+def load_wideresnet50(scopes, return_fn=_assign):
+    """Converted from the [Torch WideResNets][9]."""
+    filename = 'wrn_50_2.npz'
+    move_rules = [(r, -15) for (r, i) in move_rules_fb_resnet_torch
+                  if '1.0.bias' not in r]
+    weights_path = get_file(
+        filename, __model_url__ + 'resnet/' + filename,
+        cache_subdir='models',
+        file_hash='dd8fcad081890a2685638166d2c2d3f9')
+    values = parse_weights(weights_path, move_rules)
+    return return_fn(scopes, values)
+
+
 def load_keras_resnet50(scopes, return_fn=_assign):
     """Copied from [keras][3]."""
     filename = 'resnet50_weights_tf_dim_ordering_tf_kernels.h5'
@@ -270,7 +333,7 @@ def load_torch_resnet152(scopes, return_fn=_assign):
     return return_fn(scopes, values)
 
 
-def load_resnet200v2(scopes, return_fn=_assign):
+def load_torch_resnet200v2(scopes, return_fn=_assign):
     """Converted from the [Torch ResNets][5]."""
     filename = 'resnet_200_cpu.pth'
     weights_path = get_file(
@@ -281,7 +344,7 @@ def load_resnet200v2(scopes, return_fn=_assign):
     return return_fn(scopes, values)
 
 
-def load_resnext50(scopes, return_fn=_assign):
+def load_torch_resnext50(scopes, return_fn=_assign):
     """Converted from the [Torch ResNeXts][6]."""
     filename = 'resnext_50_32x4d_cpu.pth'
     move_rules = [(r, -15) for (r, i) in move_rules_fb_resnet_torch
@@ -294,7 +357,7 @@ def load_resnext50(scopes, return_fn=_assign):
     return return_fn(scopes, values)
 
 
-def load_resnext101(scopes, return_fn=_assign):
+def load_torch_resnext101(scopes, return_fn=_assign):
     """Converted from the [Torch ResNeXts][6]."""
     filename = 'resnext_101_32x4d_cpu.pth'
     move_rules = [(r, -15) for (r, i) in move_rules_fb_resnet_torch
@@ -307,7 +370,7 @@ def load_resnext101(scopes, return_fn=_assign):
     return return_fn(scopes, values)
 
 
-def load_resnext101c64(scopes, return_fn=_assign):
+def load_torch_resnext101c64(scopes, return_fn=_assign):
     """Converted from the [Torch ResNeXts][6]."""
     filename = 'resnext_101_64x4d_cpu.pth'
     move_rules = [(r, -15) for (r, i) in move_rules_fb_resnet_torch
@@ -320,7 +383,7 @@ def load_resnext101c64(scopes, return_fn=_assign):
     return return_fn(scopes, values)
 
 
-def load_wideresnet50(scopes, return_fn=_assign):
+def load_torch_wideresnet50(scopes, return_fn=_assign):
     """Converted from the [Torch WideResNets][9]."""
     filename = 'wrn_50_2_cpu.pth'
     move_rules = [(r, -15) for (r, i) in move_rules_fb_resnet_torch
@@ -335,6 +398,39 @@ def load_wideresnet50(scopes, return_fn=_assign):
 
 def load_densenet121(scopes, return_fn=_assign):
     """Converted from the [Torch DenseNets][7]."""
+    filename = 'densenet121.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'densenet/' + filename,
+        cache_subdir='models',
+        file_hash='c65564d54d4f7d29da6c84865325d7d4')
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
+
+
+def load_densenet169(scopes, return_fn=_assign):
+    """Converted from the [Torch DenseNets][7]."""
+    filename = 'densenet169.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'densenet/' + filename,
+        cache_subdir='models',
+        file_hash='f17f3aa42e92489a1e3b981061cd3d96')
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
+
+
+def load_densenet201(scopes, return_fn=_assign):
+    """Converted from the [Torch DenseNets][7]."""
+    filename = 'densenet201.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'densenet/' + filename,
+        cache_subdir='models',
+        file_hash='d2c503199fc0c5537ca2aa3d723cc493')
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
+
+
+def load_torch_densenet121(scopes, return_fn=_assign):
+    """Converted from the [Torch DenseNets][7]."""
     filename = 'densenet_121_cpu.pth'
     weights_path = get_file(
         filename, __model_url__ + 'densenet/' + filename,
@@ -344,7 +440,7 @@ def load_densenet121(scopes, return_fn=_assign):
     return return_fn(scopes, values)
 
 
-def load_densenet169(scopes, return_fn=_assign):
+def load_torch_densenet169(scopes, return_fn=_assign):
     """Converted from the [Torch DenseNets][7]."""
     filename = 'densenet_169_cpu.pth'
     weights_path = get_file(
@@ -355,7 +451,7 @@ def load_densenet169(scopes, return_fn=_assign):
     return return_fn(scopes, values)
 
 
-def load_densenet201(scopes, return_fn=_assign):
+def load_torch_densenet201(scopes, return_fn=_assign):
     """Converted from the [Torch DenseNets][7]."""
     filename = 'densenet_201_cpu.pth'
     weights_path = get_file(
