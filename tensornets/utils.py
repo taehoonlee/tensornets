@@ -170,7 +170,7 @@ def load_img(path, grayscale=False, target_size=None, crop_size=None,
              interp=None):
     assert cv2 is not None, '`load_img` requires `cv2`.'
     if interp is None:
-        interp = cv2.INTER_LINEAR
+        interp = cv2.INTER_CUBIC
     img = cv2.imread(path)
     if target_size:
         if isinstance(target_size, int):
