@@ -22,7 +22,7 @@ import tensorflow as tf
 from ..layers import conv2d
 from ..layers import dropout
 from ..layers import flatten
-from ..layers import fully_connected
+from ..layers import fc
 from ..layers import max_pool2d
 from ..layers import convrelu as conv
 
@@ -44,7 +44,7 @@ def __args__(is_training):
     return [([conv2d], {'padding': 'SAME', 'activation_fn': None,
                         'scope': 'conv'}),
             ([dropout], {'is_training': is_training}),
-            ([fully_connected], {'activation_fn': None, 'scope': 'fc'}),
+            ([fc], {'activation_fn': None, 'scope': 'fc'}),
             ([max_pool2d], {'scope': 'pool'})]
 
 
@@ -134,15 +134,15 @@ def rcnn(x, stem_fn, roi_pool_fn, is_training, classes,
     x = stem_fn(x)
     x, rois = roi_pool_fn(x)
     x = flatten(x)
-    x = fully_connected(x, 4096, scope='fc6')
+    x = fc(x, 4096, scope='fc6')
     x = relu(x, name='relu6')
     x = dropout(x, keep_prob=0.5, scope='drop6')
-    x = fully_connected(x, 4096, scope='fc7')
+    x = fc(x, 4096, scope='fc7')
     x = relu(x, name='relu7')
     x = dropout(x, keep_prob=0.5, scope='drop7')
     x = concat([
-        softmax(fully_connected(x, classes, scope='logits'), name='probs'),
-        fully_connected(x, 4 * classes, scope='boxes'), rois
+        softmax(fc(x, classes, scope='logits'), name='probs'),
+        fc(x, 4 * classes, scope='boxes'), rois
         ], axis=1, name='out')
     x.get_boxes = get_boxes
     return x

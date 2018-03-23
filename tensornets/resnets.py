@@ -40,7 +40,7 @@ import tensorflow as tf
 
 from .layers import batch_norm
 from .layers import conv2d
-from .layers import fully_connected
+from .layers import fc
 from .layers import max_pool2d
 from .layers import convbn as conv
 
@@ -55,7 +55,7 @@ def __args__(is_training):
                             'epsilon': 1e-5, 'scope': 'bn'}),
             ([conv2d], {'padding': 'VALID', 'activation_fn': None,
                         'scope': 'conv'}),
-            ([fully_connected], {'activation_fn': None, 'scope': 'fc'}),
+            ([fc], {'activation_fn': None, 'scope': 'fc'}),
             ([max_pool2d], {'scope': 'pool'})]
 
 
@@ -70,7 +70,7 @@ def resnet(x, preact, stack_fn, is_training, classes, scope=None, reuse=None):
     x = max_pool2d(x, 3, stride=2, scope='pool1')
     x = stack_fn(x)
     x = reduce_mean(x, [1, 2], name='avgpool')
-    x = fully_connected(x, classes, scope='logits')
+    x = fc(x, classes, scope='logits')
     x = softmax(x, name='probs')
     return x
 

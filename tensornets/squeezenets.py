@@ -18,7 +18,6 @@ import tensorflow as tf
 
 from .layers import conv2d
 from .layers import dropout
-from .layers import fully_connected
 from .layers import max_pool2d
 from .layers import convrelu as conv
 
@@ -31,7 +30,6 @@ def __args__(is_training):
     return [([conv2d], {'padding': 'SAME', 'activation_fn': None,
                         'scope': 'conv'}),
             ([dropout], {'is_training': is_training, 'scope': 'dropout'}),
-            ([fully_connected], {'activation_fn': None, 'scope': 'fc'}),
             ([max_pool2d], {'scope': 'pool'})]
 
 

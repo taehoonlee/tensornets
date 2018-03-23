@@ -20,7 +20,7 @@ import tensorflow as tf
 from .layers import batch_norm
 from .layers import conv2d
 from .layers import dropout
-from .layers import fully_connected
+from .layers import fc
 from .layers import separable_conv2d
 from .layers import convbnrelu6 as conv
 from .layers import sconvbnrelu6 as sconv
@@ -36,7 +36,7 @@ def __args__(is_training):
             ([conv2d], {'padding': 'SAME', 'activation_fn': None,
                         'biases_initializer': None, 'scope': 'conv'}),
             ([dropout], {'is_training': is_training, 'scope': 'dropout'}),
-            ([fully_connected], {'activation_fn': None, 'scope': 'fc'}),
+            ([fc], {'activation_fn': None, 'scope': 'fc'}),
             ([separable_conv2d],
              {'activation_fn': None, 'biases_initializer': None,
               'scope': 'sconv'})]
@@ -75,7 +75,7 @@ def mobilenet(x, depth_multiplier, is_training, classes,
 
     x = reduce_mean(x, [1, 2], name='avgpool')
     x = dropout(x, keep_prob=0.999, is_training=is_training, scope='dropout')
-    x = fully_connected(x, classes, scope='logits')
+    x = fc(x, classes, scope='logits')
     x = softmax(x, name='probs')
     return x
 

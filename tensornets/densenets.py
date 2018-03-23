@@ -18,7 +18,7 @@ import tensorflow as tf
 from .layers import avg_pool2d
 from .layers import batch_norm
 from .layers import conv2d
-from .layers import fully_connected
+from .layers import fc
 from .layers import max_pool2d
 from .layers import convbnrelu as conv
 
@@ -34,7 +34,7 @@ def __args__(is_training):
                             'epsilon': 1e-5, 'scope': 'bn'}),
             ([conv2d], {'padding': 'VALID', 'activation_fn': None,
                         'biases_initializer': None, 'scope': 'conv'}),
-            ([fully_connected], {'activation_fn': None, 'scope': 'fc'})]
+            ([fc], {'activation_fn': None, 'scope': 'fc'})]
 
 
 def densenet(x, blocks, is_training, classes, scope=None, reuse=None):
@@ -53,7 +53,7 @@ def densenet(x, blocks, is_training, classes, scope=None, reuse=None):
 
     x = batch_norm(x)
     x = reduce_mean(x, [1, 2], name='avgpool')
-    x = fully_connected(x, classes, scope='logits')
+    x = fc(x, classes, scope='logits')
     x = softmax(x, name='probs')
     return x
 

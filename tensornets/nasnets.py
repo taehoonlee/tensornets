@@ -22,7 +22,7 @@ from .layers import avg_pool2d
 from .layers import batch_norm
 from .layers import conv2d
 from .layers import dropout
-from .layers import fully_connected
+from .layers import fc
 from .layers import max_pool2d
 from .layers import separable_conv2d
 from .layers import convbn as conv
@@ -42,7 +42,7 @@ def __args__(is_training):
             ([conv2d], {'padding': 'SAME', 'activation_fn': None,
                         'biases_initializer': None, 'scope': 'conv'}),
             ([dropout], {'is_training': is_training, 'scope': 'dropout'}),
-            ([fully_connected], {'activation_fn': None, 'scope': 'fc'}),
+            ([fc], {'activation_fn': None, 'scope': 'fc'}),
             ([separable_conv2d], {'padding': 'SAME', 'activation_fn': None,
                                   'biases_initializer': None,
                                   'scope': 'sconv'})]
@@ -91,7 +91,7 @@ def nasnet(x, stem_filters, normals, filters, skip_reduction,
     x = relu(x, name='relu')
     x = reduce_mean(x, [1, 2], name='avgpool')
     x = dropout(x, keep_prob=0.5, scope='dropout')
-    x = fully_connected(x, classes, scope='logits')
+    x = fc(x, classes, scope='logits')
     x = softmax(x, name='probs')
     return x
 
@@ -179,7 +179,7 @@ def aux(x, classes, scope=None):
     x = conv(x, 768, int(x.shape[1]), padding='VALID', scope='conv')
     x = relu(x, name='relu3')
     x = squeeze(x, [1, 2], name='squeeze')
-    x = fully_connected(x, classes, scope='logits')
+    x = fc(x, classes, scope='logits')
     x = softmax(x, name='probs')
     return x
 

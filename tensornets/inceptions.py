@@ -41,7 +41,7 @@ from .layers import avg_pool2d
 from .layers import batch_norm
 from .layers import conv2d
 from .layers import dropout
-from .layers import fully_connected
+from .layers import fc
 from .layers import max_pool2d
 from .layers import separable_conv2d
 from .layers import convrelu0 as conv0
@@ -60,7 +60,7 @@ def __args__(is_training):
             ([conv2d], {'padding': 'SAME', 'activation_fn': None,
                         'biases_initializer': None, 'scope': 'conv'}),
             ([dropout], {'is_training': is_training, 'scope': 'dropout'}),
-            ([fully_connected], {'activation_fn': None, 'scope': 'fc'}),
+            ([fc], {'activation_fn': None, 'scope': 'fc'}),
             ([separable_conv2d], {'padding': 'SAME', 'scope': 'sconv'})]
 
 
@@ -95,7 +95,7 @@ def inception1(x, is_training=False, classes=1000, scope=None, reuse=None):
 
     x = reduce_mean(x, [1, 2], name='avgpool')
     x = dropout(x, keep_prob=0.8, scope='dropout')
-    x = fully_connected(x, classes, scope='logits')
+    x = fc(x, classes, scope='logits')
     x = softmax(x, name='probs')
     return x
 
@@ -131,7 +131,7 @@ def inception2(x, is_training=False, classes=1000, scope=None, reuse=None):
 
     x = reduce_mean(x, [1, 2], name='avgpool')
     x = dropout(x, keep_prob=0.8, scope='dropout')
-    x = fully_connected(x, classes, scope='logits')
+    x = fc(x, classes, scope='logits')
     x = softmax(x, name='probs')
     return x
 
@@ -165,7 +165,7 @@ def inception3(x, is_training=False, classes=1000, scope=None, reuse=None):
     x = inceptionC(x, [320, [384] * 3, [448, 384], 192], scope='block7c')
 
     x = reduce_mean(x, [1, 2], name='avgpool')
-    x = fully_connected(x, classes, scope='logits')
+    x = fc(x, classes, scope='logits')
     x = softmax(x, name='probs')
     return x
 
@@ -190,7 +190,7 @@ def inception4(x, is_training=False, classes=1000, scope=None, reuse=None):
 
     x = reduce_mean(x, [1, 2], name='avgpool')
     x = dropout(x, keep_prob=0.8, scope='dropout')
-    x = fully_connected(x, classes, scope='logits')
+    x = fc(x, classes, scope='logits')
     x = softmax(x, name='probs')
     return x
 
@@ -219,7 +219,7 @@ def inceptionresnet(x, stem_fn, A, B, C, is_training, classes,
 
     x = reduce_mean(x, [1, 2], name='avgpool')
     x = dropout(x, keep_prob=0.8, scope='dropout')
-    x = fully_connected(x, classes, scope='logits')
+    x = fc(x, classes, scope='logits')
     x = softmax(x, name='probs')
     return x
 

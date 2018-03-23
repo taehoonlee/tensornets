@@ -21,7 +21,6 @@ import tensorflow as tf
 from ..layers import batch_norm
 from ..layers import bias_add
 from ..layers import conv2d
-from ..layers import fully_connected
 from ..layers import max_pool2d
 
 from ..ops import *
@@ -39,7 +38,6 @@ def __args__(is_training):
             ([bias_add], {'scope': 'bias'}),
             ([conv2d], {'padding': 'SAME', 'activation_fn': None,
                         'biases_initializer': None, 'scope': 'conv'}),
-            ([fully_connected], {'scope': 'fc'}),
             ([max_pool2d], {'padding': 'SAME', 'scope': 'pool'})]
 
 
