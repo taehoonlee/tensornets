@@ -262,7 +262,7 @@ def set_args(largs, conv_bias=True):
 
 
 def pretrained_initializer(scope, values):
-    weights = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=scope)
+    weights = get_weights(scope)
 
     if len(weights) > len(values):  # excluding weights in Optimizer
         weights = weights[:len(values)]
