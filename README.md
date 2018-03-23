@@ -83,7 +83,7 @@ plt.gca().add_patch(plt.Rectangle(
 plt.show()
 ```
 
-More detection examples such as FasterRCNN on VOC2007 are [here](notebooks/test_all_voc_models.ipynb) 😎.
+More detection examples such as FasterRCNN on VOC2007 are [here](https://github.com/taehoonlee/tensornets-examples/blob/master/test_all_voc_models.ipynb) 😎.
 
 ## Utilities
 
