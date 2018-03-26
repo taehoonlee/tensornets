@@ -140,10 +140,9 @@ def rcnn(x, stem_fn, roi_pool_fn, is_training, classes,
     x = fc(x, 4096, scope='fc7')
     x = relu(x, name='relu7')
     x = dropout(x, keep_prob=0.5, scope='drop7')
-    x = concat([
-        softmax(fc(x, classes, scope='logits'), name='probs'),
-        fc(x, 4 * classes, scope='boxes'), rois
-        ], axis=1, name='out')
+    x = concat([softmax(fc(x, classes, scope='logits'), name='probs'),
+                fc(x, 4 * classes, scope='boxes'),
+                rois], axis=1, name='out')
     x.get_boxes = get_boxes
     return x
 
