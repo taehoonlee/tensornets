@@ -171,4 +171,7 @@ __preprocess_dict__ = {
     'REFtinyyolov2voc': darknet_preprocess,
     'REFfasterrcnnZFvoc': faster_rcnn_preprocess,
     'REFfasterrcnnVGG16voc': faster_rcnn_preprocess,
+    'genYOLOv2': darknet_preprocess,
+    'genTinyYOLOv2': darknet_preprocess,
+    'genFasterRCNN': faster_rcnn_preprocess,
 }

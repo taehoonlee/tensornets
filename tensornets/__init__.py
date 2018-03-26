@@ -48,6 +48,15 @@ from .references import TinyYOLOv2VOC
 from .references import FasterRCNN_ZF_VOC
 from .references import FasterRCNN_VGG16_VOC
 
+from .darknets import Darknet19
+from .darknets import TinyDarknet19
+
+from .zf import ZF
+
+from .detections import YOLOv2
+from .detections import TinyYOLOv2
+from .detections import FasterRCNN
+
 from .preprocess import preprocess
 from .pretrained import assign as pretrained
 

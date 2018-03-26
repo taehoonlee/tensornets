@@ -74,9 +74,24 @@ def assign(scopes):
 
 
 def direct(model_name, scope):
+    if model_name.startswith('gen'):
+        fun = load_nothing
+        if 'FasterRCNN' in model_name:
+            if 'vgg16' in scope.stem_name:
+                fun = load_ref_faster_rcnn_vgg16_voc
+            elif 'zf' in scope.stem_name:
+                fun = load_ref_faster_rcnn_zf_voc
+        elif 'TinyYOLOv2' in model_name:
+            if 'tinydarknet19' in scope.stem_name:
+                fun = load_ref_tiny_yolo_v2_voc
+        elif 'YOLOv2' in model_name:
+            if 'darknet19' in scope.stem_name:
+                fun = load_ref_yolo_v2_voc
+    else:
+        fun = __load_dict__[model_name]
+
     def _direct():
-        return __load_dict__[model_name](scope,
-                                         return_fn=pretrained_initializer)
+        return fun(scope, return_fn=pretrained_initializer)
     return _direct
 
 
@@ -652,6 +667,9 @@ __load_dict__ = {
     'mobilenet75': load_mobilenet75,
     'mobilenet100': load_mobilenet100,
     'squeezenet': load_squeezenet,
+    'zf': load_nothing,
+    'darknet19': load_nothing,
+    'tinydarknet19': load_nothing,
     'REFyolov2': load_ref_yolo_v2,
     'REFyolov2voc': load_ref_yolo_v2_voc,
     'REFtinyyolov2voc': load_ref_tiny_yolo_v2_voc,

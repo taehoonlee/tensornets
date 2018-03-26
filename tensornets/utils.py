@@ -382,6 +382,22 @@ def parse_torch_weights(weights_path, move_rules=None):
     return values
 
 
+def remove_head(name):
+    _scope = "%s/stem" % tf.get_variable_scope().name
+    g = tf.get_default_graph()
+    for x in g.get_collection(tf.GraphKeys.GLOBAL_VARIABLES,
+                              scope=_scope)[::-1]:
+        if name in x.name:
+            break
+        g.get_collection_ref(tf.GraphKeys.GLOBAL_VARIABLES).pop()
+
+    for x in g.get_collection(__outputs__, scope=_scope)[::-1]:
+        if name in x.name:
+            break
+        g.get_collection_ref(__outputs__).pop()
+    return x
+
+
 def remove_utils(module_name, exceptions):
     import sys
     from . import utils
