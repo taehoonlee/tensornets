@@ -216,7 +216,7 @@ def var_scope(name):
                     for i in p0(name)[0]:
                         collect_named_outputs(__middles__, _scope, _outs[i])
                     setattr(x, 'preprocess', p1(name, _input_shape))
-                    setattr(x, 'pretrained', p2(name, _scope))
+                    setattr(x, 'pretrained', p2(name, x))
                     setattr(x, 'get_bottleneck',
                             lambda: get_bottleneck(_scope))
                     setattr(x, 'get_middles', lambda: get_middles(_scope))
@@ -256,13 +256,18 @@ def set_args(largs, conv_bias=True):
                 layers_args += [arg_scope([conv2d], biases_initializer=None)]
             with arg_scope(layers, outputs_collections=__outputs__):
                 with arg_scopes(layers_args):
-                    return func(*args, **kwargs)
+                    x = func(*args, **kwargs)
+                    x.model_name = func.__name__
+                    return x
         return wrapper
     return real_set_args
 
 
 def pretrained_initializer(scope, values):
     weights = get_weights(scope)
+
+    if values is None:
+        return tf.variables_initializer(weights)
 
     if len(weights) > len(values):  # excluding weights in Optimizer
         weights = weights[:len(values)]

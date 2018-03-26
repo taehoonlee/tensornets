@@ -90,6 +90,10 @@ def _assign(scopes, values):
         sess.run(pretrained_initializer(scope, values))
 
 
+def load_nothing(scopes, return_fn=_assign):
+    return return_fn(scopes, None)
+
+
 def load_inception1(scopes, return_fn=_assign):
     """Converted from the [BAIR Caffe Model Zoo][1]."""
     filename = 'inception1.h5'
