@@ -52,7 +52,7 @@ install:
 
 script:
   - if [[ "$TEST_MODE" == "PEP8" ]]; then
-       PYTHONPATH=$PWD:$PYTHONPATH py.test --pep8;
+       PYTHONPATH=$PWD:$PYTHONPATH py.test --pep8 -m pep8;
     else
        PYTHONPATH=$PWD:$PYTHONPATH py.test tests/ --verbose;
     fi
