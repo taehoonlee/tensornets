@@ -49,12 +49,13 @@ def _stack(x, filters, blocks, scope=None):
     return x
 
 
-def vgg(x, blocks, is_training, classes, scope=None, reuse=None):
+def vgg(x, blocks, is_training, classes, stem, scope=None, reuse=None):
     x = _stack(x, 64, blocks[0], scope='conv1')
     x = _stack(x, 128, blocks[1], scope='conv2')
     x = _stack(x, 256, blocks[2], scope='conv3')
     x = _stack(x, 512, blocks[3], scope='conv4')
     x = _stack(x, 512, blocks[4], scope='conv5')
+    if stem: return x
     x = flatten(x)
     x = fc(x, 4096, scope='fc6')
     x = relu(x, name='relu6')
@@ -69,14 +70,16 @@ def vgg(x, blocks, is_training, classes, scope=None, reuse=None):
 
 @var_scope('vgg16')
 @set_args(__args__)
-def vgg16(x, is_training=False, classes=1000, scope=None, reuse=None):
-    return vgg(x, [2, 2, 3, 3, 3], is_training, classes, scope, reuse)
+def vgg16(x, is_training=False, classes=1000,
+          stem=False, scope=None, reuse=None):
+    return vgg(x, [2, 2, 3, 3, 3], is_training, classes, stem, scope, reuse)
 
 
 @var_scope('vgg19')
 @set_args(__args__)
-def vgg19(x, is_training=False, classes=1000, scope=None, reuse=None):
-    return vgg(x, [2, 2, 4, 4, 4], is_training, classes, scope, reuse)
+def vgg19(x, is_training=False, classes=1000,
+          stem=False, scope=None, reuse=None):
+    return vgg(x, [2, 2, 4, 4, 4], is_training, classes, stem, scope, reuse)
 
 
 # Simple alias.

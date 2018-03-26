@@ -59,8 +59,8 @@ def sconv(x, filters, kernel_size, stride=1, scope=None):
     return x
 
 
-def nasnet(x, stem_filters, normals, filters, skip_reduction,
-           use_aux, scaling, is_training, classes, scope=None, reuse=None):
+def nasnet(x, stem_filters, normals, filters, skip_reduction, use_aux,
+           scaling, is_training, classes, stem, scope=None, reuse=None):
     x = conv(x, stem_filters, 3, stride=2, padding='VALID', scope='conv0')
 
     x, p = reductionA(x, None, filters * scaling ** (-2), scope='stem1')
@@ -89,6 +89,7 @@ def nasnet(x, stem_filters, normals, filters, skip_reduction,
                        scope="normal%d" % (i + normals * 2 + 1))
 
     x = relu(x, name='relu')
+    if stem: return x
     x = reduce_mean(x, [1, 2], name='avgpool')
     x = dropout(x, keep_prob=0.5, scope='dropout')
     x = fc(x, classes, scope='logits')
@@ -98,16 +99,18 @@ def nasnet(x, stem_filters, normals, filters, skip_reduction,
 
 @var_scope('nasnetAlarge')
 @set_args(__args__)
-def nasnetAlarge(x, is_training=False, classes=1000, scope=None, reuse=None):
+def nasnetAlarge(x, is_training=False, classes=1000,
+                 stem=False, scope=None, reuse=None):
     return nasnet(x, 96, 6, 168, True, True, 2,
-                  is_training, classes, scope, reuse)
+                  is_training, classes, stem, scope, reuse)
 
 
 @var_scope('nasnetAmobile')
 @set_args(__args__)
-def nasnetAmobile(x, is_training=False, classes=1000, scope=None, reuse=None):
+def nasnetAmobile(x, is_training=False, classes=1000,
+                  stem=False, scope=None, reuse=None):
     return nasnet(x, 32, 4, 44, False, True, 2,
-                  is_training, classes, scope, reuse)
+                  is_training, classes, stem, scope, reuse)
 
 
 @var_scope('adjust')

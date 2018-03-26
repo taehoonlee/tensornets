@@ -49,7 +49,7 @@ def block(x, filters, stride=1, scope=None):
     return x
 
 
-def mobilenet(x, depth_multiplier, is_training, classes,
+def mobilenet(x, depth_multiplier, is_training, classes, stem,
               scope=None, reuse=None):
     def depth(d):
         return max(int(d * depth_multiplier), 8)
@@ -72,6 +72,7 @@ def mobilenet(x, depth_multiplier, is_training, classes,
     x = block(x, depth(1024), stride=2, scope='conv13')
 
     x = block(x, depth(1024), scope='conv14')
+    if stem: return x
 
     x = reduce_mean(x, [1, 2], name='avgpool')
     x = dropout(x, keep_prob=0.999, is_training=is_training, scope='dropout')
@@ -82,26 +83,30 @@ def mobilenet(x, depth_multiplier, is_training, classes,
 
 @var_scope('mobilenet25')
 @set_args(__args__)
-def mobilenet25(x, is_training=False, classes=1000, scope=None, reuse=None):
-    return mobilenet(x, 0.25, is_training, classes, scope, reuse)
+def mobilenet25(x, is_training=False, classes=1000,
+                stem=False, scope=None, reuse=None):
+    return mobilenet(x, 0.25, is_training, classes, stem, scope, reuse)
 
 
 @var_scope('mobilenet50')
 @set_args(__args__)
-def mobilenet50(x, is_training=False, classes=1000, scope=None, reuse=None):
-    return mobilenet(x, 0.5, is_training, classes, scope, reuse)
+def mobilenet50(x, is_training=False, classes=1000,
+                stem=False, scope=None, reuse=None):
+    return mobilenet(x, 0.5, is_training, classes, stem, scope, reuse)
 
 
 @var_scope('mobilenet75')
 @set_args(__args__)
-def mobilenet75(x, is_training=False, classes=1000, scope=None, reuse=None):
-    return mobilenet(x, 0.75, is_training, classes, scope, reuse)
+def mobilenet75(x, is_training=False, classes=1000,
+                stem=False, scope=None, reuse=None):
+    return mobilenet(x, 0.75, is_training, classes, stem, scope, reuse)
 
 
 @var_scope('mobilenet100')
 @set_args(__args__)
-def mobilenet100(x, is_training=False, classes=1000, scope=None, reuse=None):
-    return mobilenet(x, 1.0, is_training, classes, scope, reuse)
+def mobilenet100(x, is_training=False, classes=1000,
+                 stem=False, scope=None, reuse=None):
+    return mobilenet(x, 1.0, is_training, classes, stem, scope, reuse)
 
 
 # Simple alias.

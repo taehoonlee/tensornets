@@ -37,7 +37,7 @@ def __args__(is_training):
             ([fc], {'activation_fn': None, 'scope': 'fc'})]
 
 
-def densenet(x, blocks, is_training, classes, scope=None, reuse=None):
+def densenet(x, blocks, is_training, classes, stem, scope=None, reuse=None):
     x = pad(x, pad_info(7), name='conv1/pad')
     x = conv(x, 64, 7, stride=2, scope='conv1')
     x = pad(x, pad_info(3), name='pool1/pad')
@@ -52,6 +52,8 @@ def densenet(x, blocks, is_training, classes, scope=None, reuse=None):
     x = dense(x, blocks[3], scope='conv5')
 
     x = batch_norm(x)
+    if stem: return x
+
     x = reduce_mean(x, [1, 2], name='avgpool')
     x = fc(x, classes, scope='logits')
     x = softmax(x, name='probs')
@@ -60,20 +62,26 @@ def densenet(x, blocks, is_training, classes, scope=None, reuse=None):
 
 @var_scope('densenet121')
 @set_args(__args__)
-def densenet121(x, is_training=False, classes=1000, scope=None, reuse=None):
-    return densenet(x, [6, 12, 24, 16], is_training, classes, scope, reuse)
+def densenet121(x, is_training=False, classes=1000,
+                stem=False, scope=None, reuse=None):
+    return densenet(x, [6, 12, 24, 16], is_training, classes,
+                    stem, scope, reuse)
 
 
 @var_scope('densenet169')
 @set_args(__args__)
-def densenet169(x, is_training=False, classes=1000, scope=None, reuse=None):
-    return densenet(x, [6, 12, 32, 32], is_training, classes, scope, reuse)
+def densenet169(x, is_training=False, classes=1000,
+                stem=False, scope=None, reuse=None):
+    return densenet(x, [6, 12, 32, 32], is_training, classes,
+                    stem, scope, reuse)
 
 
 @var_scope('densenet201')
 @set_args(__args__)
-def densenet201(x, is_training=False, classes=1000, scope=None, reuse=None):
-    return densenet(x, [6, 12, 48, 32], is_training, classes, scope, reuse)
+def densenet201(x, is_training=False, classes=1000,
+                stem=False, scope=None, reuse=None):
+    return densenet(x, [6, 12, 48, 32], is_training, classes,
+                    stem, scope, reuse)
 
 
 @var_scope('dense')

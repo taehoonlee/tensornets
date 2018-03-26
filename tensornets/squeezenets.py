@@ -44,7 +44,8 @@ def fire(x, squeeze, expand, scope=None):
 
 @var_scope('squeezenet')
 @set_args(__args__)
-def squeezenet(x, is_training=False, classes=1000, scope=None, reuse=None):
+def squeezenet(x, is_training=False, classes=1000,
+               stem=False, scope=None, reuse=None):
     x = conv(x, 64, 3, stride=2, padding='VALID', scope='conv1')
     x = max_pool2d(x, 3, stride=2, scope='pool1')
 
@@ -60,6 +61,7 @@ def squeezenet(x, is_training=False, classes=1000, scope=None, reuse=None):
     x = fire(x, 48, 192, scope='fire7')
     x = fire(x, 64, 256, scope='fire8')
     x = fire(x, 64, 256, scope='fire9')
+    if stem: return x
     x = dropout(x, keep_prob=0.5, scope='drop9')
 
     x = conv(x, classes, 1, scope='conv10')
