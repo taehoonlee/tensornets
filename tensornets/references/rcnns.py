@@ -65,7 +65,7 @@ def rp_net(x, filters, original_height, original_width, scales,
            post_nms_topN=300,  # Number of top scoring boxes to keep after NMS
            min_size=16,  # Minimum of box sizes at original scale
            scope=None):
-    x = conv(x, filters, 3, scope='0')
+    x = conv(x, filters, 3, padding='SAME', scope='0')
 
     height = tf.shape(x)[1]
     width = tf.shape(x)[2]
