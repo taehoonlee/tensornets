@@ -21,6 +21,7 @@ import tensorflow as tf
 from ..layers import batch_norm
 from ..layers import bias_add
 from ..layers import conv2d
+from ..layers import darkconv as conv
 from ..layers import max_pool2d
 
 from ..ops import *
@@ -32,20 +33,9 @@ from .yolo_utils import get_boxes
 
 
 def __args__(is_training):
-    return [([batch_norm], {'center': False, 'scale': True,
-                            'is_training': is_training, 'epsilon': 1e-5,
-                            'scope': 'bn'}),
-            ([bias_add], {'scope': 'bias'}),
-            ([conv2d], {'padding': 'SAME', 'activation_fn': None,
-                        'biases_initializer': None, 'scope': 'conv'}),
-            ([max_pool2d], {'padding': 'SAME', 'scope': 'pool'})]
-
-
-def conv(*args, **kwargs):
-    scope = kwargs.pop('scope', None)
-    with tf.variable_scope(scope):
-        return leaky_relu(bias_add(batch_norm(conv2d(*args, **kwargs))),
-                          alpha=0.1, name='lrelu')
+    return [([batch_norm], {'is_training': is_training}),
+            ([bias_add, conv2d], {}),
+            ([max_pool2d], {'padding': 'SAME'})]
 
 
 @var_scope('stack')
@@ -87,8 +77,8 @@ def yolo(x, blocks, filters, is_training, classes, scope=None, reuse=None):
 
     x = concat([p, x], axis=3, name='concat')
     x = conv(x, 1024, 3, scope='conv9')
-    x = conv2d(x, filters, 1, biases_initializer=tf.zeros_initializer(),
-               scope='linear')
+    x = conv(x, filters, 1, onlyconv=True, scope='linear')
+    x.aliases = []
     return x
 
 
@@ -108,8 +98,8 @@ def tinyyolo(x, filters, is_training, classes, scope=None, reuse=None):
     x = max_pool2d(x, 2, stride=1, scope='pool6')
     x = conv(x, 1024, 3, scope='conv7')
     x = conv(x, filters[0], 3, scope='conv8')
-    x = conv2d(x, filters[1], 1, biases_initializer=tf.zeros_initializer(),
-               scope='linear')
+    x = conv(x, filters[1], 1, onlyconv=True, scope='linear')
+    x.aliases = []
     return x
 
 
