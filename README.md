@@ -50,14 +50,14 @@ TensorNets enables us to deploy well-known architectures and benchmark those res
 
 ## Object detection example
 
-Each object detection network (see [full list](#object-detection)) also takes and returns `tf.Tensor` as its input and output. Here is an example of `YOLOv2VOC`:
+Each object detection model **can be coupled with any network in TensorNets** (see [performances](#object-detection)) and takes two arguments: a placeholder and a function acting as a stem layer. Here is an example of `YOLOv2` for PASCAL VOC:
 
 ```python
 import tensorflow as tf
 import tensornets as nets
 
 inputs = tf.placeholder(tf.float32, [None, 416, 416, 3])
-model = nets.YOLOv2VOC(inputs)
+model = nets.YOLOv2(inputs, nets.Darknet19)
 
 img = nets.utils.load_img('cat.png')
 
@@ -67,7 +67,7 @@ with tf.Session() as sess:
     boxes = model.get_boxes(preds, img.shape[1:3])
 ```
 
-You can see the bounding box predictions `(x1, y1, x2, y2, score)` and visualize the results:
+Like other models, a detection model also returns `tf.Tensor` as its output. You can see the bounding box predictions `(x1, y1, x2, y2, score)` by using `model.get_boxes(model_output, original_img_shape)` and visualize the results:
 
 ```python
 from tensornets.datasets import voc
@@ -241,6 +241,11 @@ with tf.Session() as sess:
 
 ### Object detection
 
+- The object detection models can be coupled with any network but mAPs could be measured only for the models with pre-trained weights. Note that:
+  * `YOLOv2VOC` is equivalent to `YOLOv2(inputs, Darknet19)`,
+  * `TinyYOLOv2VOC`: `TinyYOLOv2(inputs, TinyDarknet19)`,
+  * `FasterRCNN_ZF_VOC`: `FasterRCNN(inputs, ZF)`,
+  * `FasterRCNN_VGG16_VOC`: `FasterRCNN(inputs, VGG16, stem_out='conv5/3')`.
 - The mAPs were obtained with TensorNets on **PASCAL VOC2007 test set** and may slightly differ from the original ones.
 - The test input sizes were the numbers reported as the best in the papers:
   * `YOLOv2`: 416x416
