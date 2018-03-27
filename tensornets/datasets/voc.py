@@ -9,9 +9,13 @@ datasets/voc_eval.py). Especially, each part was from the following:
 3. evaluate: voc_eval
 """
 import os
-import cv2
 import numpy as np
 import xml.etree.ElementTree as ET
+
+try:
+    import cv2
+except ImportError:
+    cv2 = None
 
 
 with open(os.path.join(os.path.dirname(__file__), 'voc.names'), 'r') as f:
@@ -60,6 +64,7 @@ def get_annotations(data_dir, files):
 
 def load(data_dir, data_name, min_shorter_side=None, max_longer_side=1000,
          batch_size=1, total_num=None):
+    assert cv2 is not None, '`load` requires `cv2`.'
     files = get_files(data_dir, data_name, total_num)
     total_num = len(files)
 
