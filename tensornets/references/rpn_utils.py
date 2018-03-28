@@ -33,6 +33,11 @@ except ImportError:
     def roi_pooling(x, rois, w, h):
         raise AssertionError('`roi_pooling` requires deepsense-ai\'s package.')
 
+try:
+    xrange          # Python 2
+except NameError:
+    xrange = range  # Python 3
+
 
 def _whctrs(anchor):
     """

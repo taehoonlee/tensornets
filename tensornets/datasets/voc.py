@@ -17,6 +17,11 @@ try:
 except ImportError:
     cv2 = None
 
+try:
+    xrange          # Python 2
+except NameError:
+    xrange = range  # Python 3
+
 
 with open(os.path.join(os.path.dirname(__file__), 'voc.names'), 'r') as f:
     classnames = [line.rstrip() for line in f.readlines()]
