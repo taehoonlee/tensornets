@@ -6,6 +6,11 @@ try:
 except ImportError:
     box_constructor = None
 
+try:
+    xrange          # Python 2
+except NameError:
+    xrange = range  # Python 3
+
 
 with open(os.path.join(os.path.dirname(__file__), 'coco.names'), 'r') as f:
     labels_coco = [line.rstrip() for line in f.readlines()]
