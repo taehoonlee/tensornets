@@ -40,9 +40,9 @@ from .squeezenets import SqueezeNet
 
 from .capsulenets import CapsuleNet
 
-from .references import YOLOv2
+from .references import YOLOv2COCO
 from .references import YOLOv2VOC
-from .references import TinyYOLOv2
+from .references import TinyYOLOv2COCO
 from .references import TinyYOLOv2VOC
 
 from .references import FasterRCNN_ZF_VOC
