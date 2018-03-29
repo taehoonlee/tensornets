@@ -290,7 +290,7 @@ def parse_weights(weights_path, move_rules=None):
 
     if __later_tf_version__:
         for (i, name) in enumerate(data['names']):
-            if '/beta' in data['names'][i-1] and '/gamma' in name:
+            if '/beta' in str(data['names'][i-1]) and '/gamma' in str(name):
                 values[i], values[i-1] = values[i-1], values[i]
 
     return values
@@ -360,7 +360,7 @@ def parse_torch_weights(weights_path, move_rules=None):
 
     if not __later_tf_version__:
         for (i, name) in enumerate(names):
-            if 'running_mean' in name:
+            if 'running_mean' in str(name):
                 names[i-1], names[i-2] = names[i-2], names[i-1]
 
     values = []
