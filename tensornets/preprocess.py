@@ -34,7 +34,7 @@ def preprocess(scopes, inputs):
 
 
 def direct(model_name, target_size):
-    if 'yolo' in model_name:
+    if 'yolo' in model_name.lower():
         def _direct(inputs):
             return __preprocess_dict__[model_name](inputs, target_size)
     else:
