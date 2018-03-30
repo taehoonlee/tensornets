@@ -37,7 +37,11 @@ install:
   # Replace dep1 dep2 ... with your dependencies
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
   - source activate test-environment
-  - pip install --only-binary=numpy,scipy numpy scipy pytest pytest-pep8
+  - pip install --only-binary=numpy,scipy numpy scipy opencv-python pytest pytest-pep8
+
+  # YOLO dependencies
+  - pip install cython
+  - pip install git+https://github.com/thtrieu/darkflow
 
   - pip install .
   - if [ -z "$TF_VERSION" ]; then

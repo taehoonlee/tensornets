@@ -84,7 +84,7 @@ pytestmark = pytest.mark.skipif(
     'MobileNet',
     'SqueezeNet',
 ])
-def test_basics(net, shape):
+def test_classification_basics(net, shape):
     inputs = tf.placeholder(tf.float32, [None] + list(shape))
     model = net(inputs, is_training=False)
     assert isinstance(model, tf.Tensor)
@@ -99,3 +99,27 @@ def test_basics(net, shape):
         assert a.name.endswith(b)
 
     assert y.shape == (1, 1000)
+
+
+def test_detection_basics():
+    # TODO: Once the roi-pooling dependency is removed,
+    # FasterRCNN-related tests should be added.
+    inputs = tf.placeholder(tf.float32, [None, 416, 416, 3])
+    model1 = nets.YOLOv2(inputs, nets.Darknet19, is_training=False)
+    assert isinstance(model1, tf.Tensor)
+
+    model2 = nets.TinyYOLOv2(inputs, nets.TinyDarknet19, is_training=False)
+    assert isinstance(model2, tf.Tensor)
+
+    x = np.random.random((1, 733, 490, 3)).astype(np.float32) * 255
+
+    with tf.Session() as sess:
+        nets.init([model1, model2])
+        y1 = model1.eval({inputs: model1.preprocess(x)})
+        y2 = model2.eval({inputs: model2.preprocess(x)})
+
+    boxes1 = model1.get_boxes(y1, x.shape[1:3])
+    boxes2 = model2.get_boxes(y2, x.shape[1:3])
+
+    assert len(boxes1) == 20
+    assert len(boxes2) == 20
