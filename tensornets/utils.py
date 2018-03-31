@@ -166,26 +166,44 @@ def crop(img, crop_size, crop_loc=4, crop_grid=(3, 3)):
         return img[:, r:r+crop_size, c:c+crop_size, :]
 
 
-def load_img(path, grayscale=False, target_size=None, crop_size=None,
+def load_img(paths, grayscale=False, target_size=None, crop_size=None,
              interp=None):
     assert cv2 is not None, '`load_img` requires `cv2`.'
     if interp is None:
         interp = cv2.INTER_CUBIC
-    img = cv2.imread(path)
-    if target_size:
-        if isinstance(target_size, int):
-            hw_tuple = tuple([x * target_size // min(img.shape[:2])
-                              for x in img.shape[1::-1]])
-        else:
-            hw_tuple = (target_size[1], target_size[0])
-        if img.shape[1::-1] != hw_tuple:
-            img = cv2.resize(img, hw_tuple, interpolation=interp)
-    img = np.array([img[:, :, ::-1]], dtype=np.float32)
-    if len(img.shape) == 3:
-        img = np.expand_dims(img, -1)
+    if not isinstance(paths, list):
+        paths = [paths]
+    if len(paths) > 1 and (target_size is None or
+                           isinstance(target_size, int)):
+        raise ValueError('A tuple `target_size` should be provided '
+                         'when loading multiple images.')
+
+    def _load_img(path):
+        img = cv2.imread(path)
+        if target_size:
+            if isinstance(target_size, int):
+                hw_tuple = tuple([x * target_size // min(img.shape[:2])
+                                  for x in img.shape[1::-1]])
+            else:
+                hw_tuple = (target_size[1], target_size[0])
+            if img.shape[1::-1] != hw_tuple:
+                img = cv2.resize(img, hw_tuple, interpolation=interp)
+        img = img[:, :, ::-1]
+        if len(img.shape) == 2:
+            img = np.expand_dims(img, -1)
+        return img
+
+    if len(paths) > 1:
+        imgs = np.zeros((len(paths),) + target_size + (3,), dtype=np.float32)
+        for (i, path) in enumerate(paths):
+            imgs[i] = _load_img(path)
+    else:
+        imgs = np.array([_load_img(paths[0])], dtype=np.float32)
+
     if crop_size is not None:
-        img = crop(img, crop_size)
-    return img
+        imgs = crop(imgs, crop_size)
+
+    return imgs
 
 
 def init(scopes):
