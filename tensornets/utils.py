@@ -12,7 +12,6 @@ from tensorflow.contrib.framework import arg_scope
 from tensorflow.contrib.layers.python.layers.utils import collect_named_outputs
 from tensorflow.python.framework import ops
 
-from .imagenet_utils import *
 from .layers import conv2d
 
 

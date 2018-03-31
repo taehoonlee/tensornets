@@ -1,14 +1,19 @@
+"""Collection of ImageNet utils
+"""
 from __future__ import absolute_import
 
+import os
 import numpy as np
 
+from os.path import isfile, join
 
-def imagenet_val(data_dir, max_rows=None):
-    """Reads a \`val.txt\` from
+
+def get_files(data_dir, data_name, max_rows=None):
+    """Reads a \`data_name.txt\` (e.g., \`val.txt\`) from
     http://www.image-net.org/challenges/LSVRC/2012/
     """
     files, labels = np.split(
-        np.genfromtxt("%s/val.txt" % data_dir,
+        np.genfromtxt("%s/%s.txt" % (data_dir, data_name),
                       dtype=np.str, max_rows=max_rows),
         [1], axis=1)
     files = files.flatten()
@@ -16,17 +21,16 @@ def imagenet_val(data_dir, max_rows=None):
     return files, labels
 
 
-def imagenet_val_labels(data_dir, max_rows=None):
-    _, labels = imagenet_val(data_dir, max_rows=None)
+def get_labels(data_dir, data_name, max_rows=None):
+    _, labels = get_files(data_dir, data_name, max_rows)
     return labels
 
 
-def imagenet_val_generator(data_dir, batch_size, resize_wh,
-                           crop_locs, crop_wh, total_num=None):
-    from os.path import isfile, join
-    from .utils import crop, load_img
+def load(data_dir, data_name, batch_size, resize_wh,
+         crop_locs, crop_wh, total_num=None):
+    from ..utils import crop, load_img
 
-    files, labels = imagenet_val(data_dir, total_num)
+    files, labels = get_files(data_dir, data_name, total_num)
     total_num = len(labels)
 
     for batch_start in range(0, total_num, batch_size):
@@ -39,8 +43,8 @@ def imagenet_val_generator(data_dir, batch_size, resize_wh,
         X = np.zeros(data_spec, np.float32)
 
         for (k, f) in enumerate(files[batch_start:batch_start+batch_size]):
-            filename = join("%s/ILSVRC2012_img_val" % data_dir, f)
-            if isfile(filename):
+            filename = os.path.join("%s/ILSVRC2012_img_val" % data_dir, f)
+            if os.path.isfile(filename):
                 img = load_img(filename, target_size=resize_wh)
                 X[k] = crop(img, crop_wh, crop_locs)
 
