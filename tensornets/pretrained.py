@@ -580,7 +580,7 @@ def load_vgg19(scopes, return_fn=_assign):
     return return_fn(scopes, values)
 
 
-def load_ref_yolo_v2(scopes, return_fn=_assign):
+def load_ref_yolo_v2_coco(scopes, return_fn=_assign):
     """Converted from the original [Darknet][10] using the [darkflow][11]."""
     filename = 'ref_yolo_v2.npz'
     weights_path = get_file(
@@ -670,7 +670,7 @@ __load_dict__ = {
     'zf': load_nothing,
     'darknet19': load_nothing,
     'tinydarknet19': load_nothing,
-    'REFyolov2': load_ref_yolo_v2,
+    'REFyolov2coco': load_ref_yolo_v2_coco,
     'REFyolov2voc': load_ref_yolo_v2_voc,
     'REFtinyyolov2voc': load_ref_tiny_yolo_v2_voc,
     'REFfasterrcnnZFvoc': load_ref_faster_rcnn_zf_voc,
