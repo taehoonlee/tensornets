@@ -47,3 +47,18 @@ def srn(x, depth_radius, alpha=1.0, beta=0.5, name=None):
     alpha = tf.constant(alpha / (depth_radius ** 2), dtype=tf.float32)
     beta = tf.constant(beta, dtype=tf.float32)
     return tf.divide(x, (1.0 + alpha * squared_sum) ** beta, name=name)
+
+
+@ops_to_outputs
+def upsample(x, stride, name=None):
+    if isinstance(stride, int):
+        stride = (stride, stride)
+    assert isinstance(stride, tuple)
+    b = tf.shape(x)[0]
+    h = tf.shape(x)[1] * stride[0]
+    w = tf.shape(x)[2] * stride[1]
+    c = x.shape[-1].value
+    x = tf.expand_dims(x, 2)
+    x = tf.expand_dims(x, 4)
+    x = tf.tile(x, (1, 1, stride[0], 1, stride[1], 1))
+    return tf.reshape(x, (b, h, w, c), name=name)
