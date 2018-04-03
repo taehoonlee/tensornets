@@ -48,14 +48,6 @@ def _stack(x, filters, blocks, scope=None):
     return x
 
 
-@var_scope('localflatten')
-def local_flatten(x, scope=None):
-    x = concat([x[:, 0::2, 0::2], x[:, 0::2, 1::2],
-                x[:, 1::2, 0::2], x[:, 1::2, 1::2]],
-               axis=-1, name='concat')
-    return x
-
-
 def yolo(x, blocks, filters, is_training, scope=None, reuse=None):
     x = _stack(x, 32, blocks[0], scope='conv1')
     x = max_pool2d(x, 2, stride=2, scope='pool1')
@@ -73,7 +65,7 @@ def yolo(x, blocks, filters, is_training, scope=None, reuse=None):
     x = conv(x, 1024, 3, scope='conv8')
 
     p = conv(p, 64, 1, scope='conv5a')
-    p = local_flatten(p, scope='flat5a')
+    p = local_flatten(p, 2, name='flat5a')
 
     x = concat([p, x], axis=3, name='concat')
     x = conv(x, 1024, 3, scope='conv9')

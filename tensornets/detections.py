@@ -43,7 +43,6 @@ from .utils import set_args
 from .utils import var_scope
 
 from .references.yolos import get_boxes as yolo_boxes
-from .references.yolos import local_flatten
 from .references.yolos import opts
 from .references.rcnns import get_boxes as rcnn_boxes
 from .references.rcnns import roi_pool2d
@@ -80,7 +79,7 @@ def yolov2(x, stem_fn, stem_out=None, is_training=False, classes=21,
     x = darkconv(x, 1024, 3, scope='conv8')
 
     p = darkconv(p, 64, 1, scope='conv5a')
-    p = local_flatten(p, scope='flat5a')
+    p = local_flatten(p, 2, name='flat5a')
 
     x = concat([p, x], axis=3, name='concat')
     x = darkconv(x, 1024, 3, scope='conv9')

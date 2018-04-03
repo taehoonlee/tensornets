@@ -6,6 +6,12 @@ from .utils import ops_to_outputs
 from .utils import __later_tf_version__
 
 
+try:
+    reduce
+except NameError:
+    from functools import reduce
+
+
 argmax = ops_to_outputs(tf.argmax)
 add = ops_to_outputs(tf.add)
 concat = ops_to_outputs(tf.concat)
@@ -62,3 +68,13 @@ def upsample(x, stride, name=None):
     x = tf.expand_dims(x, 4)
     x = tf.tile(x, (1, 1, stride[0], 1, stride[1], 1))
     return tf.reshape(x, (b, h, w, c), name=name)
+
+
+@ops_to_outputs
+def local_flatten(x, kernel_size, name=None):
+    if isinstance(kernel_size, int):
+        kernel_size = (kernel_size, kernel_size)
+    assert isinstance(kernel_size, tuple)
+    x = [[tf.strided_slice(x, (0, i, j), tf.shape(x)[:-1], (1,) + kernel_size)
+          for j in range(kernel_size[1])] for i in range(kernel_size[0])]
+    return tf.concat(reduce(lambda x, y: x + y, x), axis=-1, name=name)
