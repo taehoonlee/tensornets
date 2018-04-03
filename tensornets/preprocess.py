@@ -166,7 +166,7 @@ __preprocess_dict__ = {
     'mobilenet75': tfslim_preprocess,
     'mobilenet100': tfslim_preprocess,
     'squeezenet': bair_preprocess,
-    'REFyolov2': darknet_preprocess,
+    'REFyolov2coco': darknet_preprocess,
     'REFyolov2voc': darknet_preprocess,
     'REFtinyyolov2voc': darknet_preprocess,
     'REFfasterrcnnZFvoc': faster_rcnn_preprocess,
