@@ -1,1 +1,2 @@
+recursive-include tensornets/references/darkflow_utils *
 recursive-include tensornets *.names
