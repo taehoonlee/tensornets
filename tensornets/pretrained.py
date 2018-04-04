@@ -580,6 +580,28 @@ def load_vgg19(scopes, return_fn=_assign):
     return return_fn(scopes, values)
 
 
+def load_ref_yolo_v3_coco(scopes, return_fn=_assign):
+    """Converted from the original [Darknet][10] using the [darkflow][11]."""
+    filename = 'ref_yolo_v3_coco.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'yolo/' + filename,
+        cache_subdir='models',
+        file_hash='934a1360a4ff6a65c194a221aa1d60b9')
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
+
+
+def load_ref_yolo_v3_voc(scopes, return_fn=_assign):
+    """Converted from the original [Darknet][10] using the [darkflow][11]."""
+    filename = 'ref_yolo_v3_voc.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'yolo/' + filename,
+        cache_subdir='models',
+        file_hash='4d1d3cbdb601a9fa7eed81c71a24dfed')
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
+
+
 def load_ref_yolo_v2_coco(scopes, return_fn=_assign):
     """Converted from the original [Darknet][10] using the [darkflow][11]."""
     filename = 'ref_yolo_v2.npz'
@@ -670,6 +692,8 @@ __load_dict__ = {
     'zf': load_nothing,
     'darknet19': load_nothing,
     'tinydarknet19': load_nothing,
+    'REFyolov3coco': load_ref_yolo_v3_coco,
+    'REFyolov3voc': load_ref_yolo_v3_voc,
     'REFyolov2coco': load_ref_yolo_v2_coco,
     'REFyolov2voc': load_ref_yolo_v2_voc,
     'REFtinyyolov2voc': load_ref_tiny_yolo_v2_voc,

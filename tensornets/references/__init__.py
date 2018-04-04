@@ -1,5 +1,7 @@
 from __future__ import absolute_import
 
+from .yolos import YOLOv3COCO
+from .yolos import YOLOv3VOC
 from .yolos import YOLOv2COCO
 from .yolos import YOLOv2VOC
 from .yolos import TinyYOLOv2COCO

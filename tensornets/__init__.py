@@ -40,6 +40,8 @@ from .squeezenets import SqueezeNet
 
 from .capsulenets import CapsuleNet
 
+from .references import YOLOv3COCO
+from .references import YOLOv3VOC
 from .references import YOLOv2COCO
 from .references import YOLOv2VOC
 from .references import TinyYOLOv2COCO

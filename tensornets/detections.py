@@ -42,7 +42,7 @@ from .utils import remove_head
 from .utils import set_args
 from .utils import var_scope
 
-from .references.yolos import get_boxes as yolo_boxes
+from .references.yolos import get_v2_boxes as yolo_boxes
 from .references.yolos import opts
 from .references.rcnns import get_boxes as rcnn_boxes
 from .references.rcnns import roi_pool2d
