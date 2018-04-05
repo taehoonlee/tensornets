@@ -64,7 +64,6 @@ img = nets.utils.load_img('cat.png')
 with tf.Session() as sess:
     sess.run(model.pretrained())
     preds = sess.run(model, {inputs: model.preprocess(img)})
-    # get_boxes requires pip install git+https://github.com/thtrieu/darkflow
     boxes = model.get_boxes(preds, img.shape[1:3])
 ```
 
@@ -86,8 +85,6 @@ plt.show()
 
 More detection examples such as FasterRCNN on VOC2007 are [here](https://github.com/taehoonlee/tensornets-examples/blob/master/test_all_voc_models.ipynb) 😎. Note that object detection models require the following dependencies:
 
-- `get_boxes` for `YOLOv2`:
-  * `pip install git+https://github.com/thtrieu/darkflow`,
 - `roi_pooling` for `FasterRCNN`:
   * `git clone https://github.com/deepsense-io/roi-pooling && cd roi-pooling && vi roi_pooling/Makefile` and edit according to [here](https://github.com/tensorflow/tensorflow/issues/13607#issuecomment-335530430),
   * `python setup.py install`.
