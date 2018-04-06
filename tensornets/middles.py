@@ -29,7 +29,6 @@ def names_squeezenet():
     names = ["fire%d/concat:0" % (i + 2) for i in range(8)]
     names.insert(2, 'pool3/MaxPool:0')
     names.insert(5, 'pool5/MaxPool:0')
-    names.append('conv10/Relu:0')
     return names
 
 
@@ -196,7 +195,7 @@ __middles_dict__ = {
         ['conv%d/conv/Relu6:0' % (i + 4) for i in range(11)]
     ),
     'squeezenet': (
-        [9, 16, 17, 24, 31, 32] + list(range(39, 61, 7)) + [63],
+        [9, 16, 17, 24, 31, 32] + list(range(39, 61, 7)),
         names_squeezenet()
     ),
     'REFyolov2': ([-1], ['linear/BiasAdd:0']),
