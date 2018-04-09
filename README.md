@@ -247,7 +247,7 @@ with tf.Session() as sess:
 ### Object detection
 
 - The object detection models can be coupled with any network but mAPs could be measured only for the models with pre-trained weights. Note that:
-  * `YOLOv3VOC` was trained by taehoonlee with [this recipe](https://github.com/pjreddie/darknet/blob/master/cfg/yolov3-voc.cfg),
+  * `YOLOv3VOC` was trained by taehoonlee with [this recipe](https://github.com/pjreddie/darknet/blob/master/cfg/yolov3-voc.cfg) modified as `max_batches=70000, steps=40000,60000`,
   * `YOLOv2VOC` is equivalent to `YOLOv2(inputs, Darknet19)`,
   * `TinyYOLOv2VOC`: `TinyYOLOv2(inputs, TinyDarknet19)`,
   * `FasterRCNN_ZF_VOC`: `FasterRCNN(inputs, ZF)`,
@@ -263,7 +263,7 @@ with tf.Session() as sess:
 
 |                                                                        | mAP    | Size   | Speed |  FPS  | References |
 |------------------------------------------------------------------------|--------|--------|-------|-------|------------|
-| [YOLOv3VOC](tensornets/references/yolos.py#L175)                       | 0.7162 | 62M    | 24.09 | 41.51 | [[paper]](https://pjreddie.com/media/files/papers/YOLOv3.pdf) [[darknet]](https://pjreddie.com/darknet/yolo/) [[darkflow]](https://github.com/thtrieu/darkflow) |
+| [YOLOv3VOC](tensornets/references/yolos.py#L175)                       | 0.7247 | 62M    | 24.09 | 41.51 | [[paper]](https://pjreddie.com/media/files/papers/YOLOv3.pdf) [[darknet]](https://pjreddie.com/darknet/yolo/) [[darkflow]](https://github.com/thtrieu/darkflow) |
 | [YOLOv2VOC](tensornets/references/yolos.py#L195)                       | 0.7320 | 51M    | 14.75 | 67.80 | [[paper]](https://arxiv.org/abs/1612.08242) [[darknet]](https://pjreddie.com/darknet/yolov2/) [[darkflow]](https://github.com/thtrieu/darkflow) |
 | [TinyYOLOv2VOC](tensornets/references/yolos.py#L205)                   | 0.5303 | 16M    | 6.534 | 153.0 | [[paper]](https://arxiv.org/abs/1612.08242) [[darknet]](https://pjreddie.com/darknet/yolov2/) [[darkflow]](https://github.com/thtrieu/darkflow) |
 | [FasterRCNN\_ZF\_VOC](tensornets/references/rcnns.py#L151)               | 0.4466 | 59M    | 241.4 | 3.325 | [[paper]](https://arxiv.org/abs/1506.01497) [[caffe]](https://github.com/rbgirshick/py-faster-rcnn) [[roi-pooling]](https://github.com/deepsense-ai/roi-pooling) |

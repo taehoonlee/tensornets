@@ -597,7 +597,7 @@ def load_ref_yolo_v3_voc(scopes, return_fn=_assign):
     weights_path = get_file(
         filename, __model_url__ + 'yolo/' + filename,
         cache_subdir='models',
-        file_hash='4d1d3cbdb601a9fa7eed81c71a24dfed')
+        file_hash='f982ecc1393c6c8a23673b59b84be71d')
     values = parse_weights(weights_path)
     return return_fn(scopes, values)
 
