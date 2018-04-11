@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import numpy as np
 import tensorflow as tf
+import warnings
 
 from contextlib import contextmanager
 from distutils.version import LooseVersion
@@ -289,8 +290,8 @@ def pretrained_initializer(scope, values):
     if len(weights) > len(values):  # excluding weights in Optimizer
         weights = weights[:len(values)]
 
-    assert len(weights) == len(values), 'The sizes of symbolic and ' \
-                                        'actual weights do not match.' \
+    if len(weights) != len(values):
+        warnings.warn('The sizes of symbolic and actual weights do not match.')
 
     ops = [w.assign(v) for (w, v) in zip(weights[:-2], values[:-2])]
     if weights[-1].shape != values[-1].shape:  # for transfer learning
