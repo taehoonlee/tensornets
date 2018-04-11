@@ -68,12 +68,11 @@ def yolov2(x, stem_fn, stem_out=None, is_training=False, classes=21,
     def get_boxes(*args, **kwargs):
         return yolo_boxes(opts('yolov2' + data_name(classes)), *args, **kwargs)
 
-    x = stem_fn(x, is_training, stem=True, scope='stem')
+    stem = x = stem_fn(x, is_training, stem=True, scope='stem')
     p = x.p
-    stem_name = x.model_name
 
     if stem_out is not None:
-        x = remove_head(stem_out)
+        stem = x = remove_head(x, stem_out)
 
     x = darkconv(x, 1024, 3, scope='conv7')
     x = darkconv(x, 1024, 3, scope='conv8')
@@ -87,7 +86,7 @@ def yolov2(x, stem_fn, stem_out=None, is_training=False, classes=21,
                  onlyconv=True, scope='linear')
     x.aliases = []
     x.get_boxes = get_boxes
-    x.stem_name = stem_name
+    x.stem = stem
     return x
 
 
@@ -103,11 +102,10 @@ def tinyyolov2(x, stem_fn, stem_out=None, is_training=False, classes=21,
         return yolo_boxes(opts('tinyyolov2' + data_name(classes)),
                           *args, **kwargs)
 
-    x = stem_fn(x, is_training, stem=True, scope='stem')
-    stem_name = x.model_name
+    stem = x = stem_fn(x, is_training, stem=True, scope='stem')
 
     if stem_out is not None:
-        x = remove_head(stem_out)
+        stem = x = remove_head(x, stem_out)
 
     x = max_pool2d(x, 2, stride=1, scope='pool6')
     x = darkconv(x, 1024, 3, scope='conv7')
@@ -116,7 +114,7 @@ def tinyyolov2(x, stem_fn, stem_out=None, is_training=False, classes=21,
                  onlyconv=True, scope='linear')
     x.aliases = []
     x.get_boxes = get_boxes
-    x.stem_name = stem_name
+    x.stem = stem
     return x
 
 
@@ -133,13 +131,12 @@ def fasterrcnn(x, stem_fn, stem_out=None, is_training=False, classes=21,
     height = tf.cast(tf.shape(x)[1], dtype=tf.float32)
     width = tf.cast(tf.shape(x)[2], dtype=tf.float32)
 
-    x = stem_fn(x, is_training, stem=True, scope='stem')
-    stem_name = x.model_name
+    stem = x = stem_fn(x, is_training, stem=True, scope='stem')
 
     if stem_out is not None:
-        x = remove_head(stem_out)
+        stem = x = remove_head(x, stem_out)
 
-    if 'zf' in stem_name:
+    if 'zf' in stem.model_name:
         x, rois = roi_pool_fn(x, 256, 6)
     else:
         x, rois = roi_pool_fn(x, 512, 7)
@@ -155,8 +152,8 @@ def fasterrcnn(x, stem_fn, stem_out=None, is_training=False, classes=21,
                 fc(x, 4 * classes, scope='boxes'),
                 rois], axis=1, name='out')
     x.get_boxes = rcnn_boxes
-    x.stem_name = stem_name
     x.scales = scales
+    x.stem = stem
     return x
 
 

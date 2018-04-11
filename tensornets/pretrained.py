@@ -75,18 +75,15 @@ def assign(scopes):
 
 def direct(model_name, scope):
     if model_name.startswith('gen'):
-        fun = load_nothing
-        if 'FasterRCNN' in model_name:
-            if 'vgg16' in scope.stem_name:
-                fun = load_ref_faster_rcnn_vgg16_voc
-            elif 'zf' in scope.stem_name:
-                fun = load_ref_faster_rcnn_zf_voc
-        elif 'TinyYOLOv2' in model_name:
-            if 'tinydarknet19' in scope.stem_name:
-                fun = load_ref_tiny_yolo_v2_voc
-        elif 'YOLOv2' in model_name:
-            if 'darknet19' in scope.stem_name:
-                fun = load_ref_yolo_v2_voc
+        model_name = model_name[3:].lower()
+        stem_name = scope.stem.model_name
+        try:
+            fun = __gen_load_dict__[model_name][stem_name]
+        except KeyError:
+            fun = load_nothing
+            warnings.warn('Random initialization will be performed because '
+                          'the pre-trained weights for ' + model_name +
+                          ' with ' + stem_name + ' are not found.')
     else:
         fun = __load_dict__[model_name]
 
@@ -699,4 +696,17 @@ __load_dict__ = {
     'REFtinyyolov2voc': load_ref_tiny_yolo_v2_voc,
     'REFfasterrcnnZFvoc': load_ref_faster_rcnn_zf_voc,
     'REFfasterrcnnVGG16voc': load_ref_faster_rcnn_vgg16_voc,
+}
+
+__gen_load_dict__ = {
+    'fasterrcnn': {
+        'vgg16': load_ref_faster_rcnn_vgg16_voc,
+        'zf': load_ref_faster_rcnn_zf_voc,
+    },
+    'tinyyolov2': {
+        'tinydarknet19': load_ref_tiny_yolo_v2_voc,
+    },
+    'yolov2': {
+        'darknet19': load_ref_yolo_v2_voc,
+    },
 }
