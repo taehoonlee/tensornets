@@ -20,6 +20,7 @@ from .layers import batch_norm
 from .layers import bias_add
 from .layers import conv2d
 from .layers import darkconv as conv
+from .layers import fc
 from .layers import max_pool2d as pool
 
 from .ops import *
