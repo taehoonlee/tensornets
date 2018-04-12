@@ -56,10 +56,9 @@ def darknet19(x, is_training=False, classes=1000,
     x = pool(x, 2, stride=2, scope='pool3')
     x = _stack(x, 256, 3, scope='conv4')
     x = pool(x, 2, stride=2, scope='pool4')
-    x = p = _stack(x, 512, 5, scope='conv5')
+    x = _stack(x, 512, 5, scope='conv5')
     x = pool(x, 2, stride=2, scope='pool5')
     x = _stack(x, 1024, 5, scope='conv6')
-    x.p = p
     if stem: return x
 
     x = reduce_mean(x, [1, 2], name='avgpool')

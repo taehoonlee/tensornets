@@ -46,6 +46,19 @@ def names_vggs(k):
     return names
 
 
+def names_darknets(k):
+    names = []
+    for i in range(4):
+        if k[i] > 1:
+            names += ["conv%d/%d/lrelu/Maximum:0" % (i + 3, j + 1)
+                      for j in range(k[i])]
+        else:
+            names += ["conv%d/lrelu/Maximum:0" % (i + 3)]
+        if i < 3:
+            names += ["pool%d/MaxPool:0" % (i + 3)]
+    return names
+
+
 def direct(model_name):
     try:
         return __middles_dict__[model_name]
@@ -227,6 +240,17 @@ __middles_dict__ = {
         [9, 16, 17, 24, 31, 32] + list(range(39, 61, 7)),
         names_squeezenet(),
         -6
+    ),
+    'darknet19': (
+        list(range(13, 22, 4)) + [22] + list(range(26, 35, 4)) + [35] +
+        list(range(39, 56, 4)) + [56] + list(range(60, 77, 4)),
+        names_darknets([3, 3, 5, 5]),
+        -7
+    ),
+    'tinydarknet19': (
+        [13, 14, 18, 19, 23, 24, 28],
+        names_darknets([1, 1, 1, 1]),
+        -3
     ),
     'REFyolov2': ([-1], ['linear/BiasAdd:0']),
     'REFyolov2voc': ([-1], ['linear/BiasAdd:0']),
