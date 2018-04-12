@@ -32,6 +32,7 @@ serializes every single tensor from the following repositories:
 from __future__ import absolute_import
 
 import tensorflow as tf
+import warnings
 
 from .utils import get_file
 from .utils import init
@@ -49,7 +50,6 @@ __model_url__ = 'https://github.com/taehoonlee/deep-learning-models/' \
 
 
 def assign(scopes):
-    import warnings
     if not isinstance(scopes, list):
         scopes = [scopes]
     for scope in scopes:
@@ -81,7 +81,8 @@ def direct(model_name, scope):
             fun = __gen_load_dict__[model_name][stem_name]
         except KeyError:
             fun = load_nothing
-            warnings.warn('Random initialization will be performed because '
+            warnings.warn('When `pretrained` is called, random '
+                          'initialization will be performed because '
                           'the pre-trained weights for ' + model_name +
                           ' with ' + stem_name + ' are not found.')
     else:

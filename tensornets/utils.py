@@ -295,7 +295,8 @@ def pretrained_initializer(scope, values):
         weights = weights[:len(values)]
 
     if len(weights) != len(values):
-        warnings.warn('The sizes of symbolic and actual weights do not match.')
+        warnings.warn('The sizes of symbolic and actual weights do not match. '
+                      'Never mind if you are trying to load stem layers only.')
 
     ops = [w.assign(v) for (w, v) in zip(weights[:-2], values[:-2])]
     if weights[-1].shape != values[-1].shape:  # for transfer learning
