@@ -25,8 +25,7 @@ assert isinstance(model, tf.Tensor)
 You can load an example image by using `utils.load_img` returning a `np.ndarray` as the NHWC format:
 
 ```python
-from tensornets import utils
-img = utils.load_img('cat.png', target_size=256, crop_size=224)
+img = nets.utils.load_img('cat.png', target_size=256, crop_size=224)
 assert img.shape == (1, 224, 224, 3)
 ```
 
@@ -42,7 +41,7 @@ with tf.Session() as sess:
 You can see the most probable classes:
 
 ```python
-print(utils.decode_predictions(preds, top=2)[0])
+print(nets.utils.decode_predictions(preds, top=2)[0])
 [(u'n02124075', u'Egyptian_cat', 0.28067636), (u'n02127052', u'lynx', 0.16826575)]
 ```
 
@@ -91,37 +90,33 @@ More detection examples such as FasterRCNN on VOC2007 are [here](https://github.
 
 ## Utilities
 
-An example output of `utils.print_summary(model)`:
+Besides `pretrained()` and `preprocess()`, the output `tf.Tensor` provides the following useful methods:
+
+- `get_middles()`: returns a list of all the representative `tf.Tensor` end-points,
+- `get_outputs()`: returns a list of all the `tf.Tensor` end-points,
+- `get_weights()`: returns a list of all the `tf.Tensor` weight matrices,
+- `print_middles()`: prints all the representative end-points,
+- `print_outputs()`: prints all the end-points,
+- `print_weights()`: prints all the weight matrices,
+- `print_summary()`: prints the numbers of layers, weight matrices, and parameters.
+
+
+Example outputs of print methods are:
 
 ```
+>>> model.print_middles()
 Scope: resnet50
-Total layers: 54
-Total weights: 320
-Total parameters: 25,636,712
-```
-
-An example output of `utils.print_weights(model)`:
-
-```
-Scope: resnet50
-conv1/conv/weights:0 (7, 7, 3, 64)
-conv1/conv/biases:0 (64,)
-conv1/bn/beta:0 (64,)
-conv1/bn/gamma:0 (64,)
-conv1/bn/moving_mean:0 (64,)
-conv1/bn/moving_variance:0 (64,)
-conv2/block1/0/conv/weights:0 (1, 1, 64, 256)
-conv2/block1/0/conv/biases:0 (256,)
-conv2/block1/0/bn/beta:0 (256,)
-conv2/block1/0/bn/gamma:0 (256,)
+conv2/block1/out:0 (?, 56, 56, 256)
+conv2/block2/out:0 (?, 56, 56, 256)
+conv2/block3/out:0 (?, 56, 56, 256)
+conv3/block1/out:0 (?, 28, 28, 512)
+conv3/block2/out:0 (?, 28, 28, 512)
+conv3/block3/out:0 (?, 28, 28, 512)
+conv3/block4/out:0 (?, 28, 28, 512)
+conv4/block1/out:0 (?, 14, 14, 1024)
 ...
-```
 
-- `utils.get_weights(model)` returns a list of all the `tf.Tensor` weights as shown in the above
-
-An example output of `utils.print_outputs(model)`:
-
-```
+>>> model.print_outputs()
 Scope: resnet50
 conv1/pad:0 (?, 230, 230, 3)
 conv1/conv/BiasAdd:0 (?, 112, 112, 64)
@@ -135,9 +130,27 @@ conv2/block1/1/conv/BiasAdd:0 (?, 56, 56, 64)
 conv2/block1/1/bn/batchnorm/add_1:0 (?, 56, 56, 64)
 conv2/block1/1/relu:0 (?, 56, 56, 64)
 ...
-```
 
-- `utils.get_outputs(model)` returns a list of all the `tf.Tensor` end-points as shown in the above
+>>> model.print_weights()
+Scope: resnet50
+conv1/conv/weights:0 (7, 7, 3, 64)
+conv1/conv/biases:0 (64,)
+conv1/bn/beta:0 (64,)
+conv1/bn/gamma:0 (64,)
+conv1/bn/moving_mean:0 (64,)
+conv1/bn/moving_variance:0 (64,)
+conv2/block1/0/conv/weights:0 (1, 1, 64, 256)
+conv2/block1/0/conv/biases:0 (256,)
+conv2/block1/0/bn/beta:0 (256,)
+conv2/block1/0/bn/gamma:0 (256,)
+...
+
+>>> model.print_summary()
+Scope: resnet50
+Total layers: 54
+Total weights: 320
+Total parameters: 25,636,712
+```
 
 ## Examples
 
