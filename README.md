@@ -1,6 +1,6 @@
 # TensorNets
 
-High level network definitions with pre-trained weights in [TensorFlow](https://github.com/tensorflow/tensorflow) (tested with `>= 1.2.0`).
+High level network definitions with pre-trained weights in [TensorFlow](https://github.com/tensorflow/tensorflow) (tested with `>= 1.1.0`).
 
 ## Guiding principles
 
