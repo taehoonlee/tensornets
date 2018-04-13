@@ -3,7 +3,7 @@ from __future__ import absolute_import
 import tensorflow as tf
 
 from .utils import ops_to_outputs
-from .utils import __later_tf_version__
+from .utils import tf_later_than
 
 
 try:
@@ -33,7 +33,7 @@ stack = ops_to_outputs(tf.stack)
 to_int32 = ops_to_outputs(tf.to_int32)
 
 
-if __later_tf_version__:
+if tf_later_than('1.3.0'):
     leaky_relu = ops_to_outputs(tf.nn.leaky_relu)
 else:
     @ops_to_outputs
