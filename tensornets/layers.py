@@ -19,6 +19,9 @@ from .utils import arg_scope
 from .utils import remove_commons
 
 
+conv1d = conv2d
+
+
 def convbn(*args, **kwargs):
     scope = kwargs.pop('scope', None)
     with tf.variable_scope(scope):
