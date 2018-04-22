@@ -86,7 +86,14 @@ def direct(model_name, scope):
                           'the pre-trained weights for ' + model_name +
                           ' with ' + stem_name + ' are not found.')
     else:
-        fun = __load_dict__[model_name]
+        try:
+            fun = __load_dict__[model_name]
+        except KeyError:
+            fun = load_nothing
+            warnings.warn('When `pretrained` is called, random '
+                          'initialization will be performed because '
+                          'the pre-trained weights for ' + model_name +
+                          ' are not found.')
 
     def _direct():
         return fun(scope, return_fn=pretrained_initializer)
