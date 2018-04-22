@@ -42,7 +42,9 @@ from .layers import batch_norm
 from .layers import conv2d
 from .layers import fc
 from .layers import max_pool2d
+from .layers import separable_conv2d
 from .layers import convbn as conv
+from .layers import gconvbn as gconv
 
 from .ops import *
 from .utils import pad_info
@@ -56,7 +58,10 @@ def __args__(is_training):
             ([conv2d], {'padding': 'VALID', 'activation_fn': None,
                         'scope': 'conv'}),
             ([fc], {'activation_fn': None, 'scope': 'fc'}),
-            ([max_pool2d], {'scope': 'pool'})]
+            ([max_pool2d], {'scope': 'pool'}),
+            ([separable_conv2d], {'padding': 'VALID', 'activation_fn': None,
+                                  'biases_initializer': None,
+                                  'scope': 'sconv'})]
 
 
 def resnet(x, preact, stack_fn, is_training, classes, stem,
@@ -313,12 +318,7 @@ def _block3c32(x, filters, kernel_size=3, stride=1,
     x = conv(x, filters, 1, stride=1, scope='1')
     x = relu(x, name='1/relu')
     x = pad(x, pad_info(kernel_size), name='2/pad')
-    channels = filters // 32
-    convgroups = [conv2d(x[:, :, :, c*channels:(c+1)*channels], channels,
-                         kernel_size, stride=stride, scope="2/%d" % c)
-                  for c in range(32)]
-    x = concat(convgroups, axis=3, name='concat')
-    x = batch_norm(x, scope='2/bn')
+    x = gconv(x, None, kernel_size, filters // 32, stride=stride, scope='2')
     x = relu(x, name='2/relu')
     x = conv(x, 2 * filters, 1, stride=1, scope='3')
     x = relu(shortcut + x, name='out')
@@ -335,12 +335,7 @@ def _block3c64(x, filters, kernel_size=3, stride=1,
     x = conv(x, filters, 1, stride=1, scope='1')
     x = relu(x, name='1/relu')
     x = pad(x, pad_info(kernel_size), name='2/pad')
-    channels = filters // 64
-    convgroups = [conv2d(x[:, :, :, c*channels:(c+1)*channels], channels,
-                         kernel_size, stride=stride, scope="2/%d" % c)
-                  for c in range(64)]
-    x = concat(convgroups, axis=3, name='concat')
-    x = batch_norm(x, scope='2/bn')
+    x = gconv(x, None, kernel_size, filters // 64, stride=stride, scope='2')
     x = relu(x, name='2/relu')
     x = conv(x, filters, 1, stride=1, scope='3')
     x = relu(shortcut + x, name='out')

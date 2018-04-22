@@ -254,7 +254,7 @@ def load_resnext50(scopes, return_fn=_assign):
     weights_path = get_file(
         filename, __model_url__ + 'resnet/' + filename,
         cache_subdir='models',
-        file_hash='3eeb3656d95cc9cb7797f638bae56a4e')
+        file_hash='eead54b31dc282df2c433cc5a0b420e4')
     values = parse_weights(weights_path, move_rules)
     return return_fn(scopes, values)
 
@@ -267,7 +267,7 @@ def load_resnext101(scopes, return_fn=_assign):
     weights_path = get_file(
         filename, __model_url__ + 'resnet/' + filename,
         cache_subdir='models',
-        file_hash='04d3037474bc8500f417758d62a8ff2d')
+        file_hash='f45edc32440c4314563ca57e4e54e26c')
     values = parse_weights(weights_path, move_rules)
     return return_fn(scopes, values)
 
@@ -280,7 +280,7 @@ def load_resnext101c64(scopes, return_fn=_assign):
     weights_path = get_file(
         filename, __model_url__ + 'resnet/' + filename,
         cache_subdir='models',
-        file_hash='2f6e5440d6fcdfe72d4cd2fd1da12894')
+        file_hash='f226e85525aa2529dc0547c170042082')
     values = parse_weights(weights_path, move_rules)
     return return_fn(scopes, values)
 

@@ -139,32 +139,32 @@ __middles_dict__ = {
         -4
     ),
     'resnext50': (
-        list(range(49, 134, 42)) + list(range(177, 304, 42)) +
-        list(range(347, 558, 42)) + list(range(601, 686, 42)),
+        list(range(18, 41, 11)) + list(range(53, 87, 11)) +
+        list(range(99, 155, 11)) + list(range(167, 190, 11)),
         names_resnets([3, 4, 6, 3]),
         -4
     ),
     'resnext101': (
-        list(range(49, 134, 42)) + list(range(177, 304, 42)) +
-        list(range(347, 1272, 42)) + list(range(1315, 1400, 42)),
+        list(range(18, 41, 11)) + list(range(53, 87, 11)) +
+        list(range(99, 342, 11)) + list(range(354, 377, 11)),
         names_resnets([3, 4, 23, 3]),
         -4
     ),
     'resnext50c32': (
-        list(range(49, 134, 42)) + list(range(177, 304, 42)) +
-        list(range(347, 558, 42)) + list(range(601, 686, 42)),
+        list(range(18, 41, 11)) + list(range(53, 87, 11)) +
+        list(range(99, 155, 11)) + list(range(167, 190, 11)),
         names_resnets([3, 4, 6, 3]),
         -4
     ),
     'resnext101c32': (
-        list(range(49, 134, 42)) + list(range(177, 304, 42)) +
-        list(range(347, 1272, 42)) + list(range(1315, 1400, 42)),
+        list(range(18, 41, 11)) + list(range(53, 87, 11)) +
+        list(range(99, 342, 11)) + list(range(354, 377, 11)),
         names_resnets([3, 4, 23, 3]),
         -4
     ),
     'resnext101c64': (
-        list(range(81, 230, 74)) + list(range(305, 528, 74)) +
-        list(range(603, 2232, 74)) + list(range(2307, 2456, 74)),
+        list(range(18, 41, 11)) + list(range(53, 87, 11)) +
+        list(range(99, 342, 11)) + list(range(354, 377, 11)),
         names_resnets([3, 4, 23, 3]),
         -4
     ),
