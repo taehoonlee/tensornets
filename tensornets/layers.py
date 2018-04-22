@@ -15,6 +15,7 @@ from tensorflow.contrib.layers import separable_conv2d
 from .ops import leaky_relu
 from .ops import relu
 from .ops import relu6
+from .ops import reshape
 from .utils import arg_scope
 from .utils import remove_commons
 
@@ -51,6 +52,21 @@ def convbnrelu6(*args, **kwargs):
     scope = kwargs.pop('scope', None)
     with tf.variable_scope(scope):
         return relu6(batch_norm(conv2d(*args, **kwargs)))
+
+
+def gconvbn(*args, **kwargs):
+    scope = kwargs.pop('scope', None)
+    with tf.variable_scope(scope):
+        x = separable_conv2d(*args, **kwargs)
+        c = args[-1]
+        f = x.shape[-1].value // c
+        g = f // c
+        x = tf.reshape(x, tf.concat([tf.shape(x)[:-1],
+                                     tf.constant([g, c, c])], axis=0))
+        x = tf.reduce_sum(x, axis=-2)
+        x = reshape(x, tf.concat([tf.shape(x)[:-2],
+                                  tf.constant([f])], axis=0), name='gconv')
+        return batch_norm(x)
 
 
 def sconvbn(*args, **kwargs):
