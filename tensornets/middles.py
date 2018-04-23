@@ -190,13 +190,13 @@ __middles_dict__ = {
         list(range(11, 16, 2)) + list(range(18, 23, 2)) +
         list(range(25, 30, 2)),
         names_vggs(3),
-        -4
+        -1
     ),
     'vgg19': (
         list(range(11, 18, 2)) + list(range(20, 27, 2)) +
         list(range(29, 36, 2)),
         names_vggs(4),
-        -5
+        -1
     ),
     'densenet121': (
         list(range(12, 48, 7)) + [51] + list(range(58, 136, 7)) + [139] +
