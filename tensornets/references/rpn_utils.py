@@ -29,7 +29,7 @@ try:
     #                    issues/13607#issuecomment-335530430)
     # $ python setup.py install
     from roi_pooling.roi_pooling_ops import roi_pooling
-except ImportError:
+except:
     def roi_pooling(x, rois, w, h):
         raise AssertionError('`roi_pooling` requires deepsense-ai\'s package.')
 
