@@ -33,7 +33,9 @@ stack = ops_to_outputs(tf.stack)
 to_int32 = ops_to_outputs(tf.to_int32)
 
 
-if tf_later_than('1.3.0'):
+if tf_later_than('1.5.1'):
+    # Note that `tf.nn.leaky_relu` has existed since 1.4.0,
+    # but 1.4.0, 1.4.1, 1.5.0, 1.5.1 do not support float16.
     leaky_relu = ops_to_outputs(tf.nn.leaky_relu)
 else:
     @ops_to_outputs
