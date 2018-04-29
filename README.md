@@ -8,6 +8,10 @@ High level network definitions with pre-trained weights in [TensorFlow](https://
 - **Manageability.** Models are written in `tf.contrib.layers`, which is lightweight like PyTorch and Keras, and allows for ease of accessibility to every weight and end-point. Also, it is easy to deploy and expand a collection of pre-processing and pre-trained weights.
 - **Readability.** With recent TensorFlow APIs, more factoring and less indenting can be possible. For example, all the inception variants are implemented as about 500 lines of code in [TensorNets](tensornets/inceptions.py) while 2000+ lines in [official TensorFlow models](https://github.com/tensorflow/models/blob/master/research/slim/nets/inception_v3.py).
 
+## Installation
+
+You can install TensorNets from PyPI (`pip install tensornets`) or directly from GitHub (`pip install git+https://github.com/taehoonlee/tensornets.git`).
+
 ## A quick example
 
 Each network (see [full list](#image-classification)) is not a custom class but a function that takes and returns `tf.Tensor` as its input and output. Here is an example of `ResNet50`:
@@ -281,3 +285,18 @@ with tf.Session() as sess:
 | [TinyYOLOv2VOC](tensornets/references/yolos.py#L205)                   | 0.5303 | 16M    | 6.534 | 153.0 | [[paper]](https://arxiv.org/abs/1612.08242) [[darknet]](https://pjreddie.com/darknet/yolov2/) [[darkflow]](https://github.com/thtrieu/darkflow) |
 | [FasterRCNN\_ZF\_VOC](tensornets/references/rcnns.py#L151)               | 0.4466 | 59M    | 241.4 | 3.325 | [[paper]](https://arxiv.org/abs/1506.01497) [[caffe]](https://github.com/rbgirshick/py-faster-rcnn) [[roi-pooling]](https://github.com/deepsense-ai/roi-pooling) |
 | [FasterRCNN\_VGG16\_VOC](tensornets/references/rcnns.py#L187)            | 0.6872 | 137M   | 300.7 | 4.143 | [[paper]](https://arxiv.org/abs/1506.01497) [[caffe]](https://github.com/rbgirshick/py-faster-rcnn) [[roi-pooling]](https://github.com/deepsense-ai/roi-pooling) |
+
+## News 📰
+
+- YOLOv3 for COCO and VOC are released, [4 April 2018](https://github.com/taehoonlee/tensornets/commit/d8b2d8a54dc4b775a174035da63561028deb6624).
+- Generic object detection models for YOLOv2 and FasterRCNN are released, [26 March 2018](https://github.com/taehoonlee/tensornets/commit/67915e659d2097a96c82ba7740b9e43a8c69858d).
+
+## Future work 🔥
+
+- Add training codes.
+- Add image classification models (MobileNetv2, PNASNet).
+- Add object detection models (MaskRCNN, SSD).
+- Add image segmentation models (FCN, UNet).
+- Add image datasets (COCO, OpenImages).
+- Add style transfer examples which can be coupled with any network in TensorNets.
+- Add speech and language models with representative datasets (WaveNet, ByteNet).
