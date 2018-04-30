@@ -62,7 +62,6 @@ def yolov3_box(meta,np.ndarray[float,ndim=3] net_out_in):
         list boxes = list()
 
     H, W, _ = meta['out_size']
-    Hin, Win = meta['in_size']
     C = meta['classes']
     B = 3  # meta['num']
     anchor_idx = meta['anchor_idx']
@@ -81,8 +80,8 @@ def yolov3_box(meta,np.ndarray[float,ndim=3] net_out_in):
                 Bbox_pred[row, col, box_loop, 4] = expit_c(Bbox_pred[row, col, box_loop, 4])
                 Bbox_pred[row, col, box_loop, 0] = (col + expit_c(Bbox_pred[row, col, box_loop, 0])) / W
                 Bbox_pred[row, col, box_loop, 1] = (row + expit_c(Bbox_pred[row, col, box_loop, 1])) / H
-                Bbox_pred[row, col, box_loop, 2] = exp(Bbox_pred[row, col, box_loop, 2]) * anchors[2 * (box_loop + anchor_idx) + 0] / Win
-                Bbox_pred[row, col, box_loop, 3] = exp(Bbox_pred[row, col, box_loop, 3]) * anchors[2 * (box_loop + anchor_idx) + 1] / Hin
+                Bbox_pred[row, col, box_loop, 2] = exp(Bbox_pred[row, col, box_loop, 2]) * anchors[2 * (box_loop + anchor_idx) + 0] / (W * 32)
+                Bbox_pred[row, col, box_loop, 3] = exp(Bbox_pred[row, col, box_loop, 3]) * anchors[2 * (box_loop + anchor_idx) + 1] / (H * 32)
                 #SOFTMAX BLOCK, no more pointer juggling
                 for class_loop in range(C):
                     arr_max=max_c(arr_max,Classes[row,col,box_loop,class_loop])

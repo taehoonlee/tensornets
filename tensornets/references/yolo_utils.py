@@ -72,14 +72,11 @@ def get_v3_boxes(opts, outs, source_size, threshold=0.1):
     h, w = source_size
     boxes = [[] for _ in xrange(opts['classes'])]
     opts['thresh'] = threshold
-    opts['in_size'] = (416, 416)
     for i in range(3):
         opts['out_size'] = list(outs[i][0].shape)
         opts['anchor_idx'] = 6 - 3 * i
-        if outs[i][0].dtype != np.float32:
-            results = yolov3_box(opts, np.array(outs[i][0], dtype=np.float32))
-        else:
-            results = yolov3_box(opts, outs[i][0].copy())
+        o = np.array(outs[i][0], dtype=np.float32)
+        results = yolov3_box(opts, o)
         for b in results:
             idx, box = parse_box(b, threshold, w, h)
             if idx is not None:
@@ -94,10 +91,8 @@ def get_v2_boxes(opts, outs, source_size, threshold=0.1):
     boxes = [[] for _ in xrange(opts['classes'])]
     opts['thresh'] = threshold
     opts['out_size'] = list(outs[0].shape)
-    if outs[0].dtype != np.float32:
-        results = yolov2_box(opts, np.array(outs[0], dtype=np.float32))
-    else:
-        results = yolov2_box(opts, outs[0].copy())
+    o = np.array(outs[0], dtype=np.float32)
+    results = yolov2_box(opts, o)
     for b in results:
         idx, box = parse_box(b, threshold, w, h)
         if idx is not None:
