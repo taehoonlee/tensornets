@@ -298,6 +298,7 @@ def pretrained_initializer(scope, values):
         weights = weights[:len(values)]
 
     if len(weights) != len(values):
+        values = values[:len(weights)]
         warnings.warn('The sizes of symbolic and actual weights do not match. '
                       'Never mind if you are trying to load stem layers only.')
 
