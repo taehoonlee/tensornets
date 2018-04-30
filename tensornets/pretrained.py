@@ -585,6 +585,17 @@ def load_vgg19(scopes, return_fn=_assign):
     return return_fn(scopes, values)
 
 
+def load_darknet19(scopes, return_fn=_assign):
+    """Converted from the original [Darknet][10] using the [darkflow][11]."""
+    filename = 'darknet19.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'yolo/' + filename,
+        cache_subdir='models',
+        file_hash='aa68006a99edf5f9838dac35121840c4')
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
+
+
 def load_ref_yolo_v3_coco(scopes, return_fn=_assign):
     """Converted from the original [Darknet][10] using the [darkflow][11]."""
     filename = 'ref_yolo_v3_coco.npz'
@@ -695,7 +706,7 @@ __load_dict__ = {
     'mobilenet100': load_mobilenet100,
     'squeezenet': load_squeezenet,
     'zf': load_nothing,
-    'darknet19': load_nothing,
+    'darknet19': load_darknet19,
     'tinydarknet19': load_nothing,
     'REFyolov3coco': load_ref_yolo_v3_coco,
     'REFyolov3voc': load_ref_yolo_v3_voc,
