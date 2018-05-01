@@ -591,7 +591,7 @@ def load_darknet19(scopes, return_fn=_assign):
     weights_path = get_file(
         filename, __model_url__ + 'yolo/' + filename,
         cache_subdir='models',
-        file_hash='aa68006a99edf5f9838dac35121840c4')
+        file_hash='645132dcf25a18bf033e829646f90275')
     values = parse_weights(weights_path)
     return return_fn(scopes, values)
 
