@@ -51,19 +51,22 @@ def parse_box(b, t, w, h):
     idx = np.argmax(b.probs)
     score = b.probs[idx]
     if score > t:
-        x1 = int((b.x - b.w / 2) * w)
-        y1 = int((b.y - b.h / 2) * h)
-        x2 = int((b.x + b.w / 2) * w)
-        y2 = int((b.y + b.h / 2) * h)
-        if x1 < 0:
-            x1 = 0
-        if x2 > w - 1:
-            x2 = w - 1
-        if y1 < 0:
-            y1 = 0
-        if y2 > h - 1:
-            y2 = h - 1
-        return idx, (x1, y1, x2, y2, score)
+        try:
+            x1 = int((b.x - b.w / 2) * w)
+            y1 = int((b.y - b.h / 2) * h)
+            x2 = int((b.x + b.w / 2) * w)
+            y2 = int((b.y + b.h / 2) * h)
+            if x1 < 0:
+                x1 = 0
+            if x2 > w - 1:
+                x2 = w - 1
+            if y1 < 0:
+                y1 = 0
+            if y2 > h - 1:
+                y2 = h - 1
+            return idx, (x1, y1, x2, y2, score)
+        except:
+            return None, None
     else:
         return None, None
 
