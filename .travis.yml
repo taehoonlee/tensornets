@@ -14,6 +14,12 @@ matrix:
     - python: 2.7
       env: TF_VERSION=1.5.0
     - python: 2.7
+      env: TF_VERSION=1.6.0
+    - python: 2.7
+      env: TF_VERSION=1.7.0
+    - python: 2.7
+    - python: 3.6
+      env: TF_VERSION=1.1.0
     - python: 3.6
 notifications:
   email: false
