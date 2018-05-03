@@ -49,6 +49,23 @@ print(nets.utils.decode_predictions(preds, top=2)[0])
 [(u'n02124075', u'Egyptian_cat', 0.28067636), (u'n02127052', u'lynx', 0.16826575)]
 ```
 
+You can also easily obtain values of intermediate layers with `get_middles()` and `get_outputs()`:
+
+```python
+with tf.Session() as sess:
+    img = model.preprocess(img)
+    sess.run(model.pretrained())
+    middles = sess.run(model.get_middles(), {inputs: img})
+    outputs = sess.run(model.get_outputs(), {inputs: img})
+
+model.print_middles()
+assert middles[0].shape == (1, 56, 56, 256)
+assert middles[-1].shape == (1, 7, 7, 2048)
+
+model.print_outputs()
+assert sum(sum((outputs[-1] - preds) ** 2)) < 1e-8
+```
+
 TensorNets enables us to deploy well-known architectures and benchmark those results faster ⚡️. For more information, you can check out the lists of [utilities](#utilities), [examples](#examples), and [architectures](#performances).
 
 ## Object detection example
@@ -86,9 +103,14 @@ plt.gca().add_patch(plt.Rectangle(
 plt.show()
 ```
 
-More detection examples such as FasterRCNN on VOC2007 are [here](https://github.com/taehoonlee/tensornets-examples/blob/master/test_all_voc_models.ipynb) 😎. Note that object detection models require the following dependencies:
+More detection examples such as FasterRCNN on VOC2007 are [here](https://github.com/taehoonlee/tensornets-examples/blob/master/test_all_voc_models.ipynb) 😎. Note that:
 
-- `roi_pooling` for `FasterRCNN`:
+- APIs of detection models are slightly different:
+  * `YOLOv3`: `sess.run(model.preds, {inputs: img})`,
+  * `YOLOv2`: `sess.run(model, {inputs: img})`,
+  * `FasterRCNN`: `sess.run(model, {inputs: img, model.scales: scale})`,
+
+- `FasterRCNN` requires `roi_pooling`:
   * `git clone https://github.com/deepsense-io/roi-pooling && cd roi-pooling && vi roi_pooling/Makefile` and edit according to [here](https://github.com/tensorflow/tensorflow/issues/13607#issuecomment-335530430),
   * `python setup.py install`.
 
