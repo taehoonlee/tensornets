@@ -277,10 +277,16 @@ with tf.Session() as sess:
 | [DenseNet121](tensornets/densenets.py#L63)        | 25.480      | 8.022       | 6.842       | 8.1M   | 7.0M   | 202.9 | [[paper]](https://arxiv.org/abs/1608.06993) [[torch]](https://github.com/liuzhuang13/DenseNet/blob/master/models/densenet.lua) |
 | [DenseNet169](tensornets/densenets.py#L71)        | 23.926      | 6.892       | 6.140       | 14.3M  | 12.6M  | 219.1 | [[paper]](https://arxiv.org/abs/1608.06993) [[torch]](https://github.com/liuzhuang13/DenseNet/blob/master/models/densenet.lua) |
 | [DenseNet201](tensornets/densenets.py#L79)        | 22.936      | 6.542       | 5.724       | 20.2M  | 18.3M  | 272.0 | [[paper]](https://arxiv.org/abs/1608.06993) [[torch]](https://github.com/liuzhuang13/DenseNet/blob/master/models/densenet.lua) |
-| [MobileNet25](tensornets/mobilenets.py#L84)       | 48.418      | 24.208      | 21.196      | 0.5M   | 0.2M   | 29.27 | [[paper]](https://arxiv.org/abs/1704.04861) [[tf-slim]](https://github.com/tensorflow/models/blob/master/research/slim/nets/mobilenet_v1.py) |
-| [MobileNet50](tensornets/mobilenets.py#L91)       | 35.708      | 14.376      | 12.180      | 1.3M   | 0.8M   | 42.32 | [[paper]](https://arxiv.org/abs/1704.04861) [[tf-slim]](https://github.com/tensorflow/models/blob/master/research/slim/nets/mobilenet_v1.py) |
-| [MobileNet75](tensornets/mobilenets.py#L98)       | 31.588      | 11.758      | 9.878       | 2.6M   | 1.8M   | 57.23 | [[paper]](https://arxiv.org/abs/1704.04861) [[tf-slim]](https://github.com/tensorflow/models/blob/master/research/slim/nets/mobilenet_v1.py) |
-| [MobileNet100](tensornets/mobilenets.py#L105)     | 29.576      | 10.496      | 8.774       | 4.3M   | 3.2M   | 70.69 | [[paper]](https://arxiv.org/abs/1704.04861) [[tf-slim]](https://github.com/tensorflow/models/blob/master/research/slim/nets/mobilenet_v1.py) |
+| [MobileNet25](tensornets/mobilenets.py#L156)      | 48.418      | 24.208      | 21.196      | 0.5M   | 0.2M   | 34.46 | [[paper]](https://arxiv.org/abs/1704.04861) [[tf-slim]](https://github.com/tensorflow/models/blob/master/research/slim/nets/mobilenet_v1.py) |
+| [MobileNet50](tensornets/mobilenets.py#L163)      | 35.708      | 14.376      | 12.180      | 1.3M   | 0.8M   | 52.46 | [[paper]](https://arxiv.org/abs/1704.04861) [[tf-slim]](https://github.com/tensorflow/models/blob/master/research/slim/nets/mobilenet_v1.py) |
+| [MobileNet75](tensornets/mobilenets.py#L170)      | 31.588      | 11.758      | 9.878       | 2.6M   | 1.8M   | 70.11 | [[paper]](https://arxiv.org/abs/1704.04861) [[tf-slim]](https://github.com/tensorflow/models/blob/master/research/slim/nets/mobilenet_v1.py) |
+| [MobileNet100](tensornets/mobilenets.py#L177)     | 29.576      | 10.496      | 8.774       | 4.3M   | 3.2M   | 83.41 | [[paper]](https://arxiv.org/abs/1704.04861) [[tf-slim]](https://github.com/tensorflow/models/blob/master/research/slim/nets/mobilenet_v1.py) |
+| [MobileNet35v2](tensornets/mobilenets.py#L184)    | 39.914      | 17.568      | 15.422      | 1.7M   | 0.4M   | 57.04 | [[paper]](https://arxiv.org/abs/1801.04381) [[tf-slim]](https://github.com/tensorflow/models/blob/master/research/slim/nets/mobilenet/mobilenet_v2.py) |
+| [MobileNet50v2](tensornets/mobilenets.py#L191)    | 34.806      | 13.938      | 11.976      | 2.0M   | 0.7M   | 64.35 | [[paper]](https://arxiv.org/abs/1801.04381) [[tf-slim]](https://github.com/tensorflow/models/blob/master/research/slim/nets/mobilenet/mobilenet_v2.py) |
+| [MobileNet75v2](tensornets/mobilenets.py#L198)    | 30.468      | 10.824      | 9.188       | 2.7M   | 1.4M   | 88.68 | [[paper]](https://arxiv.org/abs/1801.04381) [[tf-slim]](https://github.com/tensorflow/models/blob/master/research/slim/nets/mobilenet/mobilenet_v2.py) |
+| [MobileNet100v2](tensornets/mobilenets.py#L205)   | 28.664      | 9.858       | 8.322       | 3.5M   | 2.3M   | 93.82 | [[paper]](https://arxiv.org/abs/1801.04381) [[tf-slim]](https://github.com/tensorflow/models/blob/master/research/slim/nets/mobilenet/mobilenet_v2.py) |
+| [MobileNet130v2](tensornets/mobilenets.py#L212)   | 25.320      | 7.878       | 6.728       | 5.4M   | 3.8M   | 130.4 | [[paper]](https://arxiv.org/abs/1801.04381) [[tf-slim]](https://github.com/tensorflow/models/blob/master/research/slim/nets/mobilenet/mobilenet_v2.py) |
+| [MobileNet140v2](tensornets/mobilenets.py#L219)   | 24.770      | 7.578       | 6.518       | 6.2M   | 4.4M   | 132.9 | [[paper]](https://arxiv.org/abs/1801.04381) [[tf-slim]](https://github.com/tensorflow/models/blob/master/research/slim/nets/mobilenet/mobilenet_v2.py) |
 | [SqueezeNet](tensornets/squeezenets.py#L45)       | 45.566      | 21.960      | 18.578      | 1.2M   | 0.7M   | 71.43 | [[paper]](https://arxiv.org/abs/1602.07360) [[caffe]](https://github.com/DeepScale/SqueezeNet/blob/master/SqueezeNet_v1.1/train_val.prototxt) |
 
 ### Object detection
@@ -310,13 +316,14 @@ with tf.Session() as sess:
 
 ## News 📰
 
+- The six variants of MobileNetv2 are released, [5 May 2018]().
 - YOLOv3 for COCO and VOC are released, [4 April 2018](https://github.com/taehoonlee/tensornets/commit/d8b2d8a54dc4b775a174035da63561028deb6624).
 - Generic object detection models for YOLOv2 and FasterRCNN are released, [26 March 2018](https://github.com/taehoonlee/tensornets/commit/67915e659d2097a96c82ba7740b9e43a8c69858d).
 
 ## Future work 🔥
 
 - Add training codes.
-- Add image classification models (MobileNetv2, PNASNet).
+- Add image classification models (PolyNet, PNASNet).
 - Add object detection models (MaskRCNN, SSD).
 - Add image segmentation models (FCN, UNet).
 - Add image datasets (COCO, OpenImages).

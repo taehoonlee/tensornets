@@ -36,6 +36,13 @@ from .mobilenets import MobileNet50
 from .mobilenets import MobileNet75
 from .mobilenets import MobileNet100
 
+from .mobilenets import MobileNet35v2
+from .mobilenets import MobileNet50v2
+from .mobilenets import MobileNet75v2
+from .mobilenets import MobileNet100v2
+from .mobilenets import MobileNet130v2
+from .mobilenets import MobileNet140v2
+
 from .squeezenets import SqueezeNet
 
 from .capsulenets import CapsuleNet

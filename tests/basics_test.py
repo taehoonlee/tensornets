@@ -65,6 +65,14 @@ pytestmark = pytest.mark.skipif(
         (nets.MobileNet75, (224, 224, 3)),
         (nets.MobileNet100, (224, 224, 3)),
     ]),
+    random.choice([
+        (nets.MobileNet35v2, (224, 224, 3)),
+        (nets.MobileNet50v2, (224, 224, 3)),
+        (nets.MobileNet75v2, (224, 224, 3)),
+        (nets.MobileNet100v2, (224, 224, 3)),
+        (nets.MobileNet130v2, (224, 224, 3)),
+        (nets.MobileNet140v2, (224, 224, 3)),
+    ]),
     (nets.SqueezeNet, (224, 224, 3)),
 ], ids=[
     'ResNet',
@@ -82,6 +90,7 @@ pytestmark = pytest.mark.skipif(
     'VGG',
     'DenseNet',
     'MobileNet',
+    'MobileNetv2',
     'SqueezeNet',
 ])
 def test_classification_basics(net, shape):

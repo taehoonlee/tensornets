@@ -1,6 +1,8 @@
 """Collection of representative endpoints for each model."""
 from __future__ import absolute_import
 
+from .utils import tf_later_than
+
 
 def names_inceptions(k, first_block, omit_first=False,
                      pool_last=False, resnet=False):
@@ -57,6 +59,37 @@ def names_darknets(k):
         if i < 3:
             names += ["pool%d/MaxPool:0" % (i + 3)]
     return names
+
+
+def tuple_mobilenetv2():
+    def baseidx(b):
+        return [b, b + 3, b + 5]
+    indices = baseidx(2)
+    if tf_later_than('1.3.0'):
+        bn_name = 'FusedBatchNorm:0'
+    else:
+        bn_name = 'batchnorm/add_1:0'
+    names = ['conv1/Relu6:0', 'sconv1/Relu6:0', 'pconv1/bn/' + bn_name]
+    k = 10
+    l = 2
+    for (i, j) in enumerate([2, 3, 4, 3, 3, 1]):
+        indices += baseidx(k)
+        names += ["conv%d/conv/Relu6:0" % l,
+                  "conv%d/sconv/Relu6:0" % l,
+                  "conv%d/pconv/bn/%s" % (l, bn_name)]
+        k += 8
+        l += 1
+        for _ in range(j - 1):
+            indices += (baseidx(k) + [k + 6])
+            names += ["conv%d/conv/Relu6:0" % l,
+                      "conv%d/sconv/Relu6:0" % l,
+                      "conv%d/pconv/bn/%s" % (l, bn_name),
+                      "conv%d/out:0" % l]
+            k += 9
+            l += 1
+    indices += [k]
+    names += ["conv%d/Relu6:0" % l]
+    return (indices, names, -16)
 
 
 def direct(model_name):
@@ -236,6 +269,12 @@ __middles_dict__ = {
         ['conv%d/conv/Relu6:0' % (i + 4) for i in range(11)],
         -3
     ),
+    'mobilenet35v2': tuple_mobilenetv2(),
+    'mobilenet50v2': tuple_mobilenetv2(),
+    'mobilenet75v2': tuple_mobilenetv2(),
+    'mobilenet100v2': tuple_mobilenetv2(),
+    'mobilenet130v2': tuple_mobilenetv2(),
+    'mobilenet140v2': tuple_mobilenetv2(),
     'squeezenet': (
         [9, 16, 17, 24, 31, 32] + list(range(39, 61, 7)),
         names_squeezenet(),

@@ -530,6 +530,72 @@ def load_mobilenet100(scopes, return_fn=_assign):
     return return_fn(scopes, values)
 
 
+def load_mobilenet35v2(scopes, return_fn=_assign):
+    """Converted from the [TF Slim][2]."""
+    filename = 'mobilenet_v2_035_224.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'mobilenet/' + filename,
+        cache_subdir='models',
+        file_hash='cf758f7f8024d39365e553ec924bb395')
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
+
+
+def load_mobilenet50v2(scopes, return_fn=_assign):
+    """Converted from the [TF Slim][2]."""
+    filename = 'mobilenet_v2_050_224.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'mobilenet/' + filename,
+        cache_subdir='models',
+        file_hash='218d51cd1b12b03ece24054029e7005b')
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
+
+
+def load_mobilenet75v2(scopes, return_fn=_assign):
+    """Converted from the [TF Slim][2]."""
+    filename = 'mobilenet_v2_075_224.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'mobilenet/' + filename,
+        cache_subdir='models',
+        file_hash='25b5f6c93ebec7558a757e7a70b16b1c')
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
+
+
+def load_mobilenet100v2(scopes, return_fn=_assign):
+    """Converted from the [TF Slim][2]."""
+    filename = 'mobilenet_v2_100_224.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'mobilenet/' + filename,
+        cache_subdir='models',
+        file_hash='ea55ba8d51df1df59b196d2508a3f262')
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
+
+
+def load_mobilenet130v2(scopes, return_fn=_assign):
+    """Converted from the [TF Slim][2]."""
+    filename = 'mobilenet_v2_130_224.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'mobilenet/' + filename,
+        cache_subdir='models',
+        file_hash='a2470b36675853bbe107a406b50cd648')
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
+
+
+def load_mobilenet140v2(scopes, return_fn=_assign):
+    """Converted from the [TF Slim][2]."""
+    filename = 'mobilenet_v2_140_224.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'mobilenet/' + filename,
+        cache_subdir='models',
+        file_hash='6988a66bb89a088ce20e2ae97adca88b')
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
+
+
 def load_squeezenet(scopes, return_fn=_assign):
     """Converted from the [Caffe SqueezeNets][8]."""
     filename = 'squeezenet.npz'
@@ -704,6 +770,12 @@ __load_dict__ = {
     'mobilenet50': load_mobilenet50,
     'mobilenet75': load_mobilenet75,
     'mobilenet100': load_mobilenet100,
+    'mobilenet35v2': load_mobilenet35v2,
+    'mobilenet50v2': load_mobilenet50v2,
+    'mobilenet75v2': load_mobilenet75v2,
+    'mobilenet100v2': load_mobilenet100v2,
+    'mobilenet130v2': load_mobilenet130v2,
+    'mobilenet140v2': load_mobilenet140v2,
     'squeezenet': load_squeezenet,
     'zf': load_nothing,
     'darknet19': load_darknet19,
