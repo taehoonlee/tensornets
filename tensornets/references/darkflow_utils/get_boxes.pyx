@@ -5,8 +5,9 @@ cimport numpy as np
 cimport cython
 ctypedef np.float_t DTYPE_t
 from libc.math cimport exp
+from libc.math cimport pow
 from .box import BoundBox
-from .nms cimport NMS
+from .nms import NMS
 
 #expit
 @cython.boundscheck(False) # turn off bounds-checking for entire function
@@ -52,7 +53,7 @@ cdef void _softmax_c(float* x, int classes):
 @cython.cdivision(True)
 @cython.boundscheck(False) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
-def yolov3_box(meta,np.ndarray[float,ndim=3] net_out_in):
+def _yolov3_box(meta,np.ndarray[float,ndim=3] net_out_in,scale_idx):
     cdef:
         np.intp_t H, W, _, C, B, row, col, box_loop, class_loop
         np.intp_t row1, col1, box_loop1,index,index2
@@ -61,10 +62,12 @@ def yolov3_box(meta,np.ndarray[float,ndim=3] net_out_in):
         double[:] anchors = np.asarray(meta['anchors'])
         list boxes = list()
 
-    H, W, _ = meta['out_size']
+    H, W = net_out_in.shape[:2]
     C = meta['classes']
     B = 3  # meta['num']
-    anchor_idx = meta['anchor_idx']
+    anchor_idx = 6 - 3 * scale_idx
+    Hin = H * pow(2, 5 - scale_idx)
+    Win = W * pow(2, 5 - scale_idx)
 
     cdef:
         float[:, :, :, ::1] net_out = net_out_in.reshape([H, W, B, net_out_in.shape[2]/B])
@@ -80,8 +83,8 @@ def yolov3_box(meta,np.ndarray[float,ndim=3] net_out_in):
                 Bbox_pred[row, col, box_loop, 4] = expit_c(Bbox_pred[row, col, box_loop, 4])
                 Bbox_pred[row, col, box_loop, 0] = (col + expit_c(Bbox_pred[row, col, box_loop, 0])) / W
                 Bbox_pred[row, col, box_loop, 1] = (row + expit_c(Bbox_pred[row, col, box_loop, 1])) / H
-                Bbox_pred[row, col, box_loop, 2] = exp(Bbox_pred[row, col, box_loop, 2]) * anchors[2 * (box_loop + anchor_idx) + 0] / (W * 32)
-                Bbox_pred[row, col, box_loop, 3] = exp(Bbox_pred[row, col, box_loop, 3]) * anchors[2 * (box_loop + anchor_idx) + 1] / (H * 32)
+                Bbox_pred[row, col, box_loop, 2] = exp(Bbox_pred[row, col, box_loop, 2]) * anchors[2 * (box_loop + anchor_idx) + 0] / Win
+                Bbox_pred[row, col, box_loop, 3] = exp(Bbox_pred[row, col, box_loop, 3]) * anchors[2 * (box_loop + anchor_idx) + 1] / Hin
                 #SOFTMAX BLOCK, no more pointer juggling
                 for class_loop in range(C):
                     arr_max=max_c(arr_max,Classes[row,col,box_loop,class_loop])
@@ -97,7 +100,18 @@ def yolov3_box(meta,np.ndarray[float,ndim=3] net_out_in):
     
     
     #NMS                    
-    return NMS(np.ascontiguousarray(probs).reshape(H*W*B,C), np.ascontiguousarray(Bbox_pred).reshape(H*B*W,5))
+    return np.ascontiguousarray(probs).reshape(H*W*B,C), np.ascontiguousarray(Bbox_pred).reshape(H*B*W,5)
+
+
+#BOX CONSTRUCTOR
+@cython.cdivision(True)
+@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.wraparound(False)  # turn off negative index wrapping for entire function
+def yolov3_box(meta,np.ndarray[float,ndim=3] out0,np.ndarray[float,ndim=3] out1,np.ndarray[float,ndim=3] out2):
+    a0, b0 = _yolov3_box(meta, out0, 0)
+    a1, b1 = _yolov3_box(meta, out1, 1)
+    a2, b2 = _yolov3_box(meta, out2, 2)
+    return NMS(np.concatenate([a2, a1, a0], axis=0), np.concatenate([b2, b1, b0], axis=0))
 
 
 #BOX CONSTRUCTOR
@@ -113,7 +127,7 @@ def yolov2_box(meta,np.ndarray[float,ndim=3] net_out_in):
         double[:] anchors = np.asarray(meta['anchors'])
         list boxes = list()
 
-    H, W, _ = meta['out_size']
+    H, W = net_out_in.shape[:2]
     C = meta['classes']
     B = meta['num']
     
