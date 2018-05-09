@@ -7,7 +7,7 @@ ctypedef np.float_t DTYPE_t
 from libc.math cimport exp
 from libc.math cimport pow
 from .box import BoundBox
-from .nms import NMS
+from .nms cimport NMS
 
 #expit
 @cython.boundscheck(False) # turn off bounds-checking for entire function
@@ -53,9 +53,9 @@ cdef void _softmax_c(float* x, int classes):
 @cython.cdivision(True)
 @cython.boundscheck(False) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
-def _yolov3_box(meta,np.ndarray[float,ndim=3] net_out_in,scale_idx):
+cdef _yolov3_box(meta,np.ndarray[float,ndim=3] net_out_in,scale_idx):
     cdef:
-        np.intp_t H, W, _, C, B, row, col, box_loop, class_loop
+        np.intp_t H, W, _, C, B, row, col, box_loop, class_loop, anchor_idx
         np.intp_t row1, col1, box_loop1,index,index2
         float  threshold = meta['thresh']
         float tempc,arr_max=0,sum=0
