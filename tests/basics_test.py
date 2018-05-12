@@ -50,6 +50,11 @@ pytestmark = pytest.mark.skipif(
         marks=pytest.mark.xfail(
             LooseVersion(tf.__version__) < LooseVersion('1.3.0'),
             reason='NASNetAmobile requires TensorFlow >= 1.3.0')),
+    pytest.param(
+        nets.PNASNetlarge, (331, 331, 3),
+        marks=pytest.mark.xfail(
+            LooseVersion(tf.__version__) < LooseVersion('1.3.0'),
+            reason='PNASNetlarge requires TensorFlow >= 1.3.0')),
     random.choice([
         (nets.VGG16, (224, 224, 3)),
         (nets.VGG19, (224, 224, 3)),
@@ -87,6 +92,7 @@ pytestmark = pytest.mark.skipif(
     'InceptionResNet2',
     'NASNetAlarge',
     'NASNetAmobile',
+    'PNASNetlarge',
     'VGG',
     'DenseNet',
     'MobileNet',

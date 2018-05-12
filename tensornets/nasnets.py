@@ -1,17 +1,22 @@
 """Collection of NASNet variants
 
-The reference paper:
+The reference papers:
 
+1. Original (a.k.a. NASNet)
  - Learning Transferable Architectures for Scalable Image Recognition,
    arXiv 2017
  - Barret Zoph, Vijay Vasudevan, Jonathon Shlens, Quoc V. Le
  - https://arxiv.org/abs/1707.07012
+2. PNASNet
+ - Progressive Neural Architecture Search, arXiv 2017
+ - Chenxi Liu et al.
+ - https://arxiv.org/abs/1712.00559
 
 The reference implementation:
 
 1. TF Slim
  - https://github.com/tensorflow/models/blob/master/research/slim/nets/
-   nasnet/nasnet.py
+   nasnet/{nasnet,pnasnet}.py
 """
 from __future__ import absolute_import
 from __future__ import division
@@ -66,16 +71,15 @@ def nasnet(x, stem_filters, normals, filters, skip_reduction, use_aux,
     x, p = reductionA(x, None, filters * scaling ** (-2), scope='stem1')
     x, p = reductionA(x, p, filters * scaling ** (-1), scope='stem2')
 
-    for i in range(normals):
-        x, p = normalA(x, p, filters, scope="normal%d" % (i + 1))
+    for i in range(1, normals + 1):
+        x, p = normalA(x, p, filters, scope="normal%d" % i)
 
     x, p0 = reductionA(x, p, filters * scaling,
                        scope="reduction%d" % normals)
     p = p0 if not skip_reduction else p
 
-    for i in range(normals):
-        x, p = normalA(x, p, filters * scaling,
-                       scope="normal%d" % (i + normals + 1))
+    for i in range(normals + 1, normals * 2 + 1):
+        x, p = normalA(x, p, filters * scaling, scope="normal%d" % i)
 
     if use_aux is True:
         a = aux(x, classes, scope='aux')
@@ -84,9 +88,8 @@ def nasnet(x, stem_filters, normals, filters, skip_reduction, use_aux,
                        scope="reduction%d" % (normals * 2))
     p = p0 if not skip_reduction else p
 
-    for i in range(normals):
-        x, p = normalA(x, p, filters * scaling ** 2,
-                       scope="normal%d" % (i + normals * 2 + 1))
+    for i in range(normals * 2 + 1, normals * 3 + 1):
+        x, p = normalA(x, p, filters * scaling ** 2, scope="normal%d" % i)
 
     x = relu(x, name='relu')
     if stem: return x
@@ -111,6 +114,44 @@ def nasnetAmobile(x, is_training=False, classes=1000,
                   stem=False, scope=None, reuse=None):
     return nasnet(x, 32, 4, 44, False, True, 2,
                   is_training, classes, stem, scope, reuse)
+
+
+def pnasnet(x, stem_filters, blocks, filters,
+            scaling, is_training, classes, stem, scope=None, reuse=None):
+    x = conv(x, stem_filters, 3, stride=2, padding='VALID', scope='conv0')
+
+    x, p = normalP(x, None, filters * scaling ** (-2), stride=2, scope='stem1')
+    x, p = normalP(x, p, filters * scaling ** (-1), stride=2, scope='stem2')
+
+    for i in range(1, blocks + 1):
+        x, p = normalP(x, p, filters, scope="normal%d" % i)
+
+    x, p = normalP(x, p, filters * scaling, stride=2,
+                   scope="reduction%d" % blocks)
+
+    for i in range(blocks + 1, blocks * 2):
+        x, p = normalP(x, p, filters * scaling, scope="normal%d" % i)
+
+    x, p = normalP(x, p, filters * scaling ** 2, stride=2,
+                   scope="reduction%d" % (blocks * 2 - 1))
+
+    for i in range(blocks * 2, blocks * 3 - 1):
+        x, p = normalP(x, p, filters * scaling ** 2, scope="normal%d" % i)
+
+    x = relu(x, name='relu')
+    if stem: return x
+    x = reduce_mean(x, [1, 2], name='avgpool')
+    x = dropout(x, keep_prob=0.5, scope='dropout')
+    x = fc(x, classes, scope='logits')
+    x = softmax(x, name='probs')
+    return x
+
+
+@var_scope('pnasnetlarge')
+@set_args(__args__)
+def pnasnetlarge(x, is_training=False, classes=1000,
+                 stem=False, scope=None, reuse=None):
+    return pnasnet(x, 96, 4, 216, 2, is_training, classes, stem, scope, reuse)
 
 
 @var_scope('adjust')
@@ -173,6 +214,37 @@ def reductionA(x, p, filters, scope=None):
     return concat([x2, x3, x5, x4], axis=3, name='concat'), x
 
 
+@var_scope('pool')
+def pool(x, filters, stride, scope=None):
+    y = max_pool2d(x, 3, stride=stride)
+    if int(x.shape[-1]) != filters:
+        y = conv(y, filters, 1, scope='1x1')
+    return y
+
+
+@var_scope('normalP')
+def normalP(x, p, filters, stride=1, scope=None):
+    p = adjust(p, x, filters)
+
+    h = relu(x)
+    h = conv(h, filters, 1, scope='1x1')
+
+    x1 = add(sconv(p, filters, 5, stride, scope='left1'),
+             pool(p, filters, stride, scope='right1'), name='add1')
+    x2 = add(sconv(h, filters, 7, stride, scope='left2'),
+             pool(h, filters, stride, scope='right2'), name='add2')
+    x3 = add(sconv(h, filters, 5, stride, scope='left3'),
+             sconv(h, filters, 3, stride, scope='right3'), name='add3')
+    x4 = add(sconv(x3, filters, 3, scope='left4'),
+             pool(h, filters, stride, scope='right4'), name='add4')
+    x5 = add(
+        sconv(p, filters, 3, stride, scope='left5'),
+        conv(relu(h), filters, 1, stride, scope='right5') if stride > 1 else h,
+        name='add5')
+
+    return concat([x1, x2, x3, x4, x5], axis=3, name='concat'), x
+
+
 @var_scope('aux')
 def aux(x, classes, scope=None):
     x = relu(x, name='relu1')
@@ -190,3 +262,4 @@ def aux(x, classes, scope=None):
 # Simple alias.
 NASNetAlarge = nasnetAlarge
 NASNetAmobile = nasnetAmobile
+PNASNetlarge = pnasnetlarge

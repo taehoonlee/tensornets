@@ -272,6 +272,7 @@ with tf.Session() as sess:
 | [InceptionResNet2](tensornets/inceptions.py#L264) | 19.744      | 4.748       | 3.962       | 55.9M  | 54.3M  | 656.8 | [[paper]](https://arxiv.org/abs/1602.07261) [[tf-slim]](https://github.com/tensorflow/models/blob/master/research/slim/nets/inception_resnet_v2.py) |
 | [NASNetAlarge](tensornets/nasnets.py#L100)        | 17.502      | 3.996       | 3.412       | 93.5M  | 89.5M  | 2081  | [[paper]](https://arxiv.org/abs/1707.07012) [[tf-slim]](https://github.com/tensorflow/models/tree/master/research/slim/nets/nasnet) |
 | [NASNetAmobile](tensornets/nasnets.py#L108)       | 25.634      | 8.146       | 6.758       | 7.7M   | 6.7M   | 165.8 | [[paper]](https://arxiv.org/abs/1707.07012) [[tf-slim]](https://github.com/tensorflow/models/tree/master/research/slim/nets/nasnet) |
+| [PNASNetlarge](tensornets/nasnets.py#L100)        | 17.366      | 3.950       | 3.358       | 86.2M  | 81.9M  | 2081  | [[paper]](https://arxiv.org/abs/1712.00559) [[tf-slim]](https://github.com/tensorflow/models/tree/master/research/slim/nets/nasnet) |
 | [VGG16](tensornets/vggs.py#L71)                   | 28.732      | 9.950       | 8.834       | 138.4M | 14.7M  | 348.4 | [[paper]](https://arxiv.org/abs/1409.1556) [[keras]](https://github.com/keras-team/keras/blob/master/keras/applications/vgg16.py) |
 | [VGG19](tensornets/vggs.py#L78)                   | 28.744      | 10.012      | 8.774       | 143.7M | 20.0M  | 399.8 | [[paper]](https://arxiv.org/abs/1409.1556) [[keras]](https://github.com/keras-team/keras/blob/master/keras/applications/vgg19.py) |
 | [DenseNet121](tensornets/densenets.py#L63)        | 25.480      | 8.022       | 6.842       | 8.1M   | 7.0M   | 202.9 | [[paper]](https://arxiv.org/abs/1608.06993) [[torch]](https://github.com/liuzhuang13/DenseNet/blob/master/models/densenet.lua) |
@@ -316,6 +317,7 @@ with tf.Session() as sess:
 
 ## News 📰
 
+- PNASNetlarge is released, [12 May 2018]().
 - The six variants of MobileNetv2 are released, [5 May 2018](https://github.com/taehoonlee/tensornets/commit/fb429b6637f943875249dff50f4bc6220d9d50bf).
 - YOLOv3 for COCO and VOC are released, [4 April 2018](https://github.com/taehoonlee/tensornets/commit/d8b2d8a54dc4b775a174035da63561028deb6624).
 - Generic object detection models for YOLOv2 and FasterRCNN are released, [26 March 2018](https://github.com/taehoonlee/tensornets/commit/67915e659d2097a96c82ba7740b9e43a8c69858d).
@@ -323,7 +325,7 @@ with tf.Session() as sess:
 ## Future work 🔥
 
 - Add training codes.
-- Add image classification models (PolyNet, PNASNet).
+- Add image classification models (PolyNet).
 - Add object detection models (MaskRCNN, SSD).
 - Add image segmentation models (FCN, UNet).
 - Add image datasets (COCO, OpenImages).

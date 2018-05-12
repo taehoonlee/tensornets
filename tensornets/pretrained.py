@@ -629,6 +629,17 @@ def load_nasnetAmobile(scopes, return_fn=_assign):
     return return_fn(scopes, values)
 
 
+def load_pnasnetlarge(scopes, return_fn=_assign):
+    """Converted from the [TF Slim][2]."""
+    filename = 'pnasnet_large.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'nasnet/' + filename,
+        cache_subdir='models',
+        file_hash='a1afc7679b950b643865aa7ea716c901')
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
+
+
 def load_vgg16(scopes, return_fn=_assign):
     """Copied from [Keras][3]."""
     filename = 'vgg16_weights_tf_dim_ordering_tf_kernels.h5'
@@ -761,6 +772,7 @@ __load_dict__ = {
     'wideresnet50': load_wideresnet50,
     'nasnetAlarge': load_nasnetAlarge,
     'nasnetAmobile': load_nasnetAmobile,
+    'pnasnetlarge': load_pnasnetlarge,
     'vgg16': load_vgg16,
     'vgg19': load_vgg19,
     'densenet121': load_densenet121,

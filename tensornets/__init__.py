@@ -23,6 +23,7 @@ from .resnets import WideResNet50
 
 from .nasnets import NASNetAlarge
 from .nasnets import NASNetAmobile
+from .nasnets import PNASNetlarge
 
 from .vggs import VGG16
 from .vggs import VGG19

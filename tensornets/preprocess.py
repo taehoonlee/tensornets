@@ -154,6 +154,7 @@ __preprocess_dict__ = {
     'wideresnet50': wrn_preprocess,
     'nasnetAlarge': tfslim_preprocess,
     'nasnetAmobile': tfslim_preprocess,
+    'pnasnetlarge': tfslim_preprocess,
     'vgg16': keras_resnet_preprocess,
     'vgg19': keras_resnet_preprocess,
     'densenet': fb_preprocess,

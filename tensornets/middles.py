@@ -35,9 +35,12 @@ def names_squeezenet():
 
 
 def names_nasnets(k):
-    names = ["normal%d/concat:0" % (i + 1) for i in range(k)]
-    names.insert(k // 3, "reduction%d/concat:0" % (k // 3))
-    names.insert(k // 3 * 2 + 1, "reduction%d/concat:0" % (k // 3 * 2))
+    names = []
+    for i in range(3):
+        base = sum(k[:i])
+        names += ["normal%d/concat:0" % (base + j + 1) for j in range(k[i])]
+        if i < 2:
+            names += ["reduction%d/concat:0" % (base + k[i])]
     return names
 
 
@@ -210,14 +213,20 @@ __middles_dict__ = {
     'nasnetAlarge': (
         list(range(145, 371, 45)) + [416] + list(range(466, 692, 45)) + [748] +
         list(range(798, 1024, 45)),
-        names_nasnets(18),
+        names_nasnets([6, 6, 6]),
         -8
     ),
     'nasnetAmobile': (
         list(range(145, 281, 45)) + [326] + list(range(376, 512, 45)) + [568] +
         list(range(618, 754, 45)),
-        names_nasnets(12),
+        names_nasnets([4, 4, 4]),
         -6
+    ),
+    'pnasnetlarge': (
+        list(range(169, 323, 51)) + [376] + list(range(432, 535, 51)) + [588] +
+        list(range(644, 747, 51)),
+        names_nasnets([4, 3, 3]),
+        -5
     ),
     'vgg16': (
         list(range(11, 16, 2)) + list(range(18, 23, 2)) +
