@@ -44,6 +44,8 @@ from .utils import var_scope
 
 from .references.yolos import get_v2_boxes as yolo_boxes
 from .references.yolos import opts
+from .references.yolos import v2_inputs
+from .references.yolos import v2_loss
 from .references.rcnns import get_boxes as rcnn_boxes
 from .references.rcnns import roi_pool2d
 from .references.rcnns import rp_net
@@ -65,9 +67,8 @@ def __args_rcnn__(is_training):
 @set_args(__args_yolo__)
 def yolov2(x, stem_fn, stem_out=None, is_training=False, classes=21,
            scope=None, reuse=None):
-    def get_boxes(*args, **kwargs):
-        return yolo_boxes(opts('yolov2' + data_name(classes)), *args, **kwargs)
-
+    inputs = x
+    opt = opts('yolov2' + data_name(classes))
     stem = x = stem_fn(x, is_training, stem=True, scope='stem')
     p = x.p
 
@@ -85,8 +86,16 @@ def yolov2(x, stem_fn, stem_out=None, is_training=False, classes=21,
     x = darkconv(x, 125 if classes == 21 else 425, 1,
                  onlyconv=True, scope='linear')
     x.aliases = []
+
+    def get_boxes(*args, **kwargs):
+        return yolo_boxes(opt, *args, **kwargs)
     x.get_boxes = get_boxes
     x.stem = stem
+    x.inputs = [inputs]
+    x.inputs += v2_inputs(x.shape[1:3], opt['num'], opt['classes'], x.dtype)
+    if isinstance(is_training, tf.Tensor):
+        x.inputs.append(is_training)
+    x.loss = v2_loss(x, opt['anchors'], opt['classes'])
     return x
 
 
@@ -98,10 +107,8 @@ def data_name(classes):
 @set_args(__args_yolo__)
 def tinyyolov2(x, stem_fn, stem_out=None, is_training=False, classes=21,
                scope=None, reuse=None):
-    def get_boxes(*args, **kwargs):
-        return yolo_boxes(opts('tinyyolov2' + data_name(classes)),
-                          *args, **kwargs)
-
+    inputs = x
+    opt = opts('tinyyolov2' + data_name(classes))
     stem = x = stem_fn(x, is_training, stem=True, scope='stem')
 
     if stem_out is not None:
@@ -113,8 +120,16 @@ def tinyyolov2(x, stem_fn, stem_out=None, is_training=False, classes=21,
     x = darkconv(x, 125 if classes == 21 else 425, 1,
                  onlyconv=True, scope='linear')
     x.aliases = []
+
+    def get_boxes(*args, **kwargs):
+        return yolo_boxes(opt, *args, **kwargs)
     x.get_boxes = get_boxes
     x.stem = stem
+    x.inputs = [inputs]
+    x.inputs += v2_inputs(x.shape[1:3], opt['num'], opt['classes'], x.dtype)
+    if isinstance(is_training, tf.Tensor):
+        x.inputs.append(is_training)
+    x.loss = v2_loss(x, opt['anchors'], opt['classes'])
     return x
 
 

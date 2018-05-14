@@ -3,6 +3,7 @@ from __future__ import division
 
 import os
 import numpy as np
+import tensorflow as tf
 
 try:
     from .darkflow_utils.get_boxes import yolov3_box
@@ -100,3 +101,77 @@ def get_v2_boxes(opts, outs, source_size, threshold=0.1):
     for i in xrange(opts['classes']):
         boxes[i] = np.asarray(boxes[i], dtype=np.float32)
     return boxes
+
+
+def v2_inputs(out_shape, anchors, classes, dtype):
+    sizes = [None, np.prod(out_shape), anchors]
+    return [tf.placeholder(dtype, sizes + [classes], name='probs'),
+            tf.placeholder(dtype, sizes, name='confs'),
+            tf.placeholder(dtype, sizes + [4], name='coord'),
+            tf.placeholder(dtype, sizes + [classes], name='proid'),
+            tf.placeholder(dtype, sizes, name='areas'),
+            tf.placeholder(dtype, sizes + [2], name='upleft'),
+            tf.placeholder(dtype, sizes + [2], name='botright')]
+
+
+def v2_loss(outs, anchorcoords, classes):
+    # Refer to the following darkflow loss
+    # https://github.com/thtrieu/darkflow/blob/master/darkflow/net/yolov2/train.py
+    sprob = 1.
+    sconf = 5.
+    snoob = 1.
+    scoor = 1.
+    H = outs.shape[1].value
+    W = outs.shape[2].value
+    cells = H * W
+    sizes = np.array([[[[W, H]]]], dtype=np.float32)
+    anchors = len(anchorcoords) // 2
+    anchorcoords = np.reshape(anchorcoords, [1, 1, anchors, 2])
+    _, _probs, _confs, _coord, _proid, _areas, _ul, _br = outs.inputs[:8]
+
+    # Extract the coordinate prediction from net.out
+    outs = tf.reshape(outs, [-1, H, W, anchors, (5 + classes)])
+    coords = tf.reshape(outs[:, :, :, :, :4], [-1, cells, anchors, 4])
+    adj_xy = 1. / (1. + tf.exp(-coords[:, :, :, 0:2]))
+    adj_wh = tf.sqrt(tf.exp(coords[:, :, :, 2:4]) * anchorcoords / sizes)
+    adj_c = 1. / (1. + tf.exp(-outs[:, :, :, :, 4]))
+    adj_c = tf.reshape(adj_c, [-1, cells, anchors, 1])
+    adj_prob = tf.reshape(tf.nn.softmax(outs[:, :, :, :, 5:]),
+                          [-1, cells, anchors, classes])
+    adj_outs = tf.concat([adj_xy, adj_wh, adj_c, adj_prob], 3)
+
+    coords = tf.concat([adj_xy, adj_wh], 3)
+    wh = tf.pow(coords[:, :, :, 2:4], 2) * sizes
+    area_pred = wh[:, :, :, 0] * wh[:, :, :, 1]
+    centers = coords[:, :, :, 0:2]
+    floor = centers - (wh * .5)
+    ceil = centers + (wh * .5)
+
+    # calculate the intersection areas
+    intersect_upleft = tf.maximum(floor, _ul)
+    intersect_botright = tf.minimum(ceil, _br)
+    intersect_wh = intersect_botright - intersect_upleft
+    intersect_wh = tf.maximum(intersect_wh, 0.0)
+    intersect = tf.multiply(intersect_wh[:, :, :, 0], intersect_wh[:, :, :, 1])
+
+    # calculate the best IOU, set 0.0 confidence for worse boxes
+    iou = tf.truediv(intersect, _areas + area_pred - intersect)
+    best_box = tf.equal(iou, tf.reduce_max(iou, [2], True))
+    best_box = tf.to_float(best_box)
+    confs = tf.multiply(best_box, _confs)
+
+    # take care of the weight terms
+    conid = snoob * (1. - confs) + sconf * confs
+    weight_coo = tf.concat(4 * [tf.expand_dims(confs, -1)], 3)
+    cooid = scoor * weight_coo
+    weight_pro = tf.concat(classes * [tf.expand_dims(confs, -1)], 3)
+    proid = sprob * weight_pro
+
+    true = tf.concat([_coord, tf.expand_dims(confs, 3), _probs], 3)
+    wght = tf.concat([cooid, tf.expand_dims(conid, 3), proid], 3)
+
+    loss = tf.pow(adj_outs - true, 2)
+    loss = tf.multiply(loss, wght)
+    loss = tf.reshape(loss, [-1, cells * anchors * (5 + classes)])
+    loss = tf.reduce_sum(loss, 1)
+    return .5 * tf.reduce_mean(loss) + tf.losses.get_regularization_loss()
