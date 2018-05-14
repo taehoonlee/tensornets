@@ -9,8 +9,10 @@ from tensorflow.contrib.layers import conv2d
 from tensorflow.contrib.layers import dropout
 from tensorflow.contrib.layers import flatten
 from tensorflow.contrib.layers import fully_connected as fc
+from tensorflow.contrib.layers import l2_regularizer as l2
 from tensorflow.contrib.layers import max_pool2d
 from tensorflow.contrib.layers import separable_conv2d
+from tensorflow.contrib.layers import variance_scaling_initializer
 
 from .ops import leaky_relu
 from .ops import relu
@@ -85,16 +87,19 @@ def darkconv(*args, **kwargs):
     scope = kwargs.pop('scope', None)
     onlyconv = kwargs.pop('onlyconv', False)
     with tf.variable_scope(scope):
-        conv_kwargs = {'padding': 'SAME',
-                       'activation_fn': None,
-                       'biases_initializer': None,
-                       'scope': 'conv'}
+        conv_kwargs = {
+            'padding': 'SAME',
+            'activation_fn': None,
+            'weights_initializer': variance_scaling_initializer(1.53846),
+            'weights_regularizer': l2(5e-4),
+            'biases_initializer': None,
+            'scope': 'conv'}
         if onlyconv:
             conv_kwargs.pop('biases_initializer')
         with arg_scope([conv2d], **conv_kwargs):
             x = conv2d(*args, **kwargs)
             if onlyconv: return x
-            x = batch_norm(x, center=False, scale=True,
+            x = batch_norm(x, decay=0.99, center=False, scale=True,
                            epsilon=1e-5, scope='bn')
             x = bias_add(x, scope='bias')
             x = leaky_relu(x, alpha=0.1, name='lrelu')
