@@ -87,7 +87,7 @@ def up(x, filters, kernel_size=2, scope=None):
     return x
 
 
-def yolov3(x, blocks, filters, is_training, scope=None, reuse=None):
+def yolov3(x, blocks, is_training, classes, scope=None, reuse=None):
     x = conv(x, 32, 3, scope='conv1')
     x = down(x, 64, scope='down1')
     x = stackv3(x, 64, blocks[0], scope='conv2')
@@ -101,23 +101,23 @@ def yolov3(x, blocks, filters, is_training, scope=None, reuse=None):
     x = stackv3(x, 1024, blocks[4], scope='conv6')
 
     x, p = stackv3(x, 1024, blocks[5], conv_shortcut=False, scope='conv7')
-    out0 = conv(x, filters, 1, onlyconv=True, scope='linear7')
+    out0 = conv(x, (classes + 5) * 3, 1, onlyconv=True, scope='linear7')
     p = up(p, 256, 2, scope='up7')
     x = concat([p, p1], axis=3, name='concat7')
 
     x, p = stackv3(x, 512, blocks[5], conv_shortcut=False, scope='conv8')
-    out1 = conv(x, filters, 1, onlyconv=True, scope='linear8')
+    out1 = conv(x, (classes + 5) * 3, 1, onlyconv=True, scope='linear8')
     p = up(p, 128, 2, scope='up8')
     x = concat([p, p0], axis=3, name='concat8')
 
     x, _ = stackv3(x, 256, blocks[5], conv_shortcut=False, scope='conv9')
-    out2 = conv(x, filters, 1, onlyconv=True, scope='linear9')
+    out2 = conv(x, (classes + 5) * 3, 1, onlyconv=True, scope='linear9')
     out2.aliases = []
     out2.preds = [out0, out1, out2]
     return out2
 
 
-def yolo(x, blocks, filters, is_training, scope=None, reuse=None):
+def yolo(x, blocks, is_training, classes, scope=None, reuse=None):
     x = _stack(x, 32, blocks[0], scope='conv1')
     x = max_pool2d(x, 2, stride=2, scope='pool1')
     x = _stack(x, 64, blocks[1], scope='conv2')
@@ -138,12 +138,12 @@ def yolo(x, blocks, filters, is_training, scope=None, reuse=None):
 
     x = concat([p, x], axis=3, name='concat')
     x = conv(x, 1024, 3, scope='conv9')
-    x = conv(x, filters, 1, onlyconv=True, scope='linear')
+    x = conv(x, (classes + 5) * 5, 1, onlyconv=True, scope='linear')
     x.aliases = []
     return x
 
 
-def tinyyolo(x, filters, is_training, scope=None, reuse=None):
+def tinyyolo(x, is_training, classes, scope=None, reuse=None):
     x = conv(x, 16, 3, scope='conv1')
     x = max_pool2d(x, 2, stride=2, scope='pool1')
     x = conv(x, 32, 3, scope='conv2')
@@ -158,101 +158,101 @@ def tinyyolo(x, filters, is_training, scope=None, reuse=None):
 
     x = max_pool2d(x, 2, stride=1, scope='pool6')
     x = conv(x, 1024, 3, scope='conv7')
-    x = conv(x, filters[0], 3, scope='conv8')
-    x = conv(x, filters[1], 1, onlyconv=True, scope='linear')
+    x = conv(x, 1024 if classes == 20 else 512, 3, scope='conv8')
+    x = conv(x, (classes + 5) * 5, 1, onlyconv=True, scope='linear')
     x.aliases = []
     return x
 
 
 @var_scope('REFyolov3coco')
 @set_args(__args__)
-def yolov3coco(x, is_training=False, scope=None, reuse=None):
+def yolov3coco(x, is_training=False, classes=80, scope=None, reuse=None):
     def _get_boxes(*args, **kwargs):
         return get_v3_boxes(opts('yolov3'), *args, **kwargs)
-    x = yolov3(x, [1, 2, 8, 8, 4, 3], 255, is_training, scope, reuse)
+    x = yolov3(x, [1, 2, 8, 8, 4, 3], is_training, classes, scope, reuse)
     x.get_boxes = _get_boxes
     return x
 
 
 @var_scope('REFyolov3voc')
 @set_args(__args__)
-def yolov3voc(x, is_training=False, scope=None, reuse=None):
+def yolov3voc(x, is_training=False, classes=20, scope=None, reuse=None):
     def _get_boxes(*args, **kwargs):
         return get_v3_boxes(opts('yolov3voc'), *args, **kwargs)
-    x = yolov3(x, [1, 2, 8, 8, 4, 3], 75, is_training, scope, reuse)
+    x = yolov3(x, [1, 2, 8, 8, 4, 3], is_training, classes, scope, reuse)
     x.get_boxes = _get_boxes
     return x
 
 
 @var_scope('REFyolov2coco')
 @set_args(__args__)
-def yolov2coco(x, is_training=False, scope=None, reuse=None):
+def yolov2coco(x, is_training=False, classes=80, scope=None, reuse=None):
     inputs = x
     opt = opts('yolov2')
-    x = yolo(x, [1, 1, 3, 3, 5, 5], 425, is_training, scope, reuse)
+    x = yolo(x, [1, 1, 3, 3, 5, 5], is_training, classes, scope, reuse)
 
     def _get_boxes(*args, **kwargs):
         return get_v2_boxes(opt, *args, **kwargs)
     x.get_boxes = _get_boxes
     x.inputs = [inputs]
-    x.inputs += v2_inputs(x.shape[1:3], opt['num'], opt['classes'], x.dtype)
+    x.inputs += v2_inputs(x.shape[1:3], opt['num'], classes, x.dtype)
     if isinstance(is_training, tf.Tensor):
         x.inputs.append(is_training)
-    x.loss = v2_loss(x, opt['anchors'], opt['classes'])
+    x.loss = v2_loss(x, opt['anchors'], classes)
     return x
 
 
 @var_scope('REFyolov2voc')
 @set_args(__args__)
-def yolov2voc(x, is_training=False, scope=None, reuse=None):
+def yolov2voc(x, is_training=False, classes=20, scope=None, reuse=None):
     inputs = x
     opt = opts('yolov2voc')
-    x = yolo(x, [1, 1, 3, 3, 5, 5], 125, is_training, scope, reuse)
+    x = yolo(x, [1, 1, 3, 3, 5, 5], is_training, classes, scope, reuse)
 
     def _get_boxes(*args, **kwargs):
         return get_v2_boxes(opt, *args, **kwargs)
     x.get_boxes = _get_boxes
     x.inputs = [inputs]
-    x.inputs += v2_inputs(x.shape[1:3], opt['num'], opt['classes'], x.dtype)
+    x.inputs += v2_inputs(x.shape[1:3], opt['num'], classes, x.dtype)
     if isinstance(is_training, tf.Tensor):
         x.inputs.append(is_training)
-    x.loss = v2_loss(x, opt['anchors'], opt['classes'])
+    x.loss = v2_loss(x, opt['anchors'], classes)
     return x
 
 
 @var_scope('REFtinyyolov2coco')
 @set_args(__args__)
-def tinyyolov2coco(x, is_training=False, scope=None, reuse=None):
+def tinyyolov2coco(x, is_training=False, classes=80, scope=None, reuse=None):
     inputs = x
     opt = opts('tinyyolov2')
-    x = tinyyolo(x, [512, 425], is_training, scope, reuse)
+    x = tinyyolo(x, is_training, classes, scope, reuse)
 
     def _get_boxes(*args, **kwargs):
         return get_v2_boxes(opt, *args, **kwargs)
     x.get_boxes = _get_boxes
     x.inputs = [inputs]
-    x.inputs += v2_inputs(x.shape[1:3], opt['num'], opt['classes'], x.dtype)
+    x.inputs += v2_inputs(x.shape[1:3], opt['num'], classes, x.dtype)
     if isinstance(is_training, tf.Tensor):
         x.inputs.append(is_training)
-    x.loss = v2_loss(x, opt['anchors'], opt['classes'])
+    x.loss = v2_loss(x, opt['anchors'], classes)
     return x
 
 
 @var_scope('REFtinyyolov2voc')
 @set_args(__args__)
-def tinyyolov2voc(x, is_training=False, scope=None, reuse=None):
+def tinyyolov2voc(x, is_training=False, classes=20, scope=None, reuse=None):
     inputs = x
     opt = opts('tinyyolov2voc')
-    x = tinyyolo(x, [1024, 125], is_training, scope, reuse)
+    x = tinyyolo(x, is_training, classes, scope, reuse)
 
     def _get_boxes(*args, **kwargs):
         return get_v2_boxes(opt, *args, **kwargs)
     x.get_boxes = _get_boxes
     x.inputs = [inputs]
-    x.inputs += v2_inputs(x.shape[1:3], opt['num'], opt['classes'], x.dtype)
+    x.inputs += v2_inputs(x.shape[1:3], opt['num'], classes, x.dtype)
     if isinstance(is_training, tf.Tensor):
         x.inputs.append(is_training)
-    x.loss = v2_loss(x, opt['anchors'], opt['classes'])
+    x.loss = v2_loss(x, opt['anchors'], classes)
     return x
 
 

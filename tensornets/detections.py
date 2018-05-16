@@ -65,7 +65,7 @@ def __args_rcnn__(is_training):
 
 @var_scope('genYOLOv2')
 @set_args(__args_yolo__)
-def yolov2(x, stem_fn, stem_out=None, is_training=False, classes=21,
+def yolov2(x, stem_fn, stem_out=None, is_training=False, classes=20,
            scope=None, reuse=None):
     inputs = x
     opt = opts('yolov2' + data_name(classes))
@@ -83,8 +83,7 @@ def yolov2(x, stem_fn, stem_out=None, is_training=False, classes=21,
 
     x = concat([p, x], axis=3, name='concat')
     x = darkconv(x, 1024, 3, scope='conv9')
-    x = darkconv(x, 125 if classes == 21 else 425, 1,
-                 onlyconv=True, scope='linear')
+    x = darkconv(x, (classes + 5) * 5, 1, onlyconv=True, scope='linear')
     x.aliases = []
 
     def get_boxes(*args, **kwargs):
@@ -92,20 +91,20 @@ def yolov2(x, stem_fn, stem_out=None, is_training=False, classes=21,
     x.get_boxes = get_boxes
     x.stem = stem
     x.inputs = [inputs]
-    x.inputs += v2_inputs(x.shape[1:3], opt['num'], opt['classes'], x.dtype)
+    x.inputs += v2_inputs(x.shape[1:3], opt['num'], classes, x.dtype)
     if isinstance(is_training, tf.Tensor):
         x.inputs.append(is_training)
-    x.loss = v2_loss(x, opt['anchors'], opt['classes'])
+    x.loss = v2_loss(x, opt['anchors'], classes)
     return x
 
 
 def data_name(classes):
-    return 'voc' if classes == 21 else ''
+    return 'voc' if classes == 20 else ''
 
 
 @var_scope('genTinyYOLOv2')
 @set_args(__args_yolo__)
-def tinyyolov2(x, stem_fn, stem_out=None, is_training=False, classes=21,
+def tinyyolov2(x, stem_fn, stem_out=None, is_training=False, classes=20,
                scope=None, reuse=None):
     inputs = x
     opt = opts('tinyyolov2' + data_name(classes))
@@ -116,9 +115,8 @@ def tinyyolov2(x, stem_fn, stem_out=None, is_training=False, classes=21,
 
     x = max_pool2d(x, 2, stride=1, scope='pool6')
     x = darkconv(x, 1024, 3, scope='conv7')
-    x = darkconv(x, 1024 if classes == 21 else 512, 3, scope='conv8')
-    x = darkconv(x, 125 if classes == 21 else 425, 1,
-                 onlyconv=True, scope='linear')
+    x = darkconv(x, 1024 if classes == 20 else 512, 3, scope='conv8')
+    x = darkconv(x, (classes + 5) * 5, 1, onlyconv=True, scope='linear')
     x.aliases = []
 
     def get_boxes(*args, **kwargs):
@@ -126,10 +124,10 @@ def tinyyolov2(x, stem_fn, stem_out=None, is_training=False, classes=21,
     x.get_boxes = get_boxes
     x.stem = stem
     x.inputs = [inputs]
-    x.inputs += v2_inputs(x.shape[1:3], opt['num'], opt['classes'], x.dtype)
+    x.inputs += v2_inputs(x.shape[1:3], opt['num'], classes, x.dtype)
     if isinstance(is_training, tf.Tensor):
         x.inputs.append(is_training)
-    x.loss = v2_loss(x, opt['anchors'], opt['classes'])
+    x.loss = v2_loss(x, opt['anchors'], classes)
     return x
 
 
