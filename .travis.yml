@@ -60,9 +60,17 @@ install:
   - export NUM_CHANGED=$(git diff --name-only HEAD~1 | wc -l);
   - if [ $NUM_CHANGED -gt 1 ]; then CORE_CHANGED=True; fi
 
+  # Detect one of markdown files is changed or not
+  - export DOC_ONLY_CHANGED=False;
+  - if [ $NUM_CHANGED == 1 ] && [[ "$(git diff --name-only HEAD~1)" == *"md" ]]; then
+      export DOC_ONLY_CHANGED=True;
+    fi
+
 script:
-  - if [[ "$TEST_MODE" == "PEP8" ]]; then
-       PYTHONPATH=$PWD:$PYTHONPATH py.test --pep8 -m pep8;
-    else
-       PYTHONPATH=$PWD:$PYTHONPATH py.test tests/ --verbose --ignore=tests/all*;
+  - if [[ "$DOC_ONLY_CHANGED" == "False" ]]; then
+      if [[ "$TEST_MODE" == "PEP8" ]]; then
+         PYTHONPATH=$PWD:$PYTHONPATH py.test --pep8 -m pep8;
+      else
+         PYTHONPATH=$PWD:$PYTHONPATH py.test tests/ --verbose --ignore=tests/all*;
+      fi;
     fi
