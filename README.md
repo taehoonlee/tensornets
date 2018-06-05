@@ -7,6 +7,7 @@ High level network definitions with pre-trained weights in [TensorFlow](https://
 - **Applicability.** Many people already have their own ML workflows, and want to put a new model on their workflows. TensorNets can be easily plugged together because it is designed as simple functional interfaces without custom classes.
 - **Manageability.** Models are written in `tf.contrib.layers`, which is lightweight like PyTorch and Keras, and allows for ease of accessibility to every weight and end-point. Also, it is easy to deploy and expand a collection of pre-processing and pre-trained weights.
 - **Readability.** With recent TensorFlow APIs, more factoring and less indenting can be possible. For example, all the inception variants are implemented as about 500 lines of code in [TensorNets](tensornets/inceptions.py) while 2000+ lines in [official TensorFlow models](https://github.com/tensorflow/models/blob/master/research/slim/nets/inception_v3.py).
+- **Reproducibility.** You can always reproduce the original results with [simple APIs](#utilities) including feature extractions. Furthermore, you don't need to care about a version of TensorFlow beacuse compatibilities with various releases of TensorFlow have been checked with [Travis](https://travis-ci.org/taehoonlee/tensornets/builds).
 
 ## Installation
 
