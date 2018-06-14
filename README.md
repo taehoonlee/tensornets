@@ -67,11 +67,11 @@ model.print_outputs()
 assert sum(sum((outputs[-1] - preds) ** 2)) < 1e-8
 ```
 
-TensorNets enables us to deploy well-known architectures and benchmark those results faster ⚡️. For more information, you can check out the lists of [utilities](#utilities), [examples](#examples), and [architectures](#performances).
+TensorNets enables us to deploy well-known architectures and benchmark those results faster ⚡️. For more information, you can check out the lists of [utilities](#utilities), [examples](#examples), and [architectures](#performance).
 
 ## Object detection example
 
-Each object detection model **can be coupled with any network in TensorNets** (see [performances](#object-detection)) and takes two arguments: a placeholder and a function acting as a stem layer. Here is an example of `YOLOv2` for PASCAL VOC:
+Each object detection model **can be coupled with any network in TensorNets** (see [performance](#object-detection)) and takes two arguments: a placeholder and a function acting as a stem layer. Here is an example of `YOLOv2` for PASCAL VOC:
 
 ```python
 import tensorflow as tf
@@ -240,11 +240,11 @@ with tf.Session() as sess:
         print(utils.decode_predictions(pred, top=2)[0])
 ```
 
-## Performances
+## Performance
 
 ### Image classification
 
-- The top-k errors were obtained with TensorNets on **ImageNet validation set** and may slightly differ from the original ones. The crop size is 224x224 for all but 331x331 for NASNetAlarge, 299x299 for Inception3,4,ResNet2, and ResNet50-152v2.
+- The top-k errors were obtained with TensorNets on **ImageNet validation set** and may slightly differ from the original ones. The crop size used was 224x224 for all models except NASNetAlarge (331x331), Inception3 (299x299), Inception4 (299x299), InceptionResNet2 (299x299), and ResNet50-152v2 (299x299).
   * Top-1: single center crop, top-1 error
   * Top-5: single center crop, top-5 error
   * 10-5: ten crops (1 center + 4 corners and those mirrored ones), top-5 error
