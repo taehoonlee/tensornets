@@ -325,6 +325,7 @@ with tf.Session() as sess:
 
 ## News 📰
 
+- MS COCO utils are released, [9 Jul 2018](https://github.com/taehoonlee/tensornets/commit/4a34243891e6649b72b9c0b7114b8f3d51d1d779).
 - PNASNetlarge is released, [12 May 2018](https://github.com/taehoonlee/tensornets/commit/e2e0f0f7791731d3b7dfa989cae569c15a22cdd6).
 - The six variants of MobileNetv2 are released, [5 May 2018](https://github.com/taehoonlee/tensornets/commit/fb429b6637f943875249dff50f4bc6220d9d50bf).
 - YOLOv3 for COCO and VOC are released, [4 April 2018](https://github.com/taehoonlee/tensornets/commit/d8b2d8a54dc4b775a174035da63561028deb6624).
