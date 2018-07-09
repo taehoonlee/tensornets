@@ -310,11 +310,11 @@ with tf.Session() as sess:
 
 | PASCAL VOC2007 test                                                    | mAP    | Size   | Speed |  FPS  | References |
 |------------------------------------------------------------------------|--------|--------|-------|-------|------------|
-| [YOLOv3VOC(416)](tensornets/references/yolos.py#L175)                  | 0.7423 | 62M    | 24.09 | 41.51 | [[paper]](https://pjreddie.com/media/files/papers/YOLOv3.pdf) [[darknet]](https://pjreddie.com/darknet/yolo/) [[darkflow]](https://github.com/thtrieu/darkflow) |
-| [YOLOv2VOC(416)](tensornets/references/yolos.py#L195)                  | 0.7320 | 51M    | 14.75 | 67.80 | [[paper]](https://arxiv.org/abs/1612.08242) [[darknet]](https://pjreddie.com/darknet/yolov2/) [[darkflow]](https://github.com/thtrieu/darkflow) |
-| [TinyYOLOv2VOC(416)](tensornets/references/yolos.py#L205)              | 0.5303 | 16M    | 6.534 | 153.0 | [[paper]](https://arxiv.org/abs/1612.08242) [[darknet]](https://pjreddie.com/darknet/yolov2/) [[darkflow]](https://github.com/thtrieu/darkflow) |
-| [FasterRCNN\_ZF\_VOC](tensornets/references/rcnns.py#L151)               | 0.4466 | 59M    | 241.4 | 3.325 | [[paper]](https://arxiv.org/abs/1506.01497) [[caffe]](https://github.com/rbgirshick/py-faster-rcnn) [[roi-pooling]](https://github.com/deepsense-ai/roi-pooling) |
-| [FasterRCNN\_VGG16\_VOC](tensornets/references/rcnns.py#L187)            | 0.6872 | 137M   | 300.7 | 4.143 | [[paper]](https://arxiv.org/abs/1506.01497) [[caffe]](https://github.com/rbgirshick/py-faster-rcnn) [[roi-pooling]](https://github.com/deepsense-ai/roi-pooling) |
+| [YOLOv3VOC(416)](tensornets/references/yolos.py#L177)                  | 0.7423 | 62M    | 24.09 | 41.51 | [[paper]](https://pjreddie.com/media/files/papers/YOLOv3.pdf) [[darknet]](https://pjreddie.com/darknet/yolo/) [[darkflow]](https://github.com/thtrieu/darkflow) |
+| [YOLOv2VOC(416)](tensornets/references/yolos.py#L205)                  | 0.7320 | 51M    | 14.75 | 67.80 | [[paper]](https://arxiv.org/abs/1612.08242) [[darknet]](https://pjreddie.com/darknet/yolov2/) [[darkflow]](https://github.com/thtrieu/darkflow) |
+| [TinyYOLOv2VOC(416)](tensornets/references/yolos.py#L241)              | 0.5303 | 16M    | 6.534 | 153.0 | [[paper]](https://arxiv.org/abs/1612.08242) [[darknet]](https://pjreddie.com/darknet/yolov2/) [[darkflow]](https://github.com/thtrieu/darkflow) |
+| [FasterRCNN\_ZF\_VOC](tensornets/references/rcnns.py#L150)               | 0.4466 | 59M    | 241.4 | 3.325 | [[paper]](https://arxiv.org/abs/1506.01497) [[caffe]](https://github.com/rbgirshick/py-faster-rcnn) [[roi-pooling]](https://github.com/deepsense-ai/roi-pooling) |
+| [FasterRCNN\_VGG16\_VOC](tensornets/references/rcnns.py#L186)            | 0.6872 | 137M   | 300.7 | 4.143 | [[paper]](https://arxiv.org/abs/1506.01497) [[caffe]](https://github.com/rbgirshick/py-faster-rcnn) [[roi-pooling]](https://github.com/deepsense-ai/roi-pooling) |
 
 | MS COCO val2014                                                        | mAP    | Size   | Speed |  FPS  | References |
 |------------------------------------------------------------------------|--------|--------|-------|-------|------------|
