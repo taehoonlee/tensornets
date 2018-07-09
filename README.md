@@ -299,22 +299,29 @@ with tf.Session() as sess:
   * `TinyYOLOv2VOC`: `TinyYOLOv2(inputs, TinyDarknet19)`,
   * `FasterRCNN_ZF_VOC`: `FasterRCNN(inputs, ZF)`,
   * `FasterRCNN_VGG16_VOC`: `FasterRCNN(inputs, VGG16, stem_out='conv5/3')`.
-- The mAPs were obtained with TensorNets on **PASCAL VOC2007 test set** and may slightly differ from the original ones.
+- The mAPs were obtained with TensorNets and may slightly differ from the original ones.
 - The test input sizes were the numbers reported as the best in the papers:
   * `YOLOv3`, `YOLOv2`: 416x416
   * `FasterRCNN`: min\_shorter\_side=600, max\_longer\_side=1000
 - The sizes stand for rounded the number of parameters.
 - The computation times were measured on NVIDIA Tesla P100 (3584 cores, 16 GB global memory) with cuDNN 6.0 and CUDA 8.0.
-  * Speed: milliseconds only for network inferences of a 416x416 single image
+  * Speed: milliseconds only for network inferences of a 416x416 or 608x608 single image
   * FPS: 1000 / speed
 
-|                                                                        | mAP    | Size   | Speed |  FPS  | References |
+| PASCAL VOC2007 test                                                    | mAP    | Size   | Speed |  FPS  | References |
 |------------------------------------------------------------------------|--------|--------|-------|-------|------------|
-| [YOLOv3VOC](tensornets/references/yolos.py#L175)                       | 0.7423 | 62M    | 24.09 | 41.51 | [[paper]](https://pjreddie.com/media/files/papers/YOLOv3.pdf) [[darknet]](https://pjreddie.com/darknet/yolo/) [[darkflow]](https://github.com/thtrieu/darkflow) |
-| [YOLOv2VOC](tensornets/references/yolos.py#L195)                       | 0.7320 | 51M    | 14.75 | 67.80 | [[paper]](https://arxiv.org/abs/1612.08242) [[darknet]](https://pjreddie.com/darknet/yolov2/) [[darkflow]](https://github.com/thtrieu/darkflow) |
-| [TinyYOLOv2VOC](tensornets/references/yolos.py#L205)                   | 0.5303 | 16M    | 6.534 | 153.0 | [[paper]](https://arxiv.org/abs/1612.08242) [[darknet]](https://pjreddie.com/darknet/yolov2/) [[darkflow]](https://github.com/thtrieu/darkflow) |
+| [YOLOv3VOC(416)](tensornets/references/yolos.py#L175)                  | 0.7423 | 62M    | 24.09 | 41.51 | [[paper]](https://pjreddie.com/media/files/papers/YOLOv3.pdf) [[darknet]](https://pjreddie.com/darknet/yolo/) [[darkflow]](https://github.com/thtrieu/darkflow) |
+| [YOLOv2VOC(416)](tensornets/references/yolos.py#L195)                  | 0.7320 | 51M    | 14.75 | 67.80 | [[paper]](https://arxiv.org/abs/1612.08242) [[darknet]](https://pjreddie.com/darknet/yolov2/) [[darkflow]](https://github.com/thtrieu/darkflow) |
+| [TinyYOLOv2VOC(416)](tensornets/references/yolos.py#L205)              | 0.5303 | 16M    | 6.534 | 153.0 | [[paper]](https://arxiv.org/abs/1612.08242) [[darknet]](https://pjreddie.com/darknet/yolov2/) [[darkflow]](https://github.com/thtrieu/darkflow) |
 | [FasterRCNN\_ZF\_VOC](tensornets/references/rcnns.py#L151)               | 0.4466 | 59M    | 241.4 | 3.325 | [[paper]](https://arxiv.org/abs/1506.01497) [[caffe]](https://github.com/rbgirshick/py-faster-rcnn) [[roi-pooling]](https://github.com/deepsense-ai/roi-pooling) |
 | [FasterRCNN\_VGG16\_VOC](tensornets/references/rcnns.py#L187)            | 0.6872 | 137M   | 300.7 | 4.143 | [[paper]](https://arxiv.org/abs/1506.01497) [[caffe]](https://github.com/rbgirshick/py-faster-rcnn) [[roi-pooling]](https://github.com/deepsense-ai/roi-pooling) |
+
+| MS COCO val2014                                                        | mAP    | Size   | Speed |  FPS  | References |
+|------------------------------------------------------------------------|--------|--------|-------|-------|------------|
+| [YOLOv3COCO(608)](tensornets/references/yolos.py#L167)                 | 0.6016 | 62M    | 60.66 | 16.49 | [[paper]](https://pjreddie.com/media/files/papers/YOLOv3.pdf) [[darknet]](https://pjreddie.com/darknet/yolo/) [[darkflow]](https://github.com/thtrieu/darkflow) |
+| [YOLOv3COCO(416)](tensornets/references/yolos.py#L167)                 | 0.6028 | 62M    | 40.23 | 24.85 | [[paper]](https://pjreddie.com/media/files/papers/YOLOv3.pdf) [[darknet]](https://pjreddie.com/darknet/yolo/) [[darkflow]](https://github.com/thtrieu/darkflow) |
+| [YOLOv2COCO(608)](tensornets/references/yolos.py#L187)                 | 0.5189 | 51M    | 45.88 | 21.80 | [[paper]](https://arxiv.org/abs/1612.08242) [[darknet]](https://pjreddie.com/darknet/yolov2/) [[darkflow]](https://github.com/thtrieu/darkflow) |
+| [YOLOv2COCO(416)](tensornets/references/yolos.py#L187)                 | 0.4922 | 51M    | 21.66 | 46.17 | [[paper]](https://arxiv.org/abs/1612.08242) [[darknet]](https://pjreddie.com/darknet/yolov2/) [[darkflow]](https://github.com/thtrieu/darkflow) |
 
 ## News 📰
 
@@ -329,6 +336,6 @@ with tf.Session() as sess:
 - Add image classification models (PolyNet).
 - Add object detection models (MaskRCNN, SSD).
 - Add image segmentation models (FCN, UNet).
-- Add image datasets (COCO, OpenImages).
+- Add image datasets (OpenImages).
 - Add style transfer examples which can be coupled with any network in TensorNets.
 - Add speech and language models with representative datasets (WaveNet, ByteNet).
