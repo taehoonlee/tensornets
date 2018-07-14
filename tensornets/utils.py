@@ -30,7 +30,11 @@ def tf_later_than(v):
     return LooseVersion(tf.__version__) > LooseVersion(v)
 
 
-if tf_later_than('1.3.0'):
+if tf_later_than('1.8.0'):
+    from tensorflow.python.keras.applications.imagenet_utils \
+        import decode_predictions
+    from tensorflow.python.keras.utils import get_file
+elif tf_later_than('1.3.0'):
     from tensorflow.python.keras._impl.keras.applications.imagenet_utils \
         import decode_predictions
     from tensorflow.python.keras.utils import get_file

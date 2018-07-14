@@ -18,6 +18,8 @@ matrix:
     - python: 2.7
       env: TF_VERSION=1.7.0
     - python: 2.7
+      env: TF_VERSION=1.8.0
+    - python: 2.7
     - python: 3.6
       env: TF_VERSION=1.1.0
     - python: 3.6
