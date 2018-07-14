@@ -48,6 +48,8 @@ from .squeezenets import SqueezeNet
 
 from .capsulenets import CapsuleNet
 
+from .wavenets import WaveNet
+
 from .references import YOLOv3COCO
 from .references import YOLOv3VOC
 from .references import YOLOv2COCO
