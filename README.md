@@ -128,7 +128,8 @@ Besides `pretrained()` and `preprocess()`, the output `tf.Tensor` provides the f
 - `print_summary()`: prints the numbers of layers, weight matrices, and parameters.
 
 
-Example outputs of print methods are:
+<details>
+<summary>Example outputs of print methods are:</summary>
 
 ```
 >>> model.print_middles()
@@ -178,6 +179,7 @@ Total layers: 54
 Total weights: 320
 Total parameters: 25,636,712
 ```
+</details>
 
 ## Examples
 
@@ -213,7 +215,7 @@ train = tf.train.AdamOptimizer(learning_rate=1e-5).minimize(loss)
 
 with tf.Session() as sess:
     nets.pretrained(model)
-    # for (x, y) in your NumPy data (the NHWC and one-hot format):
+    for (x, y) in your_NumPy_data:  # the NHWC and one-hot format
         sess.run(train, {inputs: x, outputs: y})
 ```
 
