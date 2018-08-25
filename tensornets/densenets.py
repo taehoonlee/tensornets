@@ -52,6 +52,7 @@ def densenet(x, blocks, is_training, classes, stem, scope=None, reuse=None):
     x = dense(x, blocks[3], scope='conv5')
 
     x = batch_norm(x)
+    x = relu(x)
     if stem: return x
 
     x = reduce_mean(x, [1, 2], name='avgpool')
