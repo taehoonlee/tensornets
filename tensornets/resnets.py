@@ -72,7 +72,8 @@ def resnet(x, preact, stack_fn, is_training, classes, stem,
     else:
         x = conv(x, 64, 7, stride=2, scope='conv1')
         x = relu(x, name='conv1/relu')
-    x = pad(x, pad_info(0 if stem else 3), name='pool1/pad')
+    x = pad(x, pad_info(0 if stem else 3, symmetry=not preact),
+            'SYMMETRIC', name='pool1/pad')
     x = max_pool2d(x, 3, stride=2, scope='pool1')
     x = stack_fn(x)
     if stem: return x
