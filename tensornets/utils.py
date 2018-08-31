@@ -128,8 +128,8 @@ def get_weights(scope=None):
 def pad_info(s, symmetry=True):
     pads = [[0, 0], [s // 2, s // 2], [s // 2, s // 2], [0, 0]]
     if not symmetry:
-        pads[1][1] += 1
-        pads[2][1] += 1
+        pads[1][0] -= 1
+        pads[2][0] -= 1
     return pads
 
 
