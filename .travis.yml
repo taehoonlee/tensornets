@@ -56,6 +56,14 @@ install:
       pip install tensorflow==$TF_VERSION;
     fi
 
+  # Ignore warnings
+  - export TF16=$(python -c "from tensornets.utils import tf_later_than; print(tf_later_than('1.6.0'))")
+  - if [[ $TF16 == "False" ]]; then
+      echo 'filterwarnings =' >> pytest.ini;
+      echo '    ignore::DeprecationWarning' >> pytest.ini;
+      echo '    ignore::PendingDeprecationWarning' >> pytest.ini;
+    fi
+
   # Detect whether core files are changed or not
   - export CORE_CHANGED=True;
   - for entry in `git diff --name-only HEAD~1`; do if [[ "$entry" == "README.md" ]]; then export CORE_CHANGED=False; fi; done

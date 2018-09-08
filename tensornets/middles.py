@@ -1,6 +1,7 @@
 """Collection of representative endpoints for each model."""
 from __future__ import absolute_import
 
+from .utils import tf_equal_to
 from .utils import tf_later_than
 
 
@@ -68,7 +69,7 @@ def tuple_mobilenetv2():
     def baseidx(b):
         return [b, b + 3, b + 5]
     indices = baseidx(2)
-    if tf_later_than('1.3.0'):
+    if tf_equal_to('1.2.0') or tf_later_than('1.3.0'):
         bn_name = 'FusedBatchNorm:0'
     else:
         bn_name = 'batchnorm/add_1:0'
