@@ -1,2 +1,4 @@
+include LICENSE
+include README.md
 recursive-include tensornets/references/darkflow_utils *
 recursive-include tensornets *.names
