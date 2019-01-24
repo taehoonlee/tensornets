@@ -2,8 +2,7 @@
 
 The reference paper:
 
- - Faster R-CNN: Towards Real-Time Object Detection
-   with Region Proposal Networks, NIPS 2015
+ - Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks, NIPS 2015
  - Shaoqing Ren, Kaiming He, Ross Girshick, Jian Sun
  - https://arxiv.org/abs/1506.01497
 

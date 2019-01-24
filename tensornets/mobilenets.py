@@ -3,23 +3,20 @@
 The reference papers:
 
 1. V1
- - MobileNets: Efficient Convolutional Neural Networks for Mobile Vision
-   Applications, arXiv 2017
+ - MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications, arXiv 2017
  - Andrew G. Howard et al.
  - https://arxiv.org/abs/1704.04861
 2. V2
- - MobileNetV2: Inverted Residuals and Linear Bottlenecks, arXiv 2018
+ - MobileNetV2: Inverted Residuals and Linear Bottlenecks, CVPR 2018 (arXiv 2018)
  - Mark Sandler et al.
  - https://arxiv.org/abs/1801.04381
 
 The reference implementations:
 
 1. (for v1) TF Slim
- - https://github.com/tensorflow/models/blob/master/research/slim/nets/
-   mobilenet_v1.py
+ - https://github.com/tensorflow/models/blob/master/research/slim/nets/mobilenet_v1.py
 2. (for v2) TF Slim
- - https://github.com/tensorflow/models/blob/master/research/slim/nets/
-   mobilenet/mobilenet_v2.py
+ - https://github.com/tensorflow/models/blob/master/research/slim/nets/mobilenet/mobilenet_v2.py
 """
 from __future__ import absolute_import
 

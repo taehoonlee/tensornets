@@ -2,8 +2,7 @@
 
 The reference paper:
 
- - SqueezeNet: AlexNet-level accuracy with 50x fewer parameters and <0.5MB
-   model size, arXiv 2016
+ - SqueezeNet: AlexNet-level accuracy with 50x fewer parameters and <0.5MB model size, arXiv 2016
  - Forrest N. Iandola et al.
  - https://arxiv.org/abs/1602.07360
 

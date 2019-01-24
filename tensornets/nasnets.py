@@ -3,20 +3,18 @@
 The reference papers:
 
 1. Original (a.k.a. NASNet)
- - Learning Transferable Architectures for Scalable Image Recognition,
-   arXiv 2017
+ - Learning Transferable Architectures for Scalable Image Recognition, CVPR 2018 (arXiv 2017)
  - Barret Zoph, Vijay Vasudevan, Jonathon Shlens, Quoc V. Le
  - https://arxiv.org/abs/1707.07012
 2. PNASNet
- - Progressive Neural Architecture Search, arXiv 2017
+ - Progressive Neural Architecture Search, ECCV 2018 (arXiv 2017)
  - Chenxi Liu et al.
  - https://arxiv.org/abs/1712.00559
 
 The reference implementation:
 
 1. TF Slim
- - https://github.com/tensorflow/models/blob/master/research/slim/nets/
-   nasnet/{nasnet,pnasnet}.py
+ - https://github.com/tensorflow/models/blob/master/research/slim/nets/nasnet/{nasnet,pnasnet}.py
 """
 from __future__ import absolute_import
 from __future__ import division

@@ -2,16 +2,14 @@
 
 The reference paper:
 
- - Very Deep Convolutional Networks for Large-Scale
-   Image Recognition, ICLR 2015
+ - Very Deep Convolutional Networks for Large-Scale Image Recognition, ICLR 2015
  - Karen Simonyan, Andrew Zisserman
  - https://arxiv.org/abs/1409.1556
 
 The reference implementation:
 
 1. Keras
- - https://github.com/keras-team/keras/blob/master/keras/applications/
-   vgg{16,19}.py
+ - https://github.com/keras-team/keras/blob/master/keras/applications/vgg{16,19}.py
 2. Caffe VGG
  - http://www.robots.ox.ac.uk/~vgg/research/very_deep/
 """
