@@ -4,6 +4,7 @@ import tensornets as nets
 import tensorflow_hub as hub
 
 models_list = [
+    (nets.Inception3, (299, 299, 3), 'inception_v3'),
     (nets.MobileNet35v2, (224, 224, 3), 'mobilenet_v2_035_224'),
     (nets.MobileNet50v2, (224, 224, 3), 'mobilenet_v2_050_224'),
     (nets.MobileNet75v2, (224, 224, 3), 'mobilenet_v2_075_224'),
@@ -42,12 +43,13 @@ for (net, shape, model_name) in models_list:
             for i in range(-2, 0):
                 values[i] = np.delete(np.squeeze(values[i]), 0, axis=-1)
 
-            # Adjust the order of the values to cover TF < 1.4.0
             names = [w.name[2:] for w in model.get_weights()]
-            for i in range(len(names) - 1):
-                if 'gamma:0' in names[i] and 'beta:0' in names[i + 1]:
-                    names[i], names[i + 1] = names[i + 1], names[i]
-                    values[i], values[i + 1] = values[i + 1], values[i]
+            if not nets.utils.tf_later_than('1.4.0'):
+                # Adjust the order of the values to cover TF < 1.4.0
+                for i in range(len(names) - 1):
+                    if 'gamma:0' in names[i] and 'beta:0' in names[i + 1]:
+                        names[i], names[i + 1] = names[i + 1], names[i]
+                        values[i], values[i + 1] = values[i + 1], values[i]
 
             # Save the values as the TensorNets format
             np.savez(model_name, names=names, values=values)

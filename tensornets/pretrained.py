@@ -137,13 +137,13 @@ def load_inception2(scopes, return_fn=_assign):
 
 
 def load_inception3(scopes, return_fn=_assign):
-    """Copied from [keras][3] with modifications on the order of weights."""
-    filename = 'inception3.h5'
+    """Converted from the [TF Slim][2]."""
+    filename = 'inception3.npz'
     weights_path = get_file(
         filename, __model_url__ + 'inception/' + filename,
         cache_subdir='models',
-        file_hash='7c4556613c348da3b99b633e1c430fff')
-    values = parse_keras_weights(weights_path)
+        file_hash='546b76313eb0fd8037ae5108c850c9e9')
+    values = parse_weights(weights_path)
     return return_fn(scopes, values)
 
 
@@ -155,6 +155,17 @@ def load_inception4(scopes, return_fn=_assign):
         cache_subdir='models',
         file_hash='8d5a0e8cb451c85112d5c4e363d77a42')
     values = parse_weights(weights_path)
+    return return_fn(scopes, values)
+
+
+def load_keras_inception3(scopes, return_fn=_assign):
+    """Copied from [keras][3] with modifications on the order of weights."""
+    filename = 'inception3.h5'
+    weights_path = get_file(
+        filename, __model_url__ + 'inception/' + filename,
+        cache_subdir='models',
+        file_hash='7c4556613c348da3b99b633e1c430fff')
+    values = parse_keras_weights(weights_path)
     return return_fn(scopes, values)
 
 
