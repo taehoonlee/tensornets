@@ -4,6 +4,7 @@ import tensornets as nets
 import tensorflow_hub as hub
 
 models_list = [
+    (nets.Inception2, (224, 224, 3), 'inception_v2'),
     (nets.Inception3, (299, 299, 3), 'inception_v3'),
     (nets.MobileNet35v2, (224, 224, 3), 'mobilenet_v2_035_224'),
     (nets.MobileNet50v2, (224, 224, 3), 'mobilenet_v2_050_224'),
