@@ -335,7 +335,10 @@ with tf.Session() as sess:
 ## Future work 🔥
 
 - Add training codes.
-- Add image classification models (PolyNet).
+- Add image classification models.
+  * [PolyNet: A Pursuit of Structural Diversity in Very Deep Networks](https://arxiv.org/abs/1611.05725v2), CVPR 2017, Top-5 4.25%
+  * [Squeeze-and-Excitation Networks](https://arxiv.org/abs/1709.01507v2), CVPR 2018, Top-5 3.79%
+  * [GPipe: Efficient Training of Giant Neural Networks using Pipeline Parallelism](https://arxiv.org/abs/1811.06965), arXiv 2018, Top-5 3.0%
 - Add object detection models (MaskRCNN, SSD).
 - Add image segmentation models (FCN, UNet).
 - Add image datasets (OpenImages).
