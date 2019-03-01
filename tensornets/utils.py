@@ -52,7 +52,7 @@ else:
 def print_collection(collection, scope):
     if scope is not None:
         print("Scope: %s" % scope)
-    for x in tf.get_collection(collection, scope=scope):
+    for x in tf.get_collection(collection, scope=scope + '/'):
         name = x.name
         if scope is not None:
             name = name[len(scope)+1:]
@@ -96,7 +96,8 @@ def print_summary(scopes=None):
     for scope in scopes:
         if scope is not None:
             print("Scope: %s" % scope)
-        weights = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=scope)
+        weights = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES,
+                                    scope=scope + '/')
         names = [w.name for w in weights]
         starts = [n.rfind('/') + 1 for n in names]
         ends = [n.rfind(':') for n in names]
@@ -111,22 +112,22 @@ def print_summary(scopes=None):
 
 def get_bottleneck(scope=None):
     scope = parse_scopes(scope)[0]
-    return tf.get_collection(__middles__, scope=scope)[-1]
+    return tf.get_collection(__middles__, scope=scope + '/')[-1]
 
 
 def get_middles(scope=None):
     scope = parse_scopes(scope)[0]
-    return tf.get_collection(__middles__, scope=scope)
+    return tf.get_collection(__middles__, scope=scope + '/')
 
 
 def get_outputs(scope=None):
     scope = parse_scopes(scope)[0]
-    return tf.get_collection(__outputs__, scope=scope)
+    return tf.get_collection(__outputs__, scope=scope + '/')
 
 
 def get_weights(scope=None):
     scope = parse_scopes(scope)[0]
-    return tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=scope)
+    return tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=scope + '/')
 
 
 def pad_info(s, symmetry=True):
@@ -232,31 +233,37 @@ def var_scope(name):
     def decorator(func):
         def wrapper(*args, **kwargs):
             stem = kwargs.get('stem', False)
-            scope = kwargs.get('scope', None)
+            scope = kwargs.get('scope', name)
             reuse = kwargs.get('reuse', None)
-            with tf.variable_scope(scope, name, reuse=reuse):
+            with tf.variable_scope(scope, reuse=reuse):
                 x = func(*args, **kwargs)
                 if func.__name__ == 'wrapper':
                     from .middles import direct as p0
                     from .preprocess import direct as p1
                     from .pretrained import direct as p2
                     _scope = tf.get_variable_scope().name
+                    if tf_later_than('1.1.0'):
+                        _name = tf.get_default_graph().get_name_scope()
+                    else:
+                        # Note that `get_middles` and `get_outputs`
+                        # may NOT work well for TensorFlow == 1.1.0.
+                        _name = _scope
                     _input_shape = tuple([i.value for i in args[0].shape[1:3]])
-                    _outs = get_outputs(_scope)
+                    _outs = get_outputs(_name)
                     for i in p0(name)[0]:
                         collect_named_outputs(__middles__, _scope, _outs[i])
                     if stem:
                         x.aliases.insert(0, _scope)
-                        x.p = get_middles(_scope)[p0(name)[2]]
+                        x.p = get_middles(_name)[p0(name)[2]]
                     setattr(x, 'preprocess', p1(name, _input_shape))
                     setattr(x, 'pretrained', p2(name, x))
                     setattr(x, 'get_bottleneck',
                             lambda: get_bottleneck(_scope))
-                    setattr(x, 'get_middles', lambda: get_middles(_scope))
-                    setattr(x, 'get_outputs', lambda: get_outputs(_scope))
+                    setattr(x, 'get_middles', lambda: get_middles(_name))
+                    setattr(x, 'get_outputs', lambda: get_outputs(_name))
                     setattr(x, 'get_weights', lambda: get_weights(_scope))
-                    setattr(x, 'print_middles', lambda: print_middles(_scope))
-                    setattr(x, 'print_outputs', lambda: print_outputs(_scope))
+                    setattr(x, 'print_middles', lambda: print_middles(_name))
+                    setattr(x, 'print_outputs', lambda: print_outputs(_name))
                     setattr(x, 'print_weights', lambda: print_weights(_scope))
                     setattr(x, 'print_summary', lambda: print_summary(_scope))
                 return x
@@ -432,12 +439,12 @@ def remove_head(original_stem, name):
     _scope = "%s/stem" % tf.get_variable_scope().name
     g = tf.get_default_graph()
     for x in g.get_collection(tf.GraphKeys.GLOBAL_VARIABLES,
-                              scope=_scope)[::-1]:
+                              scope=_scope + '/')[::-1]:
         if name in x.name:
             break
         g.get_collection_ref(tf.GraphKeys.GLOBAL_VARIABLES).pop()
 
-    for x in g.get_collection(__outputs__, scope=_scope)[::-1]:
+    for x in g.get_collection(__outputs__, scope=_scope + '/')[::-1]:
         if name in x.name:
             break
         g.get_collection_ref(__outputs__).pop()
