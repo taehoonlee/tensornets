@@ -124,6 +124,25 @@ def test_classification_basics(net, shape, weights, outputs, middles):
                               direct(model.aliases[0])[1]):
                 assert a.name.endswith(b)
 
+        # Temporary disable tests whether the desired list is returned
+        # under complicated scopes
+        if LooseVersion(tf.__version__) > LooseVersion('1.2.0'):
+            with tf.name_scope('a'):
+                with tf.variable_scope('b'):
+                    with tf.name_scope('c'):
+                        model = net(inputs, is_training=False)
+                        assert len(model.get_weights()) == weights
+                        assert len(model.get_outputs()) == outputs
+                        assert len(model.get_middles()) == middles
+
+            with tf.variable_scope('d'):
+                with tf.name_scope('e'):
+                    with tf.variable_scope('f'):
+                        model = net(inputs, is_training=False)
+                        assert len(model.get_weights()) == weights
+                        assert len(model.get_outputs()) == outputs
+                        assert len(model.get_middles()) == middles
+
         assert y.shape == (1, 1000)
 
 
