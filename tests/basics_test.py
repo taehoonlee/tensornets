@@ -105,9 +105,8 @@ def test_classification_basics(net, shape, weights, outputs, middles):
         model = net(inputs, is_training=False)
         assert isinstance(model, tf.Tensor)
 
-        # Temporary disable tests whether the desired list is returned
-        # for TensorFlow == 1.1.0 or 1.2.0
-        if LooseVersion(tf.__version__) > LooseVersion('1.2.0'):
+        # Disable tests whether the desired list is returned for TF==1.1.0
+        if LooseVersion(tf.__version__) > LooseVersion('1.1.0'):
             assert len(model.get_weights()) == weights
             assert len(model.get_outputs()) == outputs
             assert len(model.get_middles()) == middles
@@ -118,15 +117,12 @@ def test_classification_basics(net, shape, weights, outputs, middles):
             nets.init(model)
             y = model.eval({inputs: model.preprocess(x)})
 
-        # Temporary disable tests whether the desired middles are returned
-        if LooseVersion(tf.__version__) != LooseVersion('1.2.0'):
-            for (a, b) in zip(model.get_middles(),
-                              direct(model.aliases[0])[1]):
-                assert a.name.endswith(b)
+        for (a, b) in zip(model.get_middles(),
+                          direct(model.aliases[0])[1]):
+            assert a.name.endswith(b)
 
-        # Temporary disable tests whether the desired list is returned
-        # under complicated scopes
-        if LooseVersion(tf.__version__) > LooseVersion('1.2.0'):
+        # Disable tests whether the desired list is returned for TF==1.1.0
+        if LooseVersion(tf.__version__) > LooseVersion('1.1.0'):
             with tf.name_scope('a'):
                 with tf.variable_scope('b'):
                     with tf.name_scope('c'):
