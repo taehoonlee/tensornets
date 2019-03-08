@@ -332,6 +332,14 @@ def pretrained_initializer(scope, values):
     if weights[-1].shape != values[-1].shape:  # for transfer learning
         ops += [w.initializer for w in weights[-2:]]
     else:
+        # The logits layer can be either 1x1 conv or fc. In other words,
+        # the weight shape is (1, 1, features, classes) for the former,
+        # or (features, classes) the latter.
+        if weights[-2].shape != values[-2].shape:
+            values[-2] = values[-2].reshape(weights[-2].shape)
+            warnings.warn('The weight has been reshaped because 1x1 conv and '
+                          'fc layers are interchangeable for a logits layer. '
+                          'But, the conversion may affect the precision.')
         ops += [w.assign(v) for (w, v) in zip(weights[-2:], values[-2:])]
 
     return ops
