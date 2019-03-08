@@ -17,6 +17,7 @@ import tensorflow as tf
 
 from .layers import conv2d
 from .layers import dropout
+from .layers import fc
 from .layers import max_pool2d
 from .layers import convrelu as conv
 
@@ -29,6 +30,7 @@ def __args__(is_training):
     return [([conv2d], {'padding': 'SAME', 'activation_fn': None,
                         'scope': 'conv'}),
             ([dropout], {'is_training': is_training, 'scope': 'dropout'}),
+            ([fc], {'activation_fn': None, 'scope': 'fc'}),
             ([max_pool2d], {'scope': 'pool'})]
 
 
@@ -63,8 +65,8 @@ def squeezenet(x, is_training=False, classes=1000,
     if stem: return x
     x = dropout(x, keep_prob=0.5, scope='drop9')
 
-    x = conv(x, classes, 1, scope='conv10')
     x = reduce_mean(x, [1, 2], name='pool10')
+    x = fc(x, classes, scope='logits')  # the original name is `conv10`
     x = softmax(x, name='probs')
     return x
 

@@ -83,7 +83,7 @@ pytestmark = pytest.mark.skipif(
         (nets.MobileNet130v2, (224, 224, 3), 262, 152, 62),
         (nets.MobileNet140v2, (224, 224, 3), 262, 152, 62),
     ]),
-    (nets.SqueezeNet, (224, 224, 3), 52, 66, 10),
+    (nets.SqueezeNet, (224, 224, 3), 52, 65, 10),
 ], ids=[
     'ResNet',
     'ResNetv2',
