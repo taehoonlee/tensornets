@@ -119,6 +119,7 @@ More detection examples such as FasterRCNN on VOC2007 are [here](https://github.
 
 Besides `pretrained()` and `preprocess()`, the output `tf.Tensor` provides the following useful methods:
 
+- `logits`: returns the `tf.Tensor` logits (the values before the softmax),
 - `get_middles()`: returns a list of all the representative `tf.Tensor` end-points,
 - `get_outputs()`: returns a list of all the `tf.Tensor` end-points,
 - `get_weights()`: returns a list of all the `tf.Tensor` weight matrices,
@@ -210,7 +211,7 @@ inputs = tf.placeholder(tf.float32, [None, 224, 224, 3])
 outputs = tf.placeholder(tf.float32, [None, 50])
 model = nets.DenseNet169(inputs, is_training=True, classes=50)
 
-loss = tf.losses.softmax_cross_entropy(outputs, model)
+loss = tf.losses.softmax_cross_entropy(outputs, model.logits)
 train = tf.train.AdamOptimizer(learning_rate=1e-5).minimize(loss)
 
 with tf.Session() as sess:

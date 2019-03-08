@@ -122,6 +122,13 @@ def test_classification_basics(net, shape, weights, outputs, middles):
             nets.init(model)
             y = model.eval({inputs: model.preprocess(x)})
 
+        # The tensor name of `model` should be `probs`.
+        assert 'probs' in model.name
+
+        # The tensor name of `model.logits` should be `logits`.
+        assert 'logits' in model.logits.name
+
+        # The tensor names from `get_middles()` should be the desired ones.
         for (a, b) in zip(model.get_middles(),
                           direct(model.aliases[0])[1]):
             assert a.name.endswith(b)

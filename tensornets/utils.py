@@ -255,6 +255,8 @@ def var_scope(name):
                     if stem:
                         x.aliases.insert(0, _scope)
                         x.p = get_middles(_name)[p0(name)[2]]
+                    else:
+                        x.logits = get_outputs(_name)[-2]
                     setattr(x, 'preprocess', p1(name, _input_shape))
                     setattr(x, 'pretrained', p2(name, x))
                     setattr(x, 'get_bottleneck',
