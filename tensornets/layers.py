@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 
+import numpy as np
 import tensorflow as tf
 
 from tensorflow.contrib.layers import avg_pool2d
@@ -14,6 +15,7 @@ from tensorflow.contrib.layers import max_pool2d
 from tensorflow.contrib.layers import separable_conv2d
 from tensorflow.contrib.layers import variance_scaling_initializer
 
+from .ops import conv2d_primitive
 from .ops import leaky_relu
 from .ops import relu
 from .ops import relu6
@@ -63,11 +65,13 @@ def gconvbn(*args, **kwargs):
         c = args[-1]
         f = x.shape[-1].value // c
         g = f // c
-        x = tf.reshape(x, tf.concat([tf.shape(x)[:-1],
-                                     tf.constant([g, c, c])], axis=0))
-        x = tf.reduce_sum(x, axis=-2)
-        x = reshape(x, tf.concat([tf.shape(x)[:-2],
-                                  tf.constant([f])], axis=0), name='gconv')
+        kernel = np.zeros((1, 1, f * c, f), np.float32)
+        for i in range(f):
+            start = (i // c) * c * c + i % c
+            end = start + c * c
+            kernel[:, :, start:end:c, i] = 1.
+        x = conv2d_primitive(x, tf.constant(kernel), strides=[1, 1, 1, 1],
+                             padding='VALID', name='gconv')
         return batch_norm(x)
 
 

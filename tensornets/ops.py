@@ -15,6 +15,7 @@ except NameError:
 argmax = ops_to_outputs(tf.argmax)
 add = ops_to_outputs(tf.add)
 concat = ops_to_outputs(tf.concat)
+conv2d_primitive = ops_to_outputs(tf.nn.conv2d)
 expand_dims = ops_to_outputs(tf.expand_dims)
 gather = ops_to_outputs(tf.gather)
 lrn = ops_to_outputs(tf.nn.lrn)
