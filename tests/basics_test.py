@@ -7,7 +7,7 @@ import os
 import pytest
 import random
 
-from tensornets.middles import direct
+from tensornets.middles import direct as middle_names
 
 from distutils.version import LooseVersion
 
@@ -110,48 +110,46 @@ def test_classification_basics(net, shape, weights, outputs, middles):
         model = net(inputs, is_training=False)
         assert isinstance(model, tf.Tensor)
 
-        # Disable tests whether the desired list is returned for TF==1.1.0
-        if LooseVersion(tf.__version__) > LooseVersion('1.1.0'):
-            assert len(model.get_weights()) == weights
-            assert len(model.get_outputs()) == outputs
-            assert len(model.get_middles()) == middles
-
         x = np.random.random((1,) + shape).astype(np.float32) * 255
 
         with tf.Session() as sess:
             nets.init(model)
             y = model.eval({inputs: model.preprocess(x)})
 
-        # The tensor name of `model` should be `probs`.
-        assert 'probs' in model.name
-
-        # The tensor name of `model.logits` should be `logits`.
-        assert 'logits' in model.logits.name
-
-        # The tensor names from `get_middles()` should be the desired ones.
-        for (a, b) in zip(model.get_middles(),
-                          direct(model.aliases[0])[1]):
-            assert a.name.endswith(b)
-
-        # Disable tests whether the desired list is returned for TF==1.1.0
-        if LooseVersion(tf.__version__) > LooseVersion('1.1.0'):
-            with tf.name_scope('a'):
-                with tf.variable_scope('b'):
-                    with tf.name_scope('c'):
-                        model = net(inputs, is_training=False)
-                        assert len(model.get_weights()) == weights
-                        assert len(model.get_outputs()) == outputs
-                        assert len(model.get_middles()) == middles
-
-            with tf.variable_scope('d'):
-                with tf.name_scope('e'):
-                    with tf.variable_scope('f'):
-                        model = net(inputs, is_training=False)
-                        assert len(model.get_weights()) == weights
-                        assert len(model.get_outputs()) == outputs
-                        assert len(model.get_middles()) == middles
-
         assert y.shape == (1, 1000)
+
+        # Check whether the tensor names match the desired ones
+        assert 'probs' in model.name  # for `model`
+        assert 'logits' in model.logits.name  # for `model.logits`
+        model_name = model.aliases[0]
+        for (a, b) in zip(model.get_middles(), middle_names(model_name)[1]):
+            assert a.name.endswith(b)  # for `model.get_middles()`
+
+        # Disable the following tests for TF==1.1.0
+        if LooseVersion(tf.__version__) == LooseVersion('1.1.0'):
+            return
+
+        # Check whether the desired list is returned
+        assert len(model.get_weights()) == weights
+        assert len(model.get_outputs()) == outputs
+        assert len(model.get_middles()) == middles
+
+        # Check whether the desired list is returned under scope functions
+        with tf.name_scope('a'):
+            with tf.variable_scope('b'):
+                with tf.name_scope('c'):
+                    model = net(inputs, is_training=False)
+                    assert len(model.get_weights()) == weights
+                    assert len(model.get_outputs()) == outputs
+                    assert len(model.get_middles()) == middles
+
+        with tf.variable_scope('d'):
+            with tf.name_scope('e'):
+                with tf.variable_scope('f'):
+                    model = net(inputs, is_training=False)
+                    assert len(model.get_weights()) == weights
+                    assert len(model.get_outputs()) == outputs
+                    assert len(model.get_middles()) == middles
 
 
 @pytest.mark.parametrize('net,shape,stem', [
