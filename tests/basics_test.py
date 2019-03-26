@@ -134,6 +134,10 @@ def test_classification_basics(net, shape, weights, outputs, middles):
         assert len(model.get_outputs()) == outputs
         assert len(model.get_middles()) == middles
 
+    # Clear GraphDef to avoid `GraphDef cannot be larger than 2GB`
+    with tf.Graph().as_default():
+        inputs = tf.placeholder(tf.float32, [None] + list(shape))
+
         # Check whether the desired list is returned under scope functions
         with tf.name_scope('a'):
             with tf.variable_scope('b'):
