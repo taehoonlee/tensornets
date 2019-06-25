@@ -348,7 +348,7 @@ def pretrained_initializer(scope, values):
 
 
 def parse_weights(weights_path, move_rules=None):
-    data = np.load(weights_path, encoding='bytes')
+    data = np.load(weights_path, encoding='bytes', allow_pickle=True)
     values = data['values']
 
     if tf_later_than('1.3.0'):
