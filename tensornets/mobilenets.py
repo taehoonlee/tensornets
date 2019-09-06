@@ -64,7 +64,7 @@ def block(x, filters, stride=1, scope=None):
 
 
 @var_scope('blockv2')
-def block2(x, filters, first=False, stride=1, scope=None):
+def block2(x, filters, stride=1, scope=None):
     shortcut = x
     x = conv(x, 6 * x.shape[-1].value, 1, scope='conv')
     x = sconv(x, None, 3, 1, stride=stride, scope='sconv')
