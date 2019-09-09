@@ -4,21 +4,21 @@ matrix:
     - python: 3.6
       env: TEST_MODE=PEP8
     - python: 3.6
-      env: TF_VERSION=("1.1.0" "1.2.0")
+      env: TF_VERSION1=1.1.0 TF_VERSION2=1.2.0
     - python: 3.6
-      env: TF_VERSION=("1.3.0" "1.4.0")
+      env: TF_VERSION1=1.3.0 TF_VERSION2=1.4.0
     - python: 3.6
-      env: TF_VERSION=("1.5.0" "1.6.0")
+      env: TF_VERSION1=1.5.0 TF_VERSION2=1.6.0
     - python: 3.6
-      env: TF_VERSION=("1.7.0" "1.8.0")
+      env: TF_VERSION1=1.7.0 TF_VERSION2=1.8.0
     - python: 3.6
-      env: TF_VERSION=("1.9.0" "1.10.0")
+      env: TF_VERSION1=1.9.0 TF_VERSION2=1.10.0
     - python: 3.6
-      env: TF_VERSION=("1.11.0" "1.12.0")
+      env: TF_VERSION1=1.11.0 TF_VERSION2=1.12.0
     - python: 3.6
-      env: TF_VERSION=("1.13.0" "1.14.0")
+      env: TF_VERSION1=1.13.0 TF_VERSION2=1.14.0
     - python: 2.7
-      env: TF_VERSION=("1.3.0" "1.8.0")
+      env: TF_VERSION1=1.3.0 TF_VERSION2=1.8.0
     - python: 2.7
 notifications:
   email: false
@@ -47,10 +47,16 @@ install:
   - pip install --only-binary=numpy,scipy numpy scipy opencv-python cython pytest pytest-pep8
 
   - pip install .
+  - export R=$(($RANDOM%2))
+  - if [ $R -eq 0 ]; then
+      export TF_VERSION=$TF_VERSION1;
+    elif [ $R -eq 1 ]; then
+      export TF_VERSION=$TF_VERSION2;
+    fi
   - if [ -z "$TF_VERSION" ]; then
       pip install tensorflow;
     else
-      pip install tensorflow==${TF_VERSION[${RANDOM}%2]};
+      pip install tensorflow==$TF_VERSION;
     fi
 
   # Ignore warnings
