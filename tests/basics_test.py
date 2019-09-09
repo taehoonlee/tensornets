@@ -134,6 +134,8 @@ def test_classification_basics(net, shape, weights, outputs, middles):
         assert len(model.get_outputs()) == outputs
         assert len(model.get_middles()) == middles
 
+        tf.reset_default_graph()
+
     # Clear GraphDef to avoid `GraphDef cannot be larger than 2GB`
     with tf.Graph().as_default():
         inputs = tf.placeholder(tf.float32, [None] + list(shape))
@@ -154,6 +156,8 @@ def test_classification_basics(net, shape, weights, outputs, middles):
                     assert len(model.get_weights()) == weights
                     assert len(model.get_outputs()) == outputs
                     assert len(model.get_middles()) == middles
+
+        tf.reset_default_graph()
 
 
 @pytest.mark.parametrize('net,shape,stem', [
