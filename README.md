@@ -50,14 +50,14 @@ print(nets.utils.decode_predictions(preds, top=2)[0])
 [(u'n02124075', u'Egyptian_cat', 0.28067636), (u'n02127052', u'lynx', 0.16826575)]
 ```
 
-You can also easily obtain values of intermediate layers with `get_middles()` and `get_outputs()`:
+You can also easily obtain values of intermediate layers with `middles()` and `outputs()`:
 
 ```python
 with tf.Session() as sess:
     img = model.preprocess(img)
     sess.run(model.pretrained())
-    middles = sess.run(model.get_middles(), {inputs: img})
-    outputs = sess.run(model.get_outputs(), {inputs: img})
+    middles = sess.run(model.middles(), {inputs: img})
+    outputs = sess.run(model.outputs(), {inputs: img})
 
 model.print_middles()
 assert middles[0].shape == (1, 56, 56, 256)
@@ -120,13 +120,13 @@ More detection examples such as FasterRCNN on VOC2007 are [here](https://github.
 Besides `pretrained()` and `preprocess()`, the output `tf.Tensor` provides the following useful methods:
 
 - `logits`: returns the `tf.Tensor` logits (the values before the softmax),
-- `get_middles()`: returns a list of all the representative `tf.Tensor` end-points,
-- `get_outputs()`: returns a list of all the `tf.Tensor` end-points,
-- `get_weights()`: returns a list of all the `tf.Tensor` weight matrices,
+- `middles()` (=`get_middles()`): returns a list of all the representative `tf.Tensor` end-points,
+- `outputs()` (=`get_outputs()`): returns a list of all the `tf.Tensor` end-points,
+- `weights()` (=`get_weights()`): returns a list of all the `tf.Tensor` weight matrices,
+- `summary()` (=`print_summary()`): prints the numbers of layers, weight matrices, and parameters,
 - `print_middles()`: prints all the representative end-points,
 - `print_outputs()`: prints all the end-points,
-- `print_weights()`: prints all the weight matrices,
-- `print_summary()`: prints the numbers of layers, weight matrices, and parameters.
+- `print_weights()`: prints all the weight matrices.
 
 
 <details>
@@ -174,7 +174,7 @@ conv2/block1/0/bn/beta:0 (256,)
 conv2/block1/0/bn/gamma:0 (256,)
 ...
 
->>> model.print_summary()
+>>> model.summary()
 Scope: resnet50
 Total layers: 54
 Total weights: 320
