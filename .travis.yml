@@ -54,7 +54,7 @@ install:
       export TF_VERSION=$TF_VERSION2;
     fi
   - if [ -z "$TF_VERSION" ]; then
-      pip install tensorflow;
+      pip install tensorflow==1.14.0;
     else
       pip install tensorflow==$TF_VERSION;
     fi
