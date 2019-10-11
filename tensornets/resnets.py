@@ -41,7 +41,7 @@ from .layers import batch_norm
 from .layers import conv2d
 from .layers import fc
 from .layers import max_pool2d
-from .layers import separable_conv2d
+from .layers import sconv2d
 from .layers import convbn as conv
 from .layers import gconvbn as gconv
 
@@ -58,9 +58,9 @@ def __args__(is_training):
                         'scope': 'conv'}),
             ([fc], {'activation_fn': None, 'scope': 'fc'}),
             ([max_pool2d], {'scope': 'pool'}),
-            ([separable_conv2d], {'padding': 'VALID', 'activation_fn': None,
-                                  'biases_initializer': None,
-                                  'scope': 'sconv'})]
+            ([sconv2d], {'padding': 'VALID', 'activation_fn': None,
+                         'biases_initializer': None,
+                         'scope': 'sconv'})]
 
 
 def resnet(x, preact, stack_fn, is_training, classes, stem,

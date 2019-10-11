@@ -12,7 +12,7 @@ from tensorflow.contrib.layers import flatten
 from tensorflow.contrib.layers import fully_connected as fc
 from tensorflow.contrib.layers import l2_regularizer as l2
 from tensorflow.contrib.layers import max_pool2d
-from tensorflow.contrib.layers import separable_conv2d
+from tensorflow.contrib.layers import separable_conv2d as sconv2d
 from tensorflow.contrib.layers import variance_scaling_initializer
 
 from .ops import conv2d_primitive
@@ -61,7 +61,7 @@ def convbnrelu6(*args, **kwargs):
 def gconvbn(*args, **kwargs):
     scope = kwargs.pop('scope', None)
     with tf.variable_scope(scope):
-        x = separable_conv2d(*args, **kwargs)
+        x = sconv2d(*args, **kwargs)
         c = args[-1]
         f = x.shape[-1].value // c
         g = f // c
@@ -78,13 +78,19 @@ def gconvbn(*args, **kwargs):
 def sconvbn(*args, **kwargs):
     scope = kwargs.pop('scope', None)
     with tf.variable_scope(scope):
-        return batch_norm(separable_conv2d(*args, **kwargs))
+        return batch_norm(sconv2d(*args, **kwargs))
+
+
+def sconvbnrelu(*args, **kwargs):
+    scope = kwargs.pop('scope', None)
+    with tf.variable_scope(scope):
+        return relu(batch_norm(sconv2d(*args, **kwargs)))
 
 
 def sconvbnrelu6(*args, **kwargs):
     scope = kwargs.pop('scope', None)
     with tf.variable_scope(scope):
-        return relu6(batch_norm(separable_conv2d(*args, **kwargs)))
+        return relu6(batch_norm(sconv2d(*args, **kwargs)))
 
 
 def darkconv(*args, **kwargs):

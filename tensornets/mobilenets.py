@@ -26,7 +26,7 @@ from .layers import batch_norm
 from .layers import conv2d
 from .layers import dropout
 from .layers import fc
-from .layers import separable_conv2d
+from .layers import sconv2d
 from .layers import convbn
 from .layers import convbnrelu6 as conv
 from .layers import sconvbnrelu6 as sconv
@@ -43,7 +43,7 @@ def __base_args__(is_training, decay):
                         'biases_initializer': None, 'scope': 'conv'}),
             ([dropout], {'is_training': is_training, 'scope': 'dropout'}),
             ([fc], {'activation_fn': None, 'scope': 'fc'}),
-            ([separable_conv2d],
+            ([sconv2d],
              {'activation_fn': None, 'biases_initializer': None,
               'scope': 'sconv'})]
 

@@ -38,7 +38,7 @@ from .layers import conv2d
 from .layers import dropout
 from .layers import fc
 from .layers import max_pool2d
-from .layers import separable_conv2d
+from .layers import sconv2d
 from .layers import convrelu0 as conv0
 from .layers import convbnrelu as conv
 
@@ -56,7 +56,7 @@ def __args__(is_training):
                         'biases_initializer': None, 'scope': 'conv'}),
             ([dropout], {'is_training': is_training, 'scope': 'dropout'}),
             ([fc], {'activation_fn': None, 'scope': 'fc'}),
-            ([separable_conv2d], {'padding': 'SAME', 'scope': 'sconv'})]
+            ([sconv2d], {'padding': 'SAME', 'scope': 'sconv'})]
 
 
 @var_scope('inception1')
@@ -101,8 +101,7 @@ def inception1(x, is_training=False, classes=1000,
 @set_args(__args__)
 def inception2(x, is_training=False, classes=1000,
                stem=False, scope=None, reuse=None):
-    x = separable_conv2d(x, 64, 7, stride=2, depth_multiplier=8.,
-                         scope='block1')
+    x = sconv2d(x, 64, 7, stride=2, depth_multiplier=8., scope='block1')
     x = max_pool2d(x, 3, stride=2, scope='pool1')
 
     x = conv(x, 64, 1, scope='block2/1')
