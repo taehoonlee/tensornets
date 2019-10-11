@@ -4,8 +4,10 @@ from __future__ import absolute_import
 
 import os
 import numpy as np
+import concurrent.futures as cf
 
 from os.path import isfile, join
+from ..utils import crop, load_img
 
 
 def get_files(data_dir, data_name, max_rows=None):
@@ -26,9 +28,13 @@ def get_labels(data_dir, data_name, max_rows=None):
     return labels
 
 
+def load_single(filename, resize_wh, crop_wh, crop_locs):
+    img = load_img(filename, target_size=resize_wh)
+    return crop(img, crop_wh, crop_locs)
+
+
 def load(data_dir, data_name, batch_size, resize_wh,
          crop_locs, crop_wh, total_num=None):
-    from ..utils import crop, load_img
 
     files, labels = get_files(data_dir, data_name, total_num)
     total_num = len(labels)
@@ -42,11 +48,18 @@ def load(data_dir, data_name, batch_size, resize_wh,
             data_spec[1] = 10
         X = np.zeros(data_spec, np.float32)
 
-        for (k, f) in enumerate(files[batch_start:batch_start+batch_size]):
-            filename = os.path.join("%s/ILSVRC2012_img_val" % data_dir, f)
-            if os.path.isfile(filename):
-                img = load_img(filename, target_size=resize_wh)
-                X[k] = crop(img, crop_wh, crop_locs)
+        jobs = []
+        with cf.ThreadPoolExecutor(max_workers=48) as executor:
+            for (k, f) in enumerate(files[batch_start:batch_start+batch_size]):
+                filename = os.path.join("%s/ILSVRC2012_img_val" % data_dir, f)
+                if os.path.isfile(filename):
+                    jobs.append(executor.submit(
+                        load_single, (*(filename, resize_wh, crop_wh, crop_locs))))
+
+        cf.wait(jobs)
+
+        for (k, out) in enumerate(jobs):
+            X[k] = out.result()
 
         yield X.reshape((-1, crop_wh, crop_wh, 3)), \
             labels[batch_start:batch_start+batch_size]
