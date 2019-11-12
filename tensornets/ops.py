@@ -22,6 +22,7 @@ lrn = ops_to_outputs(tf.nn.lrn)
 maximum = ops_to_outputs(tf.maximum)
 one_hot = ops_to_outputs(tf.one_hot)
 pad = ops_to_outputs(tf.pad)
+reduce_max = ops_to_outputs(tf.reduce_max)
 reduce_mean = ops_to_outputs(tf.reduce_mean)
 reduce_sum = ops_to_outputs(tf.reduce_sum)
 relu = ops_to_outputs(tf.nn.relu)
@@ -35,6 +36,15 @@ squeeze = ops_to_outputs(tf.squeeze)
 stack = ops_to_outputs(tf.stack)
 tanh = ops_to_outputs(tf.tanh)
 to_int32 = ops_to_outputs(tf.to_int32)
+
+
+if tf_later_than('1.4.1'):
+    # Note that `tf.nn.swish` has existed since 1.5.0.
+    swish = ops_to_outputs(tf.nn.swish)
+else:
+    @ops_to_outputs
+    def swish(x, name=None):
+        return tf.multiply(x, tf.sigmoid(x), name=name)
 
 
 if tf_later_than('1.5.1'):

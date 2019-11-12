@@ -20,6 +20,7 @@ from .ops import leaky_relu
 from .ops import relu
 from .ops import relu6
 from .ops import reshape
+from .ops import swish
 from .utils import arg_scope
 from .utils import remove_commons
 
@@ -58,6 +59,12 @@ def convbnrelu6(*args, **kwargs):
         return relu6(batch_norm(conv2d(*args, **kwargs)))
 
 
+def convbnswish(*args, **kwargs):
+    scope = kwargs.pop('scope', None)
+    with tf.variable_scope(scope):
+        return swish(batch_norm(conv2d(*args, **kwargs)))
+
+
 def gconvbn(*args, **kwargs):
     scope = kwargs.pop('scope', None)
     with tf.variable_scope(scope):
@@ -91,6 +98,12 @@ def sconvbnrelu6(*args, **kwargs):
     scope = kwargs.pop('scope', None)
     with tf.variable_scope(scope):
         return relu6(batch_norm(sconv2d(*args, **kwargs)))
+
+
+def sconvbnswish(*args, **kwargs):
+    scope = kwargs.pop('scope', None)
+    with tf.variable_scope(scope):
+        return swish(batch_norm(sconv2d(*args, **kwargs)))
 
 
 def darkconv(*args, **kwargs):
