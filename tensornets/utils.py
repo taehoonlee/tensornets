@@ -14,6 +14,8 @@ from tensorflow.contrib.layers.python.layers.utils import collect_named_outputs
 from tensorflow.python.framework import ops
 
 from .layers import conv2d
+from .layers import fc
+from .layers import sconv2d
 
 
 try:
@@ -292,7 +294,7 @@ def arg_scopes(l):
     yield
 
 
-def set_args(largs, conv_bias=True):
+def set_args(largs, conv_bias=True, weights_regularizer=None):
     def real_set_args(func):
         def wrapper(*args, **kwargs):
             is_training = kwargs.get('is_training', False)
@@ -300,6 +302,10 @@ def set_args(largs, conv_bias=True):
             layers_args = [arg_scope(x, **y) for (x, y) in largs(is_training)]
             if not conv_bias:
                 layers_args += [arg_scope([conv2d], biases_initializer=None)]
+            if weights_regularizer is not None:
+                layers_args += [arg_scope(
+                    [conv2d, fc, sconv2d],
+                    weights_regularizer=weights_regularizer)]
             with arg_scope(layers, outputs_collections=__outputs__):
                 with arg_scopes(layers_args):
                     x = func(*args, **kwargs)
