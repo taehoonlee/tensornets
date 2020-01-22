@@ -36,6 +36,11 @@ def tf_equal_to(v):
     return tf.__version__ == v
 
 
+if tf_later_than('1.13.2'):
+    tf = tf.compat.v1
+
+variable_scope = tf.variable_scope
+
 if tf_later_than('1.8.0'):
     from tensorflow.python.keras.applications.imagenet_utils \
         import decode_predictions
