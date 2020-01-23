@@ -66,10 +66,11 @@ def block(x, filters, stride=1, scope=None):
 @var_scope('blockv2')
 def block2(x, filters, stride=1, scope=None):
     shortcut = x
-    x = conv(x, 6 * x.shape[-1].value, 1, scope='conv')
+    infilters = int(x.shape[-1]) if tf_later_than('2') else x.shape[-1].value
+    x = conv(x, 6 * infilters, 1, scope='conv')
     x = sconv(x, None, 3, 1, stride=stride, scope='sconv')
     x = convbn(x, filters, 1, stride=1, scope='pconv')
-    if stride == 1 and shortcut.shape[-1].value == filters:
+    if stride == 1 and infilters == filters:
         return add(shortcut, x, name='out')
     else:
         return x

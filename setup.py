@@ -21,6 +21,7 @@ setup(name='tensornets',
       download_url='https://github.com/taehoonlee/tensornets/tarball/0.4.1',
       license='MIT',
       packages=['tensornets', 'tensornets.datasets',
+                'tensornets.contrib_framework', 'tensornets.contrib_layers',
                 'tensornets.references', ext],
       include_package_data=True,
       ext_modules=cythonize(ext_modules))

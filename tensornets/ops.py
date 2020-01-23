@@ -3,7 +3,11 @@ from __future__ import absolute_import
 import tensorflow as tf
 
 from .utils import ops_to_outputs
-from .utils import tf_later_than
+from .version_utils import tf_later_than
+
+
+if tf_later_than('1.14'):
+    tf = tf.compat.v1
 
 
 try:
@@ -79,7 +83,7 @@ def upsample(x, stride, name=None):
     b = tf.shape(x)[0]
     h = tf.shape(x)[1] * stride[0]
     w = tf.shape(x)[2] * stride[1]
-    c = x.shape[-1].value
+    c = int(x.shape[-1]) if tf_later_than('2') else x.shape[-1].value
     x = tf.expand_dims(x, 2)
     x = tf.expand_dims(x, 4)
     x = tf.tile(x, (1, 1, stride[0], 1, stride[1], 1))

@@ -96,7 +96,8 @@ def dense(x, blocks, scope=None):
 def transition(x, reduction=0.5, scope=None):
     x = batch_norm(x)
     x = relu(x)
-    x = conv2d(x, x.shape[-1].value * reduction, 1, stride=1)
+    infilters = int(x.shape[-1]) if tf_later_than('2') else x.shape[-1].value
+    x = conv2d(x, int(infilters * reduction), 1, stride=1)
     x = avg_pool2d(x, 2, stride=2, scope='pool')
     return x
 

@@ -1,6 +1,6 @@
 # TensorNets
 
-High level network definitions with pre-trained weights in [TensorFlow](https://github.com/tensorflow/tensorflow) (tested with `>= 1.1.0`).
+High level network definitions with pre-trained weights in [TensorFlow](https://github.com/tensorflow/tensorflow) (tested with `2.1.0 >=` TF `>= 1.4.0`).
 
 ## Guiding principles
 
@@ -19,7 +19,9 @@ Each network (see [full list](#image-classification)) is not a custom class but 
 
 ```python
 import tensorflow as tf
+# import tensorflow.compat.v1 as tf  # for TF 2
 import tensornets as nets
+# tf.disable_v2_behavior()  # for TF 2
 
 inputs = tf.placeholder(tf.float32, [None, 224, 224, 3])
 model = nets.ResNet50(inputs)
