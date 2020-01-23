@@ -52,8 +52,8 @@ def primary(x, filters, length, kernel_size, stride, scope=None):
 
 @var_scope('digit')
 def digit(x, filters, length, iters=3, scope=None):
-    filters0 = x.shape[1].value
-    length0 = x.shape[2].value
+    filters0 = int(x.shape[1]) if tf_later_than('2') else x.shape[1].value
+    length0 = int(x.shape[2]) if tf_later_than('2') else x.shape[2].value
 
     # fully-connected weights between capsules: [1152, 8, 10 * 16]
     w = tf.get_variable('weights', shape=(filters0, length0, filters * length),

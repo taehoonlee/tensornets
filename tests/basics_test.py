@@ -17,6 +17,10 @@ pytestmark = pytest.mark.skipif(
     reason='Runs only when the relevant files have been modified.')
 
 
+if LooseVersion(tf.__version__) > LooseVersion('1.14'):
+    tf = tf.compat.v1
+
+
 @pytest.mark.parametrize('net,shape,weights,outputs,middles', [
     random.choice([
         (nets.ResNet50, (224, 224, 3), 320, 161, 16),
@@ -32,7 +36,7 @@ pytestmark = pytest.mark.skipif(
     random.choice([
         (nets.ResNeXt50, (224, 224, 3), 267, 193, 16),
         (nets.ResNeXt101, (224, 224, 3), 522, 380, 33),
-        (nets.ResNeXt101c64, (224, 224, 3), 522, 380, 33),
+        # (nets.ResNeXt101c64, (224, 224, 3), 522, 380, 33),  # too heavy on Travis
     ]),
     (nets.WideResNet50, (224, 224, 3), 267, 177, 16),
     (nets.Inception1, (224, 224, 3), 116, 143, 11),

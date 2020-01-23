@@ -101,7 +101,7 @@ def inception1(x, is_training=False, classes=1000,
 @set_args(__args__)
 def inception2(x, is_training=False, classes=1000,
                stem=False, scope=None, reuse=None):
-    x = sconv2d(x, 64, 7, stride=2, depth_multiplier=8., scope='block1')
+    x = sconv2d(x, 64, 7, stride=2, depth_multiplier=8, scope='block1')
     x = max_pool2d(x, 3, stride=2, scope='pool1')
 
     x = conv(x, 64, 1, scope='block2/1')

@@ -7,15 +7,8 @@ import tensorflow as tf
 import warnings
 
 from contextlib import contextmanager
-from distutils.version import LooseVersion
 
-from tensorflow.contrib.framework import arg_scope
-from tensorflow.contrib.layers.python.layers.utils import collect_named_outputs
-from tensorflow.python.framework import ops
-
-from .layers import conv2d
-from .layers import fc
-from .layers import sconv2d
+from .version_utils import tf_later_than
 
 
 try:
@@ -28,20 +21,23 @@ __middles__ = 'middles'
 __outputs__ = 'outputs'
 
 
-def tf_later_than(v):
-    return LooseVersion(tf.__version__) > LooseVersion(v)
-
-
-def tf_equal_to(v):
-    return tf.__version__ == v
-
-
-if tf_later_than('1.13.2'):
+if tf_later_than('1.14'):
     tf = tf.compat.v1
 
-variable_scope = tf.variable_scope
 
-if tf_later_than('1.8.0'):
+if tf_later_than('2'):
+    from .contrib_framework import arg_scope
+    from .contrib_layers.utils import collect_named_outputs
+else:
+    from tensorflow.contrib.framework import arg_scope
+    from tensorflow.contrib.layers.python.layers.utils import collect_named_outputs
+
+
+if tf_later_than('2.1'):
+    from tensorflow.python.keras.applications.imagenet_utils \
+        import decode_predictions
+    from tensorflow.python.keras.utils.data_utils import get_file
+elif tf_later_than('1.8.0'):
     from tensorflow.python.keras.applications.imagenet_utils \
         import decode_predictions
     from tensorflow.python.keras.utils import get_file
@@ -255,7 +251,10 @@ def var_scope(name):
                         # Note that `get_middles` and `get_outputs`
                         # may NOT work well for TensorFlow == 1.1.0.
                         _name = _scope
-                    _input_shape = tuple([i.value for i in args[0].shape[1:3]])
+                    if tf_later_than('2'):
+                        _input_shape = tuple(args[0].shape[1:3])
+                    else:
+                        _input_shape = tuple([i.value for i in args[0].shape[1:3]])
                     _outs = get_outputs(_name)
                     for i in p0(name)[0]:
                         collect_named_outputs(__middles__, _scope, _outs[i])
@@ -300,6 +299,10 @@ def arg_scopes(l):
 
 
 def set_args(largs, conv_bias=True, weights_regularizer=None):
+    from .layers import conv2d
+    from .layers import fc
+    from .layers import sconv2d
+
     def real_set_args(func):
         def wrapper(*args, **kwargs):
             is_training = kwargs.get('is_training', False)

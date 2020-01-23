@@ -5,6 +5,8 @@ import os
 import numpy as np
 import tensorflow as tf
 
+from ..version_utils import tf_later_than
+
 try:
     from .darkflow_utils.get_boxes import yolov3_box
     from .darkflow_utils.get_boxes import yolov2_box
@@ -16,6 +18,10 @@ try:
     xrange          # Python 2
 except NameError:
     xrange = range  # Python 3
+
+
+if tf_later_than('1.14'):
+    tf = tf.compat.v1
 
 
 with open(os.path.join(os.path.dirname(__file__), 'coco.names'), 'r') as f:
@@ -121,8 +127,8 @@ def v2_loss(outs, anchorcoords, classes):
     sconf = 5.
     snoob = 1.
     scoor = 1.
-    H = outs.shape[1].value
-    W = outs.shape[2].value
+    H = int(outs.shape[1]) if tf_later_than('2') else outs.shape[1].value
+    W = int(outs.shape[2]) if tf_later_than('2') else outs.shape[2].value
     cells = H * W
     sizes = np.array([[[[W, H]]]], dtype=np.float32)
     anchors = len(anchorcoords) // 2

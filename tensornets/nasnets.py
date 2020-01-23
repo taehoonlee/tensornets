@@ -194,6 +194,7 @@ def normalA(x, p, filters, scope=None):
 @var_scope('reductionA')
 def reductionA(x, p, filters, scope=None):
     """Reduction cell for NASNet-A (Fig. 4 in the paper)"""
+    filters = int(filters)
     p = adjust(p, x, filters)
 
     h = relu(x)
@@ -215,13 +216,15 @@ def reductionA(x, p, filters, scope=None):
 @var_scope('pool')
 def pool(x, filters, stride, scope=None):
     y = max_pool2d(x, 3, stride=stride)
-    if int(x.shape[-1]) != filters:
+    infilters = int(x.shape[-1]) if tf_later_than('2') else x.shape[-1].value
+    if infilters != filters:
         y = conv(y, filters, 1, scope='1x1')
     return y
 
 
 @var_scope('normalP')
 def normalP(x, p, filters, stride=1, scope=None):
+    filters = int(filters)
     p = adjust(p, x, filters)
 
     h = relu(x)
