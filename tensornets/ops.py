@@ -28,7 +28,6 @@ multiply = ops_to_outputs(tf.multiply)
 one_hot = ops_to_outputs(tf.one_hot)
 pad = ops_to_outputs(tf.pad)
 reduce_max = ops_to_outputs(tf.reduce_max)
-reduce_mean = ops_to_outputs(tf.reduce_mean)
 reduce_sum = ops_to_outputs(tf.reduce_sum)
 relu = ops_to_outputs(tf.nn.relu)
 relu6 = ops_to_outputs(tf.nn.relu6)
@@ -60,6 +59,17 @@ else:
     @ops_to_outputs
     def leaky_relu(x, alpha=0.2, name=None):
         return tf.add(tf.nn.relu(x), -alpha * tf.nn.relu(-x), name=name)
+
+
+if tf_later_than('1.5'):
+    # Note that `tf.reduce_mean` has existed since 1.0,
+    # but the parameter name `keep_dims` has been changed to `keepdims`.
+    reduce_mean = ops_to_outputs(tf.reduce_mean)
+else:
+    @ops_to_outputs
+    def reduce_mean(input_tensor, axis=None, keepdims=False, name=None):
+        return tf.reduce_mean(input_tensor, axis=axis, keep_dims=keepdims,
+                              name=name)
 
 
 @ops_to_outputs
