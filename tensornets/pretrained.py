@@ -28,6 +28,8 @@ serializes every single tensor from the following repositories:
      "TF darkflow"
 [12]: https://github.com/rbgirshick/py-faster-rcnn
      "Caffe Faster RCNN"
+[13]: https://github.com/tensorflow/tpu/blob/master/models/official/
+     "TF TPU"
 """
 from __future__ import absolute_import
 
@@ -607,6 +609,94 @@ def load_mobilenet140v2(scopes, return_fn=_assign):
     return return_fn(scopes, values)
 
 
+def load_efficientnetb0(scopes, return_fn=_assign):
+    """Converted from the [TF TPU][13]."""
+    filename = 'efficientnetb0.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'efficientnet/' + filename,
+        cache_subdir='models',
+        file_hash='32aaa7fec51d344765bf41244212e519')
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
+
+
+def load_efficientnetb1(scopes, return_fn=_assign):
+    """Converted from the [TF TPU][13]."""
+    filename = 'efficientnetb1.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'efficientnet/' + filename,
+        cache_subdir='models',
+        file_hash='1651447ea3c7284351b748aad08184fd')
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
+
+
+def load_efficientnetb2(scopes, return_fn=_assign):
+    """Converted from the [TF TPU][13]."""
+    filename = 'efficientnetb2.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'efficientnet/' + filename,
+        cache_subdir='models',
+        file_hash='5e3a7641b6d25ed8a05f55ad34cd6cea')
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
+
+
+def load_efficientnetb3(scopes, return_fn=_assign):
+    """Converted from the [TF TPU][13]."""
+    filename = 'efficientnetb3.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'efficientnet/' + filename,
+        cache_subdir='models',
+        file_hash='cdcce2b2124ea4bd0fa9c1e0fbd2a280')
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
+
+
+def load_efficientnetb4(scopes, return_fn=_assign):
+    """Converted from the [TF TPU][13]."""
+    filename = 'efficientnetb4.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'efficientnet/' + filename,
+        cache_subdir='models',
+        file_hash='7689e44a5c317489b6c5758c32b29121')
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
+
+
+def load_efficientnetb5(scopes, return_fn=_assign):
+    """Converted from the [TF TPU][13]."""
+    filename = 'efficientnetb5.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'efficientnet/' + filename,
+        cache_subdir='models',
+        file_hash='eae93e0ab8e6c627cc3367b80a977eaa')
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
+
+
+def load_efficientnetb6(scopes, return_fn=_assign):
+    """Converted from the [TF TPU][13]."""
+    filename = 'efficientnetb6.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'efficientnet/' + filename,
+        cache_subdir='models',
+        file_hash='995d5690e256727e3ec810c4f54b31d0')
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
+
+
+def load_efficientnetb7(scopes, return_fn=_assign):
+    """Converted from the [TF TPU][13]."""
+    filename = 'efficientnetb7.npz'
+    weights_path = get_file(
+        filename, __model_url__ + 'efficientnet/' + filename,
+        cache_subdir='models',
+        file_hash='a19799fd49953321f514400a1d6ba44a')
+    values = parse_weights(weights_path)
+    return return_fn(scopes, values)
+
+
 def load_squeezenet(scopes, return_fn=_assign):
     """Converted from the [Caffe SqueezeNets][8]."""
     filename = 'squeezenet.npz'
@@ -799,6 +889,14 @@ __load_dict__ = {
     'mobilenet100v2': load_mobilenet100v2,
     'mobilenet130v2': load_mobilenet130v2,
     'mobilenet140v2': load_mobilenet140v2,
+    'efficientnetb0': load_efficientnetb0,
+    'efficientnetb1': load_efficientnetb1,
+    'efficientnetb2': load_efficientnetb2,
+    'efficientnetb3': load_efficientnetb3,
+    'efficientnetb4': load_efficientnetb4,
+    'efficientnetb5': load_efficientnetb5,
+    'efficientnetb6': load_efficientnetb6,
+    'efficientnetb7': load_efficientnetb7,
     'squeezenet': load_squeezenet,
     'zf': load_nothing,
     'darknet19': load_darknet19,

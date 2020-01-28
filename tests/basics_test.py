@@ -87,6 +87,16 @@ if LooseVersion(tf.__version__) > LooseVersion('1.14'):
         (nets.MobileNet130v2, (224, 224, 3), 262, 152, 62),
         (nets.MobileNet140v2, (224, 224, 3), 262, 152, 62),
     ]),
+    random.choice([
+        (nets.EfficientNetB0, (224, 224, 3), 311, 217, 25),
+        (nets.EfficientNetB1, (240, 240, 3), 439, 312, 39),
+        (nets.EfficientNetB2, (260, 260, 3), 439, 312, 39),
+        (nets.EfficientNetB3, (300, 300, 3), 496, 354, 45),
+        # (nets.EfficientNetB4, (380, 380, 3), 610, 438, 57),  # too heavy on Travis
+        # (nets.EfficientNetB5, (456, 456, 3), 738, 533, 71),  # too heavy on Travis
+        # (nets.EfficientNetB6, (528, 528, 3), 852, 617, 83),  # too heavy on Travis
+        # (nets.EfficientNetB7, (600, 600, 3), 1037, 754, 103),  # too heavy on Travis
+    ]),
     (nets.SqueezeNet, (224, 224, 3), 52, 65, 10),
 ], ids=[
     'ResNet',
@@ -106,6 +116,7 @@ if LooseVersion(tf.__version__) > LooseVersion('1.14'):
     'DenseNet',
     'MobileNet',
     'MobileNetv2',
+    'EfficientNet',
     'SqueezeNet',
 ])
 def test_classification_basics(net, shape, weights, outputs, middles):
