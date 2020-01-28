@@ -44,6 +44,15 @@ from .mobilenets import MobileNet100v2
 from .mobilenets import MobileNet130v2
 from .mobilenets import MobileNet140v2
 
+from .efficientnets import EfficientNetB0
+from .efficientnets import EfficientNetB1
+from .efficientnets import EfficientNetB2
+from .efficientnets import EfficientNetB3
+from .efficientnets import EfficientNetB4
+from .efficientnets import EfficientNetB5
+from .efficientnets import EfficientNetB6
+from .efficientnets import EfficientNetB7
+
 from .squeezenets import SqueezeNet
 
 from .capsulenets import CapsuleNet
