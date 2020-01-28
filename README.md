@@ -337,6 +337,8 @@ with tf.Session() as sess:
 
 ## News 📰
 
+- The eight variants of EfficientNet are released, [28 Jan 2020](https://github.com/taehoonlee/tensornets/pull/56).
+- It is available to use TensorNets on TF 2, [23 Jan 2020](https://github.com/taehoonlee/tensornets/pull/55).
 - MS COCO utils are released, [9 Jul 2018](https://github.com/taehoonlee/tensornets/commit/4a34243891e6649b72b9c0b7114b8f3d51d1d779).
 - PNASNetlarge is released, [12 May 2018](https://github.com/taehoonlee/tensornets/commit/e2e0f0f7791731d3b7dfa989cae569c15a22cdd6).
 - The six variants of MobileNetv2 are released, [5 May 2018](https://github.com/taehoonlee/tensornets/commit/fb429b6637f943875249dff50f4bc6220d9d50bf).
