@@ -7,7 +7,7 @@ from .version_utils import tf_later_than
 
 if tf_later_than('1.15'):
     bn_name = 'FusedBatchNormV3:0'
-elif tf_later_than('1.3.0'):
+elif tf_later_than('1.4'):
     bn_name = 'FusedBatchNorm:0'
 else:
     bn_name = 'batchnorm/add_1:0'

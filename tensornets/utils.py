@@ -37,11 +37,11 @@ if tf_later_than('2.1'):
     from tensorflow.python.keras.applications.imagenet_utils \
         import decode_predictions
     from tensorflow.python.keras.utils.data_utils import get_file
-elif tf_later_than('1.8.0'):
+elif tf_later_than('1.9'):
     from tensorflow.python.keras.applications.imagenet_utils \
         import decode_predictions
     from tensorflow.python.keras.utils import get_file
-elif tf_later_than('1.3.0'):
+elif tf_later_than('1.4'):
     from tensorflow.python.keras._impl.keras.applications.imagenet_utils \
         import decode_predictions
     from tensorflow.python.keras.utils import get_file
@@ -245,7 +245,7 @@ def var_scope(name):
                     from .preprocess import direct as p1
                     from .pretrained import direct as p2
                     _scope = tf.get_variable_scope().name
-                    if tf_later_than('1.1.0'):
+                    if tf_later_than('1.2'):
                         _name = tf.get_default_graph().get_name_scope()
                     else:
                         # Note that `get_middles` and `get_outputs`
@@ -369,7 +369,7 @@ def parse_weights(weights_path, move_rules=None):
     data = np.load(weights_path, encoding='bytes', allow_pickle=True)
     values = data['values']
 
-    if tf_later_than('1.3.0'):
+    if tf_later_than('1.4'):
         for (i, name) in enumerate(data['names']):
             if '/beta' in str(data['names'][i-1]) and '/gamma' in str(name):
                 values[i], values[i-1] = values[i-1], values[i]
@@ -413,7 +413,7 @@ def parse_keras_weights(weights_path, move_rules=None):
             g = f[name]
             w = [n.decode('utf8') for n in g.attrs['weight_names']]
             v = [np.asarray(g[n]) for n in w]
-            if not tf_later_than('1.3.0'):
+            if not tf_later_than('1.4'):
                 if len(v) == 4:
                     w[0], w[1] = w[1], w[0]
                     v[0], v[1] = v[1], v[0]
@@ -439,7 +439,7 @@ def parse_torch_weights(weights_path, move_rules=None):
                 idx = names.index(name)
                 names.insert(idx + loc, names.pop(idx))
 
-    if not tf_later_than('1.3.0'):
+    if not tf_later_than('1.4'):
         for (i, name) in enumerate(names):
             if 'running_mean' in str(name):
                 names[i-1], names[i-2] = names[i-2], names[i-1]

@@ -43,7 +43,7 @@ tanh = ops_to_outputs(tf.tanh)
 to_int32 = ops_to_outputs(tf.to_int32)
 
 
-if tf_later_than('1.4.1'):
+if tf_later_than('1.5'):
     # Note that `tf.nn.swish` has existed since 1.5.0.
     swish = ops_to_outputs(tf.nn.swish)
 else:
@@ -52,7 +52,7 @@ else:
         return tf.multiply(x, tf.sigmoid(x), name=name)
 
 
-if tf_later_than('1.5.1'):
+if tf_later_than('1.6'):
     # Note that `tf.nn.leaky_relu` has existed since 1.4.0,
     # but 1.4.0, 1.4.1, 1.5.0, 1.5.1 do not support float16.
     leaky_relu = ops_to_outputs(tf.nn.leaky_relu)
