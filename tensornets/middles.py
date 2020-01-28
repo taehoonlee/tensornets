@@ -304,28 +304,36 @@ __middles_dict__ = {
     'mobilenet100v2': tuple_mobilenetv2(),
     'mobilenet130v2': tuple_mobilenetv2(),
     'mobilenet140v2': tuple_mobilenetv2(),
-    'efficientnetb0': tuple_efficientnet(11, 23, 15,
+    'efficientnetb0': tuple_efficientnet(
+        11, 23, 15,
         [3, 6, 9, 11, 14, 16, 19, 21, 23]),
-    'efficientnetb1': tuple_efficientnet(11, 20, 22,
+    'efficientnetb1': tuple_efficientnet(
+        11, 20, 22,
         [2, 5, 7, 10, 12, 15, 17, 19, 22, 24, 26, 29, 31, 33, 35, 38]),
-    'efficientnetb2': tuple_efficientnet(11, 20, 22,
+    'efficientnetb2': tuple_efficientnet(
+        11, 20, 22,
         [2, 5, 7, 10, 12, 15, 17, 19, 22, 24, 26, 29, 31, 33, 35, 38]),
-    'efficientnetb3': tuple_efficientnet(11, 20, 25,
+    'efficientnetb3': tuple_efficientnet(
+        11, 20, 25,
         [2, 5, 7, 10, 12, 15, 17, 19, 21, 24, 26, 28, 30, 33, 35, 37,
          39, 41, 44]),
-    'efficientnetb4': tuple_efficientnet(11, 20, 31,
+    'efficientnetb4': tuple_efficientnet(
+        11, 20, 31,
         [2, 5, 7, 9, 12, 14, 16, 19, 21, 23, 25, 27, 30, 32, 34, 36, 38,
          41, 43, 45, 47, 49, 51, 53, 56]),
-    'efficientnetb5': tuple_efficientnet(11, 20, 38,
+    'efficientnetb5': tuple_efficientnet(
+        11, 20, 38,
         [2, 4, 7, 9, 11, 13, 16, 18, 20, 22, 25, 27, 29, 31, 33, 35, 38,
          40, 42, 44, 46, 48, 51, 53, 55, 57, 59, 61, 63, 65, 68, 70],
         biases=[3]),
-    'efficientnetb6': tuple_efficientnet(11, 20, 44,
+    'efficientnetb6': tuple_efficientnet(
+        11, 20, 44,
         [2, 4, 7, 9, 11, 13, 15, 18, 20, 22, 24, 26, 29, 31, 33, 35, 37,
          39, 41, 44, 46, 48, 50, 52, 54, 56, 59, 61, 63, 65, 67, 69, 71,
          73, 75, 77, 80, 82],
         biases=[3]),
-    'efficientnetb7': tuple_efficientnet(11, 20, 54,
+    'efficientnetb7': tuple_efficientnet(
+        11, 20, 54,
         [2, 4, 6, 9, 11, 13, 15, 17, 19, 22, 24, 26, 28, 30, 32, 35, 37,
          39, 41, 43, 45, 47, 49, 51, 54, 56, 58, 60, 62, 64, 66, 68, 70,
          73, 75, 77, 79, 81, 83, 85, 87, 89, 91, 93, 95, 98, 100, 102],
