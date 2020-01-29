@@ -29,6 +29,7 @@ from .layers import sconv2d
 from .layers import sconvbnswish as sconv
 
 from .ops import *
+from .ops import _swish
 from .utils import pad_info
 from .utils import set_args
 from .utils import var_scope
@@ -103,7 +104,7 @@ def efficientnet(x, width_coefficient, depth_coefficient,
 @var_scope('se')
 def se(i, filters_se, filters_out, scope=None):
     x = reduce_mean(i, [1, 2], keepdims=True, name='squeeze')
-    x = conv2d(x, filters_se, 1, activation_fn=tf.nn.swish,
+    x = conv2d(x, filters_se, 1, activation_fn=_swish,
                biases_initializer=tf.zeros_initializer(), scope='reduce')
     x = conv2d(x, filters_out, 1, activation_fn=tf.sigmoid,
                biases_initializer=tf.zeros_initializer(), scope='expand')
