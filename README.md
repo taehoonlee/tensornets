@@ -1,4 +1,4 @@
-# TensorNets
+# TensorNets [![Build Status](https://travis-ci.org/taehoonlee/tensornets.svg?branch=master)](https://travis-ci.org/taehoonlee/tensornets)
 
 High level network definitions with pre-trained weights in [TensorFlow](https://github.com/tensorflow/tensorflow) (tested with `2.1.0 >=` TF `>= 1.4.0`).
 
