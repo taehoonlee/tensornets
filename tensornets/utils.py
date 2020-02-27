@@ -113,24 +113,35 @@ def print_summary(scopes=None):
         print("Total parameters: {:,}".format(parameters))
 
 
+def get_collection(collection_name, scope=None, names=None):
+    scope = parse_scopes(scope)[0]
+    collection = tf.get_collection(collection_name, scope=scope + '/')
+    if names is None:
+        return collection
+    else:
+        if not isinstance(names, list):
+            names = [names]
+        _collection = []
+        for x in collection:
+            if any([name in x.name for name in names]):
+                _collection.append(x)
+        return _collection
+
+
 def get_bottleneck(scope=None):
-    scope = parse_scopes(scope)[0]
-    return tf.get_collection(__middles__, scope=scope + '/')[-1]
+    return get_collection(__middles__, scope, names=None)[-1]
 
 
-def get_middles(scope=None):
-    scope = parse_scopes(scope)[0]
-    return tf.get_collection(__middles__, scope=scope + '/')
+def get_middles(scope=None, names=None):
+    return get_collection(__middles__, scope, names)
 
 
-def get_outputs(scope=None):
-    scope = parse_scopes(scope)[0]
-    return tf.get_collection(__outputs__, scope=scope + '/')
+def get_outputs(scope=None, names=None):
+    return get_collection(__outputs__, scope, names)
 
 
-def get_weights(scope=None):
-    scope = parse_scopes(scope)[0]
-    return tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=scope + '/')
+def get_weights(scope=None, names=None):
+    return get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope, names)
 
 
 def pad_info(s, symmetry=True):
@@ -267,12 +278,12 @@ def var_scope(name):
                     setattr(x, 'pretrained', p2(name, x))
                     setattr(x, 'get_bottleneck',
                             lambda: get_bottleneck(_scope))
-                    setattr(x, 'get_middles', lambda: get_middles(_name))
-                    setattr(x, 'get_outputs', lambda: get_outputs(_name))
-                    setattr(x, 'get_weights', lambda: get_weights(_scope))
-                    setattr(x, 'middles', lambda: get_middles(_name))
-                    setattr(x, 'outputs', lambda: get_outputs(_name))
-                    setattr(x, 'weights', lambda: get_weights(_scope))
+                    setattr(x, 'get_middles', lambda names=None: get_middles(_name, names))
+                    setattr(x, 'get_outputs', lambda names=None: get_outputs(_name, names))
+                    setattr(x, 'get_weights', lambda names=None: get_weights(_scope, names))
+                    setattr(x, 'middles', lambda names=None: get_middles(_name, names))
+                    setattr(x, 'outputs', lambda names=None: get_outputs(_name, names))
+                    setattr(x, 'weights', lambda names=None: get_weights(_scope, names))
                     setattr(x, 'summary', lambda: print_summary(_scope))
                     setattr(x, 'print_middles', lambda: print_middles(_name))
                     setattr(x, 'print_outputs', lambda: print_outputs(_name))
