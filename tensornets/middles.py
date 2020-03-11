@@ -100,6 +100,10 @@ def tuple_mobilenetv2():
     return (indices, names, -16)
 
 
+def tuple_mobilenetv3():
+    return ([-1], ['probs:0'], -1)
+
+
 def tuple_efficientnet(index0, index1, blocks, addindices, biases=None):
     indices = [index0] + list(range(index1, index1 + 12 * blocks, 12))
     names = ["block%d/pconv/bn/%s" % (i, bn_name) for i in range(len(indices))]
@@ -304,6 +308,12 @@ __middles_dict__ = {
     'mobilenet100v2': tuple_mobilenetv2(),
     'mobilenet130v2': tuple_mobilenetv2(),
     'mobilenet140v2': tuple_mobilenetv2(),
+    'mobilenet75v3large': tuple_mobilenetv3(),
+    'mobilenet100v3large': tuple_mobilenetv3(),
+    'mobilenet100v3largemini': tuple_mobilenetv3(),
+    'mobilenet75v3small': tuple_mobilenetv3(),
+    'mobilenet100v3small': tuple_mobilenetv3(),
+    'mobilenet100v3smallmini': tuple_mobilenetv3(),
     'efficientnetb0': tuple_efficientnet(
         11, 23, 15,
         [3, 6, 9, 11, 14, 16, 19, 21, 23]),

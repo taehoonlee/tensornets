@@ -44,6 +44,15 @@ from .mobilenets import MobileNet100v2
 from .mobilenets import MobileNet130v2
 from .mobilenets import MobileNet140v2
 
+from .mobilenets import MobileNet75v3
+from .mobilenets import MobileNet100v3
+from .mobilenets import MobileNet75v3large
+from .mobilenets import MobileNet100v3large
+from .mobilenets import MobileNet100v3largemini
+from .mobilenets import MobileNet75v3small
+from .mobilenets import MobileNet100v3small
+from .mobilenets import MobileNet100v3smallmini
+
 from .efficientnets import EfficientNetB0
 from .efficientnets import EfficientNetB1
 from .efficientnets import EfficientNetB2
