@@ -227,8 +227,8 @@ def mobilenetv3large(x, depth_multiplier, kernel_size, se, activation_fn,
     x = conva(x, depth(960), 1, scope='conv17')
     x = avg_pool2d(x, 7, scope='pool')
     x = conv2d(x, depth(1280) if depth_multiplier > 1. else 1280, 1,
-               activation_fn=activation_fn,
                biases_initializer=tf.zeros_initializer(), scope='conv18')
+    x = activation_fn(x, 'conv18/out')
     if stem: return x
 
     x = reduce_mean(x, [1, 2], name='avgpool')
@@ -264,8 +264,8 @@ def mobilenetv3small(x, depth_multiplier, kernel_size, se, activation_fn,
     x = conva(x, depth(576), 1, scope='conv13')
     x = avg_pool2d(x, 7, scope='pool')
     x = conv2d(x, depth(1024) if depth_multiplier > 1. else 1024, 1,
-               activation_fn=activation_fn,
                biases_initializer=tf.zeros_initializer(), scope='conv14')
+    x = activation_fn(x, 'conv14/out')
     if stem: return x
 
     x = reduce_mean(x, [1, 2], name='avgpool')

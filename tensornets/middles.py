@@ -100,8 +100,54 @@ def tuple_mobilenetv2():
     return (indices, names, -16)
 
 
-def tuple_mobilenetv3():
-    return ([-1], ['probs:0'], -1)
+def tuple_mobilenetv3(is_large, is_mini):
+    if is_mini is True:
+        act_name = 'Relu:0'
+    else:
+        act_name = 'Mul:0'
+
+    names = ["conv1/%s" % act_name]
+    indices = [2]
+    l = 3
+
+    if is_large is True:
+        names += ['conv2/out:0']
+        blocks = [2, 3, 4, 2, 3]
+        k = 8
+    else:
+        names += ["conv2/pconv/bn/%s" % bn_name]
+        blocks = [2, 3, 2, 3]
+        if is_mini is True:
+            k = 7
+        else:
+            k = 13
+
+    indices += [k]
+
+    for (i, j) in enumerate(blocks):
+        names += ["conv%d/pconv/bn/%s" % (l, bn_name)]
+        l += 1
+        k += 8
+        if is_mini is False:
+            if (is_large is True and i in [1, 3, 4]) or \
+               (is_large is False and i in [1, 2, 3, 4]):
+                k += 6
+        indices += [k]
+        for _ in range(j - 1):
+            names += ["conv%d/out:0" % l]
+            l += 1
+            k += 9
+            if is_mini is False:
+                if (is_large is True and i in [1, 3, 4]) or \
+                   (is_large is False and i in [1, 2, 3, 4]):
+                    k += 6
+            indices += [k]
+
+    indices += [k + 3, k + 4, k + 6]
+    names += ["conv%d/%s" % (l, act_name),
+              'pool/AvgPool:0',
+              "conv%d/out:0" % (l + 1)]
+    return (indices, names, -16)
 
 
 def tuple_efficientnet(index0, index1, blocks, addindices, biases=None):
@@ -308,12 +354,12 @@ __middles_dict__ = {
     'mobilenet100v2': tuple_mobilenetv2(),
     'mobilenet130v2': tuple_mobilenetv2(),
     'mobilenet140v2': tuple_mobilenetv2(),
-    'mobilenet75v3large': tuple_mobilenetv3(),
-    'mobilenet100v3large': tuple_mobilenetv3(),
-    'mobilenet100v3largemini': tuple_mobilenetv3(),
-    'mobilenet75v3small': tuple_mobilenetv3(),
-    'mobilenet100v3small': tuple_mobilenetv3(),
-    'mobilenet100v3smallmini': tuple_mobilenetv3(),
+    'mobilenet75v3large': tuple_mobilenetv3(True, False),
+    'mobilenet100v3large': tuple_mobilenetv3(True, False),
+    'mobilenet100v3largemini': tuple_mobilenetv3(True, True),
+    'mobilenet75v3small': tuple_mobilenetv3(False, False),
+    'mobilenet100v3small': tuple_mobilenetv3(False, False),
+    'mobilenet100v3smallmini': tuple_mobilenetv3(False, True),
     'efficientnetb0': tuple_efficientnet(
         11, 23, 15,
         [3, 6, 9, 11, 14, 16, 19, 21, 23]),

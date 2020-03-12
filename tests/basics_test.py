@@ -88,6 +88,14 @@ if LooseVersion(tf.__version__) > LooseVersion('1.14'):
         (nets.MobileNet140v2, (224, 224, 3), 262, 152, 62),
     ]),
     random.choice([
+        (nets.MobileNet75v3, (224, 224, 3), 266, 187, 19),
+        (nets.MobileNet75v3small, (224, 224, 3), 210, 157, 15),
+        (nets.MobileNet100v3, (224, 224, 3), 266, 187, 19),
+        (nets.MobileNet100v3small, (224, 224, 3), 210, 157, 15),
+        (nets.MobileNet100v3largemini, (224, 224, 3), 234, 139, 19),
+        (nets.MobileNet100v3smallmini, (224, 224, 3), 174, 103, 15),
+    ]),
+    random.choice([
         (nets.EfficientNetB0, (224, 224, 3), 311, 217, 25),
         (nets.EfficientNetB1, (240, 240, 3), 439, 312, 39),
         (nets.EfficientNetB2, (260, 260, 3), 439, 312, 39),
@@ -116,6 +124,7 @@ if LooseVersion(tf.__version__) > LooseVersion('1.14'):
     'DenseNet',
     'MobileNet',
     'MobileNetv2',
+    'MobileNetv3',
     'EfficientNet',
     'SqueezeNet',
 ])
