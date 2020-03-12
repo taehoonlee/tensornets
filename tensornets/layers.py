@@ -115,6 +115,13 @@ def sconvbn(*args, **kwargs):
         return batch_norm(sconv2d(*args, **kwargs))
 
 
+def sconvbnact(*args, **kwargs):
+    scope = kwargs.pop('scope', None)
+    activation_fn = kwargs.pop('activation_fn', None)
+    with tf.variable_scope(scope):
+        return activation_fn(batch_norm(sconv2d(*args, **kwargs)))
+
+
 def sconvbnrelu(*args, **kwargs):
     scope = kwargs.pop('scope', None)
     with tf.variable_scope(scope):

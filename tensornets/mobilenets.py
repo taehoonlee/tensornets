@@ -29,6 +29,7 @@ from __future__ import absolute_import
 import functools
 import tensorflow as tf
 
+from .layers import avg_pool2d
 from .layers import batch_norm
 from .layers import conv2d
 from .layers import dropout
@@ -38,6 +39,7 @@ from .layers import convbn
 from .layers import convbnact
 from .layers import convbnrelu6 as conv
 from .layers import sconvbn
+from .layers import sconvbnact
 from .layers import sconvbnrelu6 as sconv
 
 from .ops import *
@@ -46,7 +48,8 @@ from .utils import var_scope
 
 
 def __base_args__(is_training, decay):
-    return [([batch_norm], {'decay': decay, 'scale': True, 'epsilon': 0.001,
+    return [([avg_pool2d], {'padding': 'VALID', 'scope': 'pool'}),
+            ([batch_norm], {'decay': decay, 'scale': True, 'epsilon': 0.001,
                             'is_training': is_training, 'scope': 'bn'}),
             ([conv2d], {'padding': 'SAME', 'activation_fn': None,
                         'biases_initializer': None, 'scope': 'conv'}),
@@ -109,10 +112,10 @@ def block3(x, ex, se, filters, kernel_size, stride=1,
     shortcut = x
     infilters = int(x.shape[-1]) if tf_later_than('2') else x.shape[-1].value
     if ex > 1:
-        x = convbn(x, _depth(ex * infilters), 1, scope='conv')
-        x = activation_fn(x, name='conv/out')
-    x = sconvbn(x, None, kernel_size, 1, stride=stride, scope='sconv')
-    x = activation_fn(x, name='sconv/out')
+        x = convbnact(x, _depth(ex * infilters), 1,
+                      activation_fn=activation_fn, scope='conv')
+    x = sconvbnact(x, None, kernel_size, 1, stride=stride,
+                   activation_fn=activation_fn, scope='sconv')
     if 0 < se <= 1:
         x = seblock(x, se, _depth(ex * infilters), scope='se')
     x = convbn(x, filters, 1, stride=1, scope='pconv')
@@ -197,39 +200,38 @@ def mobilenetv3large(x, depth_multiplier, kernel_size, se, activation_fn,
                      is_training, classes, stem, scope=None, reuse=None):
     def depth(d):
         return _depth(d * depth_multiplier)
-    block3a = functools.partial(block3, activation_fn=relu)
-    block3b = functools.partial(block3, activation_fn=activation_fn)
-    conv3 = functools.partial(convbnact, activation_fn=activation_fn)
+    conva = functools.partial(convbnact, activation_fn=activation_fn)
+    block3a = functools.partial(block3, activation_fn=activation_fn)
 
-    x = conv3(x, depth(16), 3, stride=2, scope='conv1')
-    x = block3a(x, 1, 0, depth(16), 3, scope='conv2')
-    x = block3a(x, 4, 0, depth(24), 3, stride=2, scope='conv3')
-    x = block3a(x, 3, 0, depth(24), 3, scope='conv4')
+    x = conva(x, depth(16), 3, stride=2, scope='conv1')
+    x = block3(x, 1, 0, depth(16), 3, scope='conv2')
+    x = block3(x, 4, 0, depth(24), 3, stride=2, scope='conv3')
+    x = block3(x, 3, 0, depth(24), 3, scope='conv4')
 
-    x = block3a(x, 3, se, depth(40), kernel_size, stride=2, scope='conv5')
-    x = block3a(x, 3, se, depth(40), kernel_size, scope='conv6')
-    x = block3a(x, 3, se, depth(40), kernel_size, scope='conv7')
+    x = block3(x, 3, se, depth(40), kernel_size, stride=2, scope='conv5')
+    x = block3(x, 3, se, depth(40), kernel_size, scope='conv6')
+    x = block3(x, 3, se, depth(40), kernel_size, scope='conv7')
 
-    x = block3b(x, 6, 0, depth(80), 3, stride=2, scope='conv8')
-    x = block3b(x, 2.5, 0, depth(80), 3, scope='conv9')
-    x = block3b(x, 2.3, 0, depth(80), 3, scope='conv10')
-    x = block3b(x, 2.3, 0, depth(80), 3, scope='conv11')
+    x = block3a(x, 6, 0, depth(80), 3, stride=2, scope='conv8')
+    x = block3a(x, 2.5, 0, depth(80), 3, scope='conv9')
+    x = block3a(x, 2.3, 0, depth(80), 3, scope='conv10')
+    x = block3a(x, 2.3, 0, depth(80), 3, scope='conv11')
 
-    x = block3b(x, 6, se, depth(112), 3, scope='conv12')
-    x = block3b(x, 6, se, depth(112), 3, scope='conv13')
+    x = block3a(x, 6, se, depth(112), 3, scope='conv12')
+    x = block3a(x, 6, se, depth(112), 3, scope='conv13')
 
-    x = block3b(x, 6, se, depth(160), kernel_size, stride=2, scope='conv14')
-    x = block3b(x, 6, se, depth(160), kernel_size, scope='conv15')
-    x = block3b(x, 6, se, depth(160), kernel_size, scope='conv16')
+    x = block3a(x, 6, se, depth(160), kernel_size, stride=2, scope='conv14')
+    x = block3a(x, 6, se, depth(160), kernel_size, scope='conv15')
+    x = block3a(x, 6, se, depth(160), kernel_size, scope='conv16')
 
-    x = conv3(x, depth(960), 1, scope='conv17')
-    x = reduce_mean(x, [1, 2], keepdims=True, name='avgpool')
+    x = conva(x, depth(960), 1, scope='conv17')
+    x = avg_pool2d(x, 7, scope='pool')
     x = conv2d(x, depth(1280) if depth_multiplier > 1. else 1280, 1,
+               activation_fn=activation_fn,
                biases_initializer=tf.zeros_initializer(), scope='conv18')
-    x = activation_fn(x, name='conv18/out')
     if stem: return x
 
-    x = squeeze(x, [1, 2], name='flatten')
+    x = reduce_mean(x, [1, 2], name='avgpool')
     x = fc(x, classes, scope='logits')
     x = softmax(x, name='probs')
     return x
@@ -239,35 +241,34 @@ def mobilenetv3small(x, depth_multiplier, kernel_size, se, activation_fn,
                      is_training, classes, stem, scope=None, reuse=None):
     def depth(d):
         return _depth(d * depth_multiplier)
-    block3a = functools.partial(block3, activation_fn=relu)
-    block3b = functools.partial(block3, activation_fn=activation_fn)
-    conv3 = functools.partial(convbnact, activation_fn=activation_fn)
+    conva = functools.partial(convbnact, activation_fn=activation_fn)
+    block3a = functools.partial(block3, activation_fn=activation_fn)
 
-    x = conv3(x, depth(16), 3, stride=2, scope='conv1')
-    x = block3a(x, 1, se, depth(16), 3, stride=2, scope='conv2')
+    x = conva(x, depth(16), 3, stride=2, scope='conv1')
+    x = block3(x, 1, se, depth(16), 3, stride=2, scope='conv2')
 
-    x = block3a(x, 72./16, 0, depth(24), 3, stride=2, scope='conv3')
-    x = block3a(x, 88./24, 0, depth(24), 3, scope='conv4')
+    x = block3(x, 72./16, 0, depth(24), 3, stride=2, scope='conv3')
+    x = block3(x, 88./24, 0, depth(24), 3, scope='conv4')
 
-    x = block3b(x, 4, se, depth(40), kernel_size, stride=2, scope='conv5')
-    x = block3b(x, 6, se, depth(40), kernel_size, scope='conv6')
-    x = block3b(x, 6, se, depth(40), kernel_size, scope='conv7')
+    x = block3a(x, 4, se, depth(40), kernel_size, stride=2, scope='conv5')
+    x = block3a(x, 6, se, depth(40), kernel_size, scope='conv6')
+    x = block3a(x, 6, se, depth(40), kernel_size, scope='conv7')
 
-    x = block3b(x, 3, se, depth(48), kernel_size, scope='conv8')
-    x = block3b(x, 3, se, depth(48), kernel_size, scope='conv9')
+    x = block3a(x, 3, se, depth(48), kernel_size, scope='conv8')
+    x = block3a(x, 3, se, depth(48), kernel_size, scope='conv9')
 
-    x = block3b(x, 6, se, depth(96), kernel_size, stride=2, scope='conv10')
-    x = block3b(x, 6, se, depth(96), kernel_size, scope='conv11')
-    x = block3b(x, 6, se, depth(96), kernel_size, scope='conv12')
+    x = block3a(x, 6, se, depth(96), kernel_size, stride=2, scope='conv10')
+    x = block3a(x, 6, se, depth(96), kernel_size, scope='conv11')
+    x = block3a(x, 6, se, depth(96), kernel_size, scope='conv12')
 
-    x = conv3(x, depth(576), 1, scope='conv13')
-    x = reduce_mean(x, [1, 2], keepdims=True, name='avgpool')
+    x = conva(x, depth(576), 1, scope='conv13')
+    x = avg_pool2d(x, 7, scope='pool')
     x = conv2d(x, depth(1024) if depth_multiplier > 1. else 1024, 1,
+               activation_fn=activation_fn,
                biases_initializer=tf.zeros_initializer(), scope='conv14')
-    x = activation_fn(x, name='conv14/out')
     if stem: return x
 
-    x = squeeze(x, [1, 2], name='flatten')
+    x = reduce_mean(x, [1, 2], name='avgpool')
     x = fc(x, classes, scope='logits')
     x = softmax(x, name='probs')
     return x
