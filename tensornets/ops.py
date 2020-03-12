@@ -43,12 +43,22 @@ else:
                               name=name)
 
 
+def _hard_sigmoid(x, name=None):
+    return tf.divide(tf.nn.relu6(x + 3.), 6., name=name)
+
+
+def _hard_swish(x, name=None):
+    return tf.multiply(x, tf.nn.relu6(x + 3.) / 6., name=name)
+
+
 argmax = ops_to_outputs(tf.argmax)
 add = ops_to_outputs(tf.add)
 concat = ops_to_outputs(tf.concat)
 conv2d_primitive = ops_to_outputs(tf.nn.conv2d)
 expand_dims = ops_to_outputs(tf.expand_dims)
 gather = ops_to_outputs(tf.gather)
+hard_sigmoid = ops_to_outputs(_hard_sigmoid)
+hard_swish = ops_to_outputs(_hard_swish)
 leaky_relu = ops_to_outputs(_leaky_relu)
 lrn = ops_to_outputs(tf.nn.lrn)
 maximum = ops_to_outputs(tf.maximum)
