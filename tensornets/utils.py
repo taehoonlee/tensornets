@@ -144,6 +144,24 @@ def get_weights(scope=None, names=None):
     return get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope, names)
 
 
+def load(model, weights_path):
+    sess = tf.get_default_session()
+    assert sess is not None, 'The default session should be given.'
+
+    values = parse_weights(weights_path)
+    sess.run(pretrained_initializer(model, values))
+
+
+def save(model, weights_path):
+    sess = tf.get_default_session()
+    assert sess is not None, 'The default session should be given.'
+
+    weights = get_weights(model)
+    names = [w.name for w in weights]
+    values = sess.run(weights)
+    np.savez(weights_path, names=names, values=values)
+
+
 def pad_info(s, symmetry=True):
     pads = [[0, 0], [s // 2, s // 2], [s // 2, s // 2], [0, 0]]
     if not symmetry:
@@ -289,6 +307,9 @@ def var_scope(name):
                     setattr(x, 'print_outputs', lambda: print_outputs(_name))
                     setattr(x, 'print_weights', lambda: print_weights(_scope))
                     setattr(x, 'print_summary', lambda: print_summary(_scope))
+                    setattr(x, 'init', lambda: init(_scope))
+                    setattr(x, 'load', lambda weights_path: load(x, weights_path))
+                    setattr(x, 'save', lambda weights_path: save(x, weights_path))
                 return x
         return wrapper
     return decorator

@@ -69,6 +69,19 @@ model.print_outputs()
 assert sum(sum((outputs[-1] - preds) ** 2)) < 1e-8
 ```
 
+With `load()` and `save()`, your weight values can be restorable:
+
+```python
+with tf.Session() as sess:
+    model.init()
+    # ... your training ...
+    model.save('test.npz')
+
+with tf.Session() as sess:
+    model.load('test.npz')
+    # ... your deployment ...
+```
+
 TensorNets enables us to deploy well-known architectures and benchmark those results faster ⚡️. For more information, you can check out the lists of [utilities](#utilities), [examples](#examples), and [architectures](#performance).
 
 ## Object detection example

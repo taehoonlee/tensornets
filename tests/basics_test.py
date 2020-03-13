@@ -206,3 +206,36 @@ def test_detection_basics(net, shape, stem):
         # boxes = model.get_boxes(y, x.shape[1:3])
 
         # assert len(boxes) == 20
+
+
+@pytest.mark.parametrize('net,shape', [
+    (nets.MobileNet25, (224, 224, 3)),
+    (nets.SqueezeNet, (224, 224, 3)),
+], ids=[
+    'MobileNet',
+    'SqueezeNet',
+])
+def test_load_save(net, shape):
+    with tf.Graph().as_default():
+        inputs = tf.placeholder(tf.float32, [None] + list(shape))
+        model = net(inputs, is_training=False)
+
+        with tf.Session() as sess:
+            model.init()
+            model.save('test.npz')
+            values0 = sess.run(model.weights())
+
+            sess.run(model.pretrained())
+            values1 = sess.run(model.weights())
+
+            for (v0, v1) in zip(values0, values1):
+                assert not np.allclose(v0, v1)
+
+        with tf.Session() as sess:
+            model.load('test.npz')
+            values2 = sess.run(model.weights())
+
+            for (v0, v2) in zip(values0, values2):
+                assert np.allclose(v0, v2)
+
+        os.remove('test.npz')
