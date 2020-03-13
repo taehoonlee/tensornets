@@ -92,6 +92,6 @@ from .pretrained import assign as pretrained
 
 from .utils import *
 
-__version__ = '0.4.3'
+__version__ = '0.4.5'
 
 remove_utils(__name__, ['init'])
