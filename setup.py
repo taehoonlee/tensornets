@@ -11,6 +11,9 @@ ext_modules = [Extension("%s.%s" % (ext, n),
                          libraries=[] if platform.startswith("win") else ['m'],
                          include_dirs=[numpy.get_include()])
                for n in ['nms', 'get_boxes']]
+install_requires = [
+        'tensorflow>=1.8.0'
+        ]
 
 setup(name='tensornets',
       version='0.4.5',
@@ -24,4 +27,5 @@ setup(name='tensornets',
                 'tensornets.contrib_framework', 'tensornets.contrib_layers',
                 'tensornets.references', ext],
       include_package_data=True,
+      install_requires=install_requires,
       ext_modules=cythonize(ext_modules))
