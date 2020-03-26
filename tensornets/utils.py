@@ -144,17 +144,19 @@ def get_weights(scope=None, names=None):
     return get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope, names)
 
 
-def load(model, weights_path):
-    sess = tf.get_default_session()
-    assert sess is not None, 'The default session should be given.'
+def load(model, weights_path, sess):
+    if sess is None:
+        sess = tf.get_default_session()
+        assert sess is not None, 'The default session should be given.'
 
     values = parse_weights(weights_path)
     sess.run(pretrained_initializer(model, values))
 
 
-def save(model, weights_path):
-    sess = tf.get_default_session()
-    assert sess is not None, 'The default session should be given.'
+def save(model, weights_path, sess):
+    if sess is None:
+        sess = tf.get_default_session()
+        assert sess is not None, 'The default session should be given.'
 
     weights = get_weights(model)
     names = [w.name for w in weights]
@@ -250,9 +252,10 @@ def load_img(paths, grayscale=False, target_size=None, crop_size=None,
     return imgs
 
 
-def init(scopes):
-    sess = tf.get_default_session()
-    assert sess is not None, 'The default session should be given.'
+def init(scopes, sess):
+    if sess is None:
+        sess = tf.get_default_session()
+        assert sess is not None, 'The default session should be given.'
 
     if not isinstance(scopes, list):
         scopes = [scopes]
@@ -307,9 +310,11 @@ def var_scope(name):
                     setattr(x, 'print_outputs', lambda: print_outputs(_name))
                     setattr(x, 'print_weights', lambda: print_weights(_scope))
                     setattr(x, 'print_summary', lambda: print_summary(_scope))
-                    setattr(x, 'init', lambda: init(_scope))
-                    setattr(x, 'load', lambda weights_path: load(x, weights_path))
-                    setattr(x, 'save', lambda weights_path: save(x, weights_path))
+                    setattr(x, 'init', lambda sess=None: init(_scope, sess))
+                    setattr(x, 'load',
+                            lambda weights_path, sess=None: load(x, weights_path, sess))
+                    setattr(x, 'save',
+                            lambda weights_path, sess=None: save(x, weights_path, sess))
                 return x
         return wrapper
     return decorator
@@ -399,12 +404,16 @@ def pretrained_initializer(scope, values):
 
 def parse_weights(weights_path, move_rules=None):
     data = np.load(weights_path, encoding='bytes', allow_pickle=True)
-    values = data['values']
 
-    if tf_later_than('1.4'):
-        for (i, name) in enumerate(data['names']):
-            if '/beta' in str(data['names'][i-1]) and '/gamma' in str(name):
-                values[i], values[i-1] = values[i-1], values[i]
+    if isinstance(data, np.lib.npyio.NpzFile) or isinstance(data, dict):
+        values = data['values']
+
+        if tf_later_than('1.4'):
+            for (i, name) in enumerate(data['names']):
+                if '/beta' in str(data['names'][i-1]) and '/gamma' in str(name):
+                    values[i], values[i-1] = values[i-1], values[i]
+    else:
+        values = data
 
     return values
 

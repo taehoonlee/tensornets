@@ -220,6 +220,8 @@ def test_load_save(net, shape):
         inputs = tf.placeholder(tf.float32, [None] + list(shape))
         model = net(inputs, is_training=False)
 
+        # usages with the default session
+
         with tf.Session() as sess:
             model.init()
             model.save('test.npz')
@@ -238,4 +240,36 @@ def test_load_save(net, shape):
             for (v0, v2) in zip(values0, values2):
                 assert np.allclose(v0, v2)
 
+        # usages without the default session
+
+        sess = tf.Session()
+
+        model.init(sess)
+        model.save('test2.npz', sess)
+        values0 = sess.run(model.weights())
+
+        sess.run(model.pretrained())
+        values1 = sess.run(model.weights())
+
+        for (v0, v1) in zip(values0, values1):
+            assert not np.allclose(v0, v1)
+
+        model.load('test2.npz', sess)
+        values2 = sess.run(model.weights())
+
+        for (v0, v2) in zip(values0, values2):
+            assert np.allclose(v0, v2)
+
+        with pytest.raises(AssertionError):
+            model.init()
+
+        with pytest.raises(AssertionError):
+            model.save('test2.npz')
+
+        with pytest.raises(AssertionError):
+            model.load('test2.npz')
+
+        sess.close()
+
         os.remove('test.npz')
+        os.remove('test2.npz')
