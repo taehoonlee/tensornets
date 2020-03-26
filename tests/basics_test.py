@@ -137,7 +137,7 @@ def test_classification_basics(net, shape, weights, outputs, middles):
         x = np.random.random((1,) + shape).astype(np.float32) * 255
 
         with tf.Session() as sess:
-            nets.init(model)
+            model.init()
             y = model.eval({inputs: model.preprocess(x)})
 
         assert y.shape == (1, 1000)
@@ -198,7 +198,7 @@ def test_detection_basics(net, shape, stem):
         x = np.random.random((1, 733, 490, 3)).astype(np.float32) * 255
 
         with tf.Session() as sess:
-            nets.init(model)
+            model.init()
             y = model.eval({inputs: model.preprocess(x)})
 
         # TODO: Once the get_boxes's are translated from cython,
