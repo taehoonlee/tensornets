@@ -217,6 +217,7 @@ def load_train(data_dir, data_name,
         files = get_files(data_dir, data_name, total_num)
         annotations = get_annotations(data_dir, files)
         dirs = np.zeros(len(files), dtype=np.int)
+        data_dir = [data_dir]  # put in list for consistent further processing
 
     total_num = len(files)
     for f in files:
