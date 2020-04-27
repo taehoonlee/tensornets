@@ -177,7 +177,7 @@ def evaluate(results, data_dir, data_name, ovthresh=0.5, verbose=True):
         ids = np.array(ids)
         scores = np.array(scores)
         boxes = np.array(boxes)
-        _annotations = dict((k, v[c]) for (k, v) in annotations.iteritems())
+        _annotations = dict((k, v[c]) for (k, v) in annotations.items())
         ap, _, _ = evaluate_class(ids, scores, boxes, _annotations,
                                   files, ovthresh)
         aps += [ap]
