@@ -17,10 +17,12 @@ matrix:
       env: TF_VERSION1=1.14.0 TF_VERSION2=1.15.0
     - python: 3.6
       env: TF_VERSION1=2.0.0 TF_VERSION2=2.1.0
+    - python: 3.6
+      env: TF_VERSION1=2.2.0 TF_VERSION2=2.2.0
     - python: 2.7
       env: TF_VERSION1=1.4.0 TF_VERSION2=1.15.0
     - python: 2.7
-      env: TF_VERSION1=2.0.0 TF_VERSION2=2.1.0
+      env: TF_VERSION1=2.0.0 TF_VERSION2=2.2.0
 notifications:
   email: false
 # Adapted from
