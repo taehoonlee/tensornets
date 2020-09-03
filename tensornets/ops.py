@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 
+import os
 import tensorflow as tf
 
 from .utils import ops_to_outputs
