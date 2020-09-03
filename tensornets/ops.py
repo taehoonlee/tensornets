@@ -25,7 +25,14 @@ else:
         return tf.add(tf.nn.relu(x), -alpha * tf.nn.relu(-x), name=name)
 
 
-if tf_later_than('1.5'):
+TNETS_CUSTOM_SWISH = os.environ.get('TNETS_CUSTOM_SWISH', 'false').lower()
+if TNETS_CUSTOM_SWISH != 'true':
+    if TNETS_CUSTOM_SWISH != '1':
+        TNETS_CUSTOM_SWISH = 'false'
+    else:
+        TNETS_CUSTOM_SWISH = 'true'
+
+if tf_later_than('1.5') and not (TNETS_CUSTOM_SWISH == 'true'):
     # Note that `tf.nn.swish` has existed since 1.5.0.
     _swish = tf.nn.swish
 else:
