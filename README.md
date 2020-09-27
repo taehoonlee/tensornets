@@ -324,6 +324,8 @@ with tf.Session() as sess:
 | [EfficientNetB7](tensornets/efficientnets.py#L187)|  600  | 84.088      | 96.740      | 131.9M | 66.7M  | 64.1M  | 6149  | [[paper]](https://arxiv.org/abs/1905.11946) [[tf-tpu]](https://github.com/tensorflow/tpu/blob/master/models/official/efficientnet/efficientnet_model.py) |
 | [SqueezeNet](tensornets/squeezenets.py#L46)       |  224  | 54.434      | 78.040      |   2.5M | 1.2M   | 0.7M   | 71.43 | [[paper]](https://arxiv.org/abs/1602.07360) [[caffe]](https://github.com/DeepScale/SqueezeNet/blob/master/SqueezeNet_v1.1/train_val.prototxt) |
 
+![summary](summary.png)
+
 ### Object detection
 
 - The object detection models can be coupled with any network but mAPs could be measured only for the models with pre-trained weights. Note that:
