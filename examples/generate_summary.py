@@ -38,7 +38,7 @@ groups.append(
 groups.append(
     ('MobileNet2', '#66BB6A', np.array([('MobileNet' in x) and ('v2' in x) for x in name])))
 groups.append(
-    ('MobileNet3', '#9CCC65', np.array([('v3' in x) for x in name])))
+    ('MobileNet3', '#9CCC65', np.array([('v3large' in x) and ('mini' not in x) for x in name])))
 groups.append(
     ('EfficientNet', '#FFA726', np.array([('EfficientNet' in x) for x in name])))
 
@@ -53,15 +53,19 @@ for (label, color, index) in groups:
 
 axarr[0, 0].legend()
 axarr[0, 0].set_xlabel('Size (M)')
+axarr[0, 0].set_xscale('log')
 axarr[0, 0].set_ylabel('Top-1 (%)')
 
 axarr[0, 1].set_xlabel('Size (M)')
+axarr[0, 1].set_xscale('log')
 axarr[0, 1].set_ylabel('Top-5 (%)')
 
 axarr[1, 0].set_xlabel('MAC (M)')
+axarr[1, 0].set_xscale('log')
 axarr[1, 0].set_ylabel('Top-1 (%)')
 
 axarr[1, 1].set_xlabel('MAC (M)')
+axarr[1, 1].set_xscale('log')
 axarr[1, 1].set_ylabel('Top-5 (%)')
 
 for i in range(2):
