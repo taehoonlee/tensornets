@@ -333,13 +333,11 @@ def process_record_dataset(dataset,
   dataset = dataset.repeat(num_epochs)
 
   # Parses the raw records into images and labels.
-  dataset = dataset.apply(
-      tf.data.experimental.map_and_batch(
-          lambda value: parse_record_fn(value, is_training, dtype,
-                                        eval_image_size, normalize),
-          batch_size=batch_size,
-          num_parallel_batches=num_parallel_batches,
-          drop_remainder=False))
+  dataset = dataset.map(
+      lambda value: parse_record_fn(value, is_training, dtype,
+                                    eval_image_size, normalize),
+      num_parallel_calls=tf.data.experimental.AUTOTUNE)
+  dataset = dataset.batch(batch_size, drop_remainder=False)
 
   # Operations between the final prefetch and the get_next call to the iterator
   # will happen synchronously during run time. We prefetch here again to
@@ -512,8 +510,9 @@ def input_fn(is_training, data_dir, batch_size,
   # This number is low enough to not cause too much contention on small systems
   # but high enough to provide the benefits of parallelization. You may want
   # to increase this number if you have a large number of CPU cores.
-  dataset = dataset.apply(tf.data.experimental.parallel_interleave(
-      tf.data.TFRecordDataset, cycle_length=48))
+  dataset = dataset.interleave(
+      tf.data.TFRecordDataset, cycle_length=48,
+      num_parallel_calls=tf.data.experimental.AUTOTUNE)
 
   return process_record_dataset(
       dataset=dataset,

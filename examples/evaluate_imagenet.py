@@ -2,10 +2,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import tensorflow as tf
+import sys
+import tensorflow.compat.v1 as tf
 import tensornets as nets
 
 from imagenet_preprocessing import input_fn as _input_fn
+from tensorflow import contrib
 
 
 tf.app.flags.DEFINE_integer(
@@ -93,12 +95,18 @@ def model_fn(features, labels, mode):
         metrics = {}
         for i in range(len(models)):
             top1 = tf.metrics.accuracy(labels=labels, predictions=classes[i])
-            top5 = tf.contrib.metrics.streaming_sparse_recall_at_k(
+            top5 = contrib.metrics.streaming_sparse_recall_at_k(
                 logits[i], tf.cast(labels, tf.int64), k=5)
             size = sum([w.shape.num_elements()
                         for w in models[i].get_weights()])
+            run_meta = tf.RunMetadata()
+            opts = tf.profiler.ProfileOptionBuilder.float_operation()
+            opts['output'] = 'none'
+            flops = tf.profiler.profile(tf.get_default_graph(),
+                                        run_meta=run_meta, options=opts)
             metrics.update({"%dTop1" % i: top1,
                             "%dTop5" % i: top5,
+                            "%dMAC" % i: (tf.constant(flops.total_float_ops), tf.no_op()),
                             "%dSize" % i: (tf.constant(size), tf.no_op())})
 
     return tf.estimator.EstimatorSpec(
@@ -111,7 +119,7 @@ def model_fn(features, labels, mode):
         export_outputs=None)
 
 
-def main(_):
+def main(argv=None):
     if not FLAGS.dataset_dir:
         raise ValueError('You must supply the dataset directory.')
 
@@ -127,16 +135,17 @@ def main(_):
         input_fn=input_fn, steps=FLAGS.steps,
         hooks=[hook(every_n_steps=FLAGS.log_every_n_steps)])
 
-    print("| {:5d} Samples    | Top-1       | Top-5       | Size   |".format(
+    print("| {:5d} Samples    | Top-1       | Top-5       | MAC    | Size   |".format(
           FLAGS.batch_size * FLAGS.steps))
-    print("|------------------|-------------|-------------|--------|")
+    print("|------------------|-------------|-------------|--------|--------|")
     for (i, model_name) in enumerate(FLAGS.model_name.split(',')):
-        print("| {:16s} | {:6.3f}      | {:6.3f}      | {:5.1f}M |".format(
-              model_name,
-              100 * (1 - results["%dTop1" % i]),
-              100 * (1 - results["%dTop5" % i]),
+        print("| {:16s} | {:6.3f}      | {:6.3f}      | {:5.1f}M | {:5.1f}M |".format(
+              model_name.split('Net')[-1] if len(model_name) > 16 else model_name,
+              100 * (results["%dTop1" % i]),
+              100 * (results["%dTop5" % i]),
+              results["%dMAC" % i] / 10e5,
               results["%dSize" % i] / 10e5))
 
 
 if __name__ == '__main__':
-    tf.app.run()
+    main(sys.argv[1:])
